@@ -256,7 +256,7 @@ class MainWindowController: PlayerWindowController {
       case .animating(let toFullScreen, let legacy, let frame):
         if toFullScreen {
           self = .fullscreen(legacy: legacy, priorWindowedFrame: frame)
-        } else{
+        } else {
           self = .windowed
         }
       }
@@ -1317,7 +1317,7 @@ class MainWindowController: PlayerWindowController {
     player.mpv.setFlag(MPVOption.Window.keepaspect, true)
   }
 
-  func windowDidEnterFullScreen(_ notification: Notification) {
+  func windowDidEnterFullScreen(_ notification: Notification?) {
     fsState.finishAnimating()
 
     titleTextField?.alphaValue = 1
@@ -1361,6 +1361,14 @@ class MainWindowController: PlayerWindowController {
     player.events.emit(.windowFullscreenChanged, data: true)
   }
 
+  func windowDidFailToEnterFullScreen(_ window: NSWindow) {
+    Logger.log("AppKit failed to enter full screen! Attempting to restore previous windowed state", level: .error)
+    if case .animating(let toFullscreen, let legacy, let priorWindowedFrame) = fsState, toFullscreen, !legacy {
+      fsState = .animating(toFullscreen: false, legacy: legacy, priorWindowedFrame: priorWindowedFrame)
+      windowDidExitFullScreen(nil)
+    }
+  }
+
   func windowWillExitFullScreen(_ notification: Notification) {
     // When playback is paused the display link is stopped in order to avoid wasting energy on
     // needless processing. It must be running while transitioning from full screen mode.
@@ -1397,7 +1405,7 @@ class MainWindowController: PlayerWindowController {
     player.mpv.setFlag(MPVOption.Window.keepaspect, false)
   }
 
-  func windowDidExitFullScreen(_ notification: Notification) {
+  func windowDidExitFullScreen(_ notification: Notification?) {
     if Preference.bool(for: PK.disableAnimations) {
       // When animation is not used exiting full screen does not restore the previous size of the
       // window. Restore it now.
@@ -1452,6 +1460,14 @@ class MainWindowController: PlayerWindowController {
     updateWindowParametersForMPV()
     
     player.events.emit(.windowFullscreenChanged, data: false)
+  }
+
+  func windowDidFailToExitFullScreen(_ window: NSWindow) {
+    Logger.log("AppKit failed to exit full screen! Attempting to recover previous full screen state", level: .error)
+    if case .animating(let toFullscreen, let legacy, let priorWindowedFrame) = fsState, !toFullscreen, !legacy {
+      fsState = .animating(toFullscreen: true, legacy: legacy, priorWindowedFrame: priorWindowedFrame)
+      windowDidEnterFullScreen(nil)
+    }
   }
 
   func toggleWindowFullScreen() {

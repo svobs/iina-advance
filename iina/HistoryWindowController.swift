@@ -7,7 +7,11 @@
 //
 
 import Cocoa
-
+import SwiftUI
+extension ToolbarItemPlacement {
+  @available(macOS 13.0, *)
+  static let toolOptionsBar = ToolbarItemPlacement(id: "com.companyname.toolOptions")
+}
 fileprivate extension NSUserInterfaceItemIdentifier {
   static let time = NSUserInterfaceItemIdentifier("Time")
   static let filename = NSUserInterfaceItemIdentifier("Filename")
@@ -60,12 +64,57 @@ class HistoryOutlineView: OutlineView {
   }
 }
 
+// 1. Create your SwiftUI toolbar view
+struct HistoryToolbarView: View {
+  @Binding var searchText: String
+  @Binding var groupBy: Preference.HistoryGroupBy
+
+  var onSearchTypeChange: (Preference.HistorySearchType) -> Void
+
+  var body: some View {
+    HStack(spacing: 4) {
+      // Group by picker
+      Picker("Group by:", selection: $groupBy) {
+        Text("Day").tag(Preference.HistoryGroupBy.lastPlayedDay)
+        Text("Folder").tag(Preference.HistoryGroupBy.parentFolder)
+      }
+      .pickerStyle(.segmented)
+
+      Spacer().frame(width: 8)
+
+      // Search field
+      TextField("Search", text: $searchText)
+        .textFieldStyle(.roundedBorder)
+        .frame(width: 200)
+
+      Menu {
+        Button("Filename") {
+          onSearchTypeChange(.filename)
+        }
+        Button("Full Path") {
+          onSearchTypeChange(.fullPath)
+        }
+      } label: {
+        Image(systemName: "line.3.horizontal.decrease.circle")
+          .imageScale(.large)
+      }
+      .menuStyle(.borderlessButton)
+      .frame(width: 30, height: 20)
+    }
+    .padding(.horizontal, 8)
+  }
+}
+
 class HistoryWindowController: WindowController, NSOutlineViewDelegate, NSOutlineViewDataSource,
                                NSMenuDelegate, NSMenuItemValidation, NSWindowDelegate {
 
   override var windowNibName: NSNib.Name {
     return NSNib.Name("HistoryWindowController")
   }
+
+  // Add a hosting view property
+  private var toolbarHostingView: NSHostingView<AnyView>?
+
 
   @IBOutlet weak var titleBarAccessoryContentView: NSView!
   @IBOutlet weak var outlineView: OutlineView!
@@ -220,25 +269,28 @@ class HistoryWindowController: WindowController, NSOutlineViewDelegate, NSOutlin
     outlineView.doubleAction = #selector(doubleAction)
     outlineView.sizeLastColumnToFit()
 
+    // Create SwiftUI toolbar
+    setupSwiftUIToolbar()
+
     // Add this to prevent vertical overlap with title
     historyTableVerticalOffsetConstraint.constant = Constants.Distance.standardTitleBarHeight
 
-    if #available(macOS 26.0, *) {
-      groupByButton.wantsLayer = true
-      groupByButton.borderShape = .capsule
-      groupByButton.layer?.cornerRadius = 10
-    }
-
-    // Add the visual effect as a title bar accessory
-    let accessory = NSTitlebarAccessoryViewController()
-    accessory.view = titleBarAccessoryContentView
-    accessory.layoutAttribute = .trailing
-    window.addTitlebarAccessoryViewController(accessory)
-
-    if #available(macOS 11.0, *) {
-      window.titlebarSeparatorStyle = .automatic  // or .line, .none, .shadow
-      accessory.automaticallyAdjustsSize = false
-    }
+//    if #available(macOS 26.0, *) {
+//      groupByButton.wantsLayer = true
+//      groupByButton.borderShape = .capsule
+//      groupByButton.layer?.cornerRadius = 10
+//    }
+//
+//    // Add the visual effect as a title bar accessory
+//    let accessory = NSTitlebarAccessoryViewController()
+//    accessory.view = titleBarAccessoryContentView
+//    accessory.layoutAttribute = .trailing
+//    window.addTitlebarAccessoryViewController(accessory)
+//
+//    if #available(macOS 11.0, *) {
+//      window.titlebarSeparatorStyle = .automatic  // or .line, .none, .shadow
+//      accessory.automaticallyAdjustsSize = false
+//    }
 
     window.backgroundColor = .clear
     window.titlebarAppearsTransparent = true
@@ -256,6 +308,88 @@ class HistoryWindowController: WindowController, NSOutlineViewDelegate, NSOutlin
     window.makeFirstResponder(outlineView)
 
     log.verbose("History windowDidLoad done")
+  }
+
+  private func setupSwiftUIToolbar() {
+    guard let window else { return }
+
+    let searchTextBinding = Binding(
+      get: { self.searchString },
+      set: { newValue in
+        self.searchString = newValue
+        UIState.shared.set(newValue, for: .uiHistoryTableSearchString)
+        self.reloadHistoryData()
+      }
+    )
+
+    let groupByBinding = Binding(
+      get: { self.groupBy },
+      set: { newValue in
+        self.groupBy = newValue
+        UIState.shared.set(newValue.rawValue, for: .uiHistoryTableGroupBy)
+        self.reloadHistoryData()
+      }
+    )
+
+    let onSearchTypeChange: (Preference.HistorySearchType) -> Void = { [weak self] newType in
+      self?.setSearchType(newType)
+    }
+
+    // Create the SwiftUI view with bindings
+    let toolbarView = HistoryToolbarView(
+      searchText: searchTextBinding,
+      groupBy: groupByBinding,
+      onSearchTypeChange: onSearchTypeChange
+    )
+
+    let toolbarViewAnonymous = HStack(spacing: 4) {
+      // Group by picker
+      Picker("Group by:", selection: groupByBinding) {
+        Text("Day").tag(Preference.HistoryGroupBy.lastPlayedDay)
+        Text("Folder").tag(Preference.HistoryGroupBy.parentFolder)
+      }
+      .pickerStyle(.segmented)
+
+      Spacer().frame(width: 8)
+
+      // Search field
+      TextField("Search", text: searchTextBinding)
+        .textFieldStyle(.roundedBorder)
+        .frame(width: 200)
+
+      Menu {
+        Button("Filename") {
+          onSearchTypeChange(.filename)
+        }
+        Button("Full Path") {
+          onSearchTypeChange(.fullPath)
+        }
+      } label: {
+        Image(systemName: "line.3.horizontal.decrease.circle")
+          .imageScale(.large)
+      }
+      .menuStyle(.borderlessButton)
+      .frame(width: 30, height: 20)
+    }
+      .padding(.horizontal, 8)
+    let accessory = NSTitlebarAccessoryViewController()
+    let hostingView = NSHostingView(rootView: AnyView(toolbarViewAnonymous))
+    accessory.view = hostingView
+    accessory.layoutAttribute = .trailing
+    accessory.isHidden = false
+    hostingView.frame.size = hostingView.fittingSize
+    // Set constraints for size
+    NSLayoutConstraint.activate([
+      hostingView.widthAnchor.constraint(greaterThanOrEqualToConstant: 200)
+    ])
+
+    log.debug("TOOLBAR HEIGHT: \(hostingView.fittingSize.height)")
+
+    window.addTitlebarAccessoryViewController(accessory)
+
+    // Store reference
+    toolbarHostingView = hostingView
+
   }
 
   class OutlineColumnHeaderCell: NSTableHeaderCell {

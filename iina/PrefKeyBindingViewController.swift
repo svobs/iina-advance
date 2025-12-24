@@ -216,7 +216,7 @@ class PrefKeyBindingViewController: PreferenceViewController, PreferenceWindowEm
     Utility.quickOpenPanel(title: "Select Conf File to Import", chooseDir: false, sheetWindow: view.window,
                            allowedFileTypes: [Constants.InputConf.fileExtension]) { url in
       guard url.isFileURL, url.lastPathComponent.hasSuffix(Constants.InputConf.fileExtension) else { return }
-      self.confTableController?.importConfFiles([url.lastPathComponent])
+      self.confTableController?.importConfFiles([url.path])
     }
   }
 

@@ -21,6 +21,7 @@ final class MediaPlayerIntegration {
     guard !AppDelegate.shared.isTerminating else { return }
     let newEnablement = Preference.bool(for: .useMediaKeys)
     updateEnablement(to: newEnablement)
+    guard newEnablement else { return }
     updateNowPlayingInfo()
   }
 
@@ -119,7 +120,7 @@ final class MediaPlayerIntegration {
   ///
   /// This method must be run on the main thread because it references `PlayerManager.shared.lastActivePlayer`.
   @MainActor
-  func updateNowPlayingInfo() {
+  private func updateNowPlayingInfo() {
     let center = MPNowPlayingInfoCenter.default()
     var info = center.nowPlayingInfo ?? [String: Any]()
 

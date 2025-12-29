@@ -2339,7 +2339,7 @@ final class PlayerCore: NSObject {
     guard isActive else { return }
     DispatchQueue.main.async { [self] in
       guard pwc.isOpen else { return }
-      MediaPlayerIntegration.shared.updateNowPlayingInfo()
+      MediaPlayerIntegration.shared.update()
       postNotification(.iinaMediaTitleChanged)
     }
   }

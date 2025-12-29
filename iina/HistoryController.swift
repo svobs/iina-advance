@@ -120,12 +120,7 @@ final class HistoryController {
       guard !started else { return }
       started = true
       log.verbose("Starting History")
-
-      // Make sure to start listening before reload, to avoid creating race condition
-      log.debug("Starting monitoring of watch-later dir")
-      folderMonitor.folderDidChange = self.watchLaterDirDidChange
-      folderMonitor.startMonitoring()
-
+      startOrStopMonitoringWatchLaterDir()
       reloadAll()
 
       // Workaround for macOS Sonoma clearing the recent documents list when the IINA code is not signed
@@ -160,6 +155,18 @@ final class HistoryController {
           NotificationCenter.default.post(Notification(name: .iinaHistoryTasksFinished))
         }
       }
+    }
+  }
+
+  func startOrStopMonitoringWatchLaterDir() {
+    if Preference.bool(for: .resumeLastPosition) {
+      // Make sure to start listening before reload, to avoid creating race condition
+      log.debug("Starting monitoring of watch-later dir")
+      folderMonitor.folderDidChange = self.watchLaterDirDidChange
+      folderMonitor.startMonitoring()
+    } else {
+      log.debug("Will not monitor watch-later dir: resumeLastPosition=NO")
+      folderMonitor.stopMonitoring()
     }
   }
 

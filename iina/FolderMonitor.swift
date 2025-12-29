@@ -27,9 +27,7 @@ public class FolderMonitor {
 
   /// Listen for changes to the directory (if we are not already).
   public func startMonitoring() {
-    guard folderMonitorSource == nil, monitoredFolderFileDescriptor == -1 else {
-      return
-    }
+    guard folderMonitorSource == nil, monitoredFolderFileDescriptor == -1 else { return }
     // Open the directory referenced by URL for monitoring only.
     monitoredFolderFileDescriptor = open(url.path, O_EVTONLY)
     // Define a dispatch source monitoring the directory for additions, deletions, and renamings.
@@ -54,13 +52,12 @@ public class FolderMonitor {
 
   /// Stop listening for changes to the directory, if the source has been created.
   public func stopMonitoring() {
-    if let folderMonitorSource {
-      HistoryController.shared.log.debug("Stopping watchdog for watch-later dir")
-      folderMonitorSource.cancel()
+    guard let folderMonitorSource else { return }
+    HistoryController.shared.log.debug("Stopping watchdog for watch-later dir")
+    folderMonitorSource.cancel()
 
-      // Reset variables
-      self.folderMonitorSource = nil
-      monitoredFolderFileDescriptor = -1
-    }
+    // Reset variables
+    self.folderMonitorSource = nil
+    monitoredFolderFileDescriptor = -1
   }
 }

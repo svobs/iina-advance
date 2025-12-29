@@ -106,6 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SPUUpdaterDelegate {
     case PK.resumeLastPosition:
       HistoryController.shared.async {
         HistoryController.shared.log.verbose("Reloading playback history in response to change for 'resumeLastPosition'.")
+        HistoryController.shared.startOrStopMonitoringWatchLaterDir()
         HistoryController.shared.reloadAll()
       }
 

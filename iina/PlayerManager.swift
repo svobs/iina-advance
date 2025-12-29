@@ -108,7 +108,7 @@ final class PlayerManager {
   }
 
   func getNonIdle() -> [PlayerCore] {
-    playerCores.filter { $0.isActive }
+    playerCores.filter { $0.isActive && ($0.state != .idle) }
   }
 
   func getIdleOrCreateNew() -> PlayerCore {

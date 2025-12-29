@@ -645,6 +645,19 @@ struct Preference {
     init?(key: Key) {
       self.init(rawValue: Preference.integer(for: key))
     }
+
+    var description: String {
+      switch self {
+      case .welcomeWindow:
+        return "Show welcome window"
+      case .openPanel:
+        return "Show open file panel"
+      case .none:
+        return "Do nothing"
+      case .historyWindow:
+        return "Show Playback History window"
+      }
+    }
   }
 
   enum ActionWhenNoOpenWindow: Int, InitializingFromKey {

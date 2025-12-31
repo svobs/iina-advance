@@ -2332,6 +2332,9 @@ final class PlayerCore: NSObject {
     // Idle player is one which is closed or never used but can be reused. Do not set to idle when changing media or other small intervals
     if state.isNotYet(.shuttingDown), (errorMsg != nil) || (info.currentPlayback == nil) {
       state = .idle
+      DispatchQueue.main.async { [self] in
+        videoView.displayIdle()
+      }
     }
   }
 
@@ -2383,8 +2386,6 @@ final class PlayerCore: NSObject {
     guard !isStopping else { return }
     log.verbose("Reloading QuickSettigsView")
 
-    // Easiest place to put this - need to call it when setting equalizers
-    videoView.displayActive()
     pwc.quickSettingView.reloadCurrentTab()
   }
 

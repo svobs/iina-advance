@@ -34,7 +34,7 @@ class PlaybackInfo {
     isPausedLocally ?? isPausedRemotely
   }
   var isPlaying: Bool { !isPaused }
-  var isPausedRemotely: Bool = false {
+  var isPausedRemotely: Bool = true {
     didSet {
       if oldValue != isPaused {
         log.verbose("Playback is \(isPaused ? "PAUSED" : "PLAYING")")

@@ -1615,7 +1615,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
     player.mpv.queue.async { [self] in
       guard player.isActive else { return }
       guard let currentPlayback = player.info.currentPlayback else {
-        log.verbose("Cannot update window title: currentPlayback is nil")
+        log.trace("Cannot update window title: currentPlayback is nil")
         return
       }
 

@@ -172,14 +172,14 @@ class VideoView: NSView {
     }
   }
 
+  @MainActor
   func initVideoLayer() {
-    assert(DispatchQueue.isExecutingIn(.main))
     if useOpenGL {
       log.verbose("Init OpenGL layer")
       /// This will create & add the layer if it was not already init'd:
       wantsLayer = true
       glLayer?.initGLRendering()
-      startDisplayLink()
+      displayActive()
     } else {
       log.verbose("Init Metal layer")
       wantsLayer = true

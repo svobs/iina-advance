@@ -749,6 +749,8 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
     guard currentTab == .video else { return }
     guard pwc.isOpen(sidebarTab: .video) else { return }
     player.log.verbose("QuickSettings: reloading Video tab")
+    // Easiest place to put this - need to call it when setting equalizers
+    player.videoView.displayActive()
     videoTableView.reloadData()
     updateVideoTabControls(using: videoGeo)
     updateVideoEqState()

@@ -27,8 +27,8 @@ extension VideoView {
     return link
   }
 
-  func startDisplayLink() {
-    assert(DispatchQueue.isExecutingIn(.main))
+  @MainActor
+  private func startDisplayLink() {
     let link = obtainDisplayLink()
 
     guard !CVDisplayLinkIsRunning(link) else { return }

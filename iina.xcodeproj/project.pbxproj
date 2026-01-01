@@ -5104,7 +5104,7 @@
 				DEVELOPMENT_TEAM = PG2MG2559L;
 				INFOPLIST_KEY_CFBundleDisplayName = "IINA Advance";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -5164,7 +5164,7 @@
 				DEVELOPMENT_TEAM = PG2MG2559L;
 				INFOPLIST_KEY_CFBundleDisplayName = "IINA Advance";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -5240,7 +5240,7 @@
 				DEVELOPMENT_TEAM = PG2MG2559L;
 				INFOPLIST_KEY_CFBundleDisplayName = "IINA Advance";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -5269,7 +5269,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "IINA Advance";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (

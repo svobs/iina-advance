@@ -115,9 +115,17 @@ extension Date {
 
 extension NSColor {
   var mpvColorString: String {
-    get {
-      return "\(self.redComponent)/\(self.greenComponent)/\(self.blueComponent)/\(self.alphaComponent)"
-    }
+    // Normalize to sRGB before extracting cmponents
+    let rgb = self.usingColorSpace(.sRGB) ?? self
+
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+
+    rgb.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+    return "\(red)/\(green)/\(blue)/\(alpha)"
   }
 
   convenience init?(mpvColorString: String) {
@@ -486,7 +494,7 @@ extension NSRect {
     var newX = origin.x - (newSize.width - size.width) / 2
     var newY = origin.y - (newSize.height - size.height) / 2
     let screenFrame = NSScreen.main?.visibleFrame ?? NSRect.zero
-    
+
     // resizes x and y values so the window always stays within a valid screenFrame
     if screenFrame != NSRect.zero {
       newX = max(min(newX, screenFrame.maxX - newSize.width), screenFrame.minX)
@@ -711,7 +719,7 @@ struct StandardizedDecimalFormatters {
       fmt.numberStyle = .decimal
       fmt.maximumFractionDigits = i
       fmt.usesGroupingSeparator = false
-      fmt.roundingMode = .floor  
+      fmt.roundingMode = .floor
       truncate_maxFracDigits.append(fmt)
     }
     self.truncate_maxFracDigits = truncate_maxFracDigits
@@ -846,7 +854,6 @@ extension FloatingPoint {
     return fmtStdDecimal.roundHalfDown_maxFracDigits[6].string(for: self)!
   }
 }
-
 
 // MARK: - Text types
 
@@ -1998,7 +2005,7 @@ extension NSScrollView {
     }
     return observer
   }
-  
+
   // Combines the previous 2 functions into one
   func restoreAndObserveVerticalScroll(key: Preference.Key, defaultScrollAction: () -> Void) -> NSObjectProtocol {
     if !restoreVerticalScroll(key: key) {
@@ -2098,7 +2105,7 @@ extension NSView {
     let radius = suggestedRoundedCornerRadius()
     roundCorners(withRadius: radius)
   }
-  
+
   func suggestedRoundedCornerRadius() -> CGFloat {
     // Set corner radius to betwen 10 and 20
     return 10 + min(10, max(0, (frame.height - 400) * 0.01))

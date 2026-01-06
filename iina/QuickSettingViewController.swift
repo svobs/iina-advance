@@ -129,7 +129,7 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
 
   @IBOutlet weak var customSpeedTextField: NSTextField!
   @IBOutlet weak var speedResetBtn: NSButton!
-  
+
   @IBOutlet weak var switchHorizontalLine: NSBox!
   @IBOutlet weak var switchHorizontalLine2: NSBox!
   @IBOutlet weak var hardwareDecodingSwitch: NSSwitch!
@@ -197,7 +197,7 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
 
   @IBOutlet weak var subtitleSwitch: NSSwitch!
   @IBOutlet weak var secondarySubtitleSwitch: NSSwitch!
-  
+
   private lazy var audioEQSliders: [NSSlider] = [
     audioEqSlider1, audioEqSlider2, audioEqSlider3, audioEqSlider4, audioEqSlider5,
     audioEqSlider6, audioEqSlider7, audioEqSlider8, audioEqSlider9, audioEqSlider10
@@ -266,9 +266,16 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
       Utility.quickConstraints(["H:|[v]|", "V:|[v]|"], ["v": well])
     }
 
-    subTextColorWell.action = #selector(subTextColorAction)
-    subTextBgColorWell.action = #selector(subTextBgColorAction)
-    subTextBorderColorWell.action = #selector(subTextBorderColorAction)
+    // Wire color wells to IBAction handlers
+    subTextColorWell.target = self
+    subTextColorWell.action = #selector(subTextColorAction(_:))
+
+    subTextBgColorWell.target = self
+    subTextBgColorWell.action = #selector(subTextBgColorAction(_:))
+
+    subTextBorderColorWell.target = self
+    subTextBorderColorWell.action = #selector(subTextBorderColorAction(_:))
+
 
     if #available(macOS 26, *) {
       speedSlider.neutralValue = 8
@@ -560,7 +567,7 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
     deinterlaceSwitch.state = player.info.deinterlace ? .on : .off
     hdrSwitch.isEnabled = player.info.hdrAvailable
     hdrSwitch.state = (player.info.hdrAvailable && player.info.hdrEnabled) ? .on : .off
-    
+
     // These strings are also contained in the strings file of this view. Remove these lines if the localization of these strings are complete enough.
     hardwareDecodingLabel.stringValue = NSLocalizedString("quicksetting.hwdec", comment: "Hardware Decoding")
     deinterlaceLabel.stringValue = NSLocalizedString("quicksetting.deinterlace", comment: "Deinterlace")
@@ -1117,11 +1124,11 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
   @IBAction func hardwareDecodingAction(_ sender: NSSwitch) {
     player.toggleHardwareDecoding(sender.state == .on)
   }
-  
+
   @IBAction func deinterlaceAction(_ sender: NSSwitch) {
     player.toggleDeinterlace(sender.state == .on)
   }
-  
+
   @IBAction func hdrAction(_ sender: NSSwitch) {
     self.player.info.hdrEnabled = sender.state == .on
     player.refreshEdrMode()
@@ -1629,7 +1636,7 @@ extension QuickSettingViewController {
     Utility.quickPromptPanel(key, validator: validator, callback: { inputString = $0 })
     return inputString
   }
-  
+
   /// Find item in audio EQ popup menu which matches both name & tag
   private func findItem(_ name: String, _ tag: Int = eqUserDefinedProfileMenuItemTag) -> NSMenuItem? {
     return eqPopUpButton.itemArray.filter{ $0.tag == tag }.first { $0.title == name }

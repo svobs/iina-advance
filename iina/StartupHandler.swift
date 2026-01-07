@@ -727,7 +727,7 @@ final class StartupHandler {
         AppDelegate.shared.doLaunchOrReopenAction()
         DispatchQueue.main.async {
           // Pre-load if no player, for a snappier drag & drop effect in Welcome window
-          log.verbose("Ensuring an idle player is ready")
+          log.debug("No players were explicitly opened at launch - will preemptively create a new idle player")
           _ = PlayerManager.shared.getIdleOrCreateNew()
         }
       }

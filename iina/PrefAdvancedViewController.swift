@@ -423,7 +423,7 @@ extension PrefAdvancedViewController: EditableTableViewDelegate {
   }
 
   func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool {
-    Logger.log.verbose("User finished editing value for row \(rowIndex), col \(columnIndex): \(newValue.quoted)")
+    Logger.log.verbose("User finished editing option value for row \(rowIndex), col \(columnIndex): \(newValue.quoted)")
     guard rowIndex < optionsList.count else {
       return false
     }
@@ -444,7 +444,7 @@ extension PrefAdvancedViewController: EditableTableViewDelegate {
       let optParsed = MPVOptPair.parseLine(userString)
 
       if optParsed.val.isEmpty {
-        optNew = MPVOptPair(key: optParsed.key, val: optOld.key)
+        optNew = MPVOptPair(key: optParsed.key, val: optOld.val)
       } else {
         Logger.log.debug("User entered a key=value pair in the Name field: will split into Name & Value and changing both columns.")
         optNew = optParsed

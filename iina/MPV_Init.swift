@@ -403,9 +403,14 @@ extension MPVController {
       let status = setOptionString(opName, op.val)
       if status < 0 {
         let errorString = errorString(status)
+        let errorKey = "extra_option.error"
+        let errorFormat = NSLocalizedString("alert." + errorKey, comment: errorKey)
+        let errorStringArgs: [CVarArg] = [opName, op.val, status, errorString]
+        log.error(String(format: errorFormat, arguments: errorStringArgs).replacingOccurrences(of: "\n", with: " | "))
+
         // `Utility.showAlert` will deadlock if not called async because we are already running on the main thread
         DispatchQueue.main.async {
-          Utility.showAlert("extra_option.error", arguments: [opName, op.val, status, errorString])
+          Utility.showAlert(errorKey, arguments: errorStringArgs, logAlert: false)
         }
       }
     }

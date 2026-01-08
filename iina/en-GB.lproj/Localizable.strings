@@ -304,7 +304,7 @@
 
 "alert.extra_option.cannot_read" = "Cannot read user defined extra mpv options.";
 "alert.extra_option.empty" = "Key or value cannot be empty!";
-"alert.extra_option.error" = "Error setting mpv option:\n--%@=%@\nReturn code: %d (%@). Please check your options in Settings > Advanced > Additional mpv options.";
+"alert.extra_option.error" = "Failed to set mpv option:\n--%@=%@\n\nReturn code: %d (%@)\n\nPlease check your options in Settings > Advanced > Additional mpv options.";
 "alert.extra_option.config_folder" = "Error setting config directory \"%@\".";
 
 "alert.playlist.error_deleting" = "Error deleting: %@";

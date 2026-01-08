@@ -301,9 +301,9 @@ extension PlayerCore {
       guard syncAndValidatePlaylist(expectedPlaylist: expectedPlaylistAfter) else {
         if log.isVerboseEnabled {
           let tableChangeExpected = TableUIChangeBuilder.shared.buildDiff(oldRows: expectedPlaylistBefore,
-                                                                    newRows: expectedPlaylistAfter)
+                                                                          newRows: expectedPlaylistAfter)
           let tableChangeActual = TableUIChangeBuilder.shared.buildDiff(oldRows: expectedPlaylistBefore,
-                                                                  newRows: info.playlist)
+                                                                        newRows: info.playlist)
           let expStr: String = tableChangeExpected.toMove?.compactMap{"\($0.0) → \($0.1)"}.joined(separator: "\n") ?? "nil"
           let actStr: String = tableChangeActual.toMove?.compactMap{"\($0.0) → \($0.1)"}.joined(separator: "\n") ?? "nil"
           log.warn("[Playlist] Mismatch after MOVE:\nEXPECTED:\n\(expStr)\n\nACTUAL:\n\(actStr)")

@@ -180,9 +180,7 @@ class EditableTableView: NSTableView {
 
   override func becomeFirstResponder() -> Bool {
     // If user types ESC key while is FieldEditor, it goes straight here instead of notifying its text field.
-    if let cellEditTracker = cellEditTracker {
-      cellEditTracker.endEdit()
-    }
+    cellEditTracker?.endEdit()
     return true
   }
 
@@ -341,10 +339,20 @@ class EditableTableView: NSTableView {
   func reloadExistingRows(reselectRowsAfter: Bool, usingNewSelection newRowIndexes: IndexSet? = nil) {
     let selectedRows = newRowIndexes ?? self.selectedRowIndexes
     log.verbose("Reloading existing rows\(reselectRowsAfter ? " (will re-select \(selectedRows) after)" : "")")
+    let currentCellFocus = cellEditTracker?.current
+    cellEditTracker?.endEdit()  // close any cell edit which may be in progress
     reloadData(forRowIndexes: IndexSet(0..<numberOfRows), columnIndexes: IndexSet(0..<numberOfColumns))
     if reselectRowsAfter {
       // Fires change listener...
       selectApprovedRowIndexes(selectedRows, byExtendingSelection: false)
+      if let currentCellFocus, currentCellFocus.editInProgress {
+        guard selectedRows.contains(currentCellFocus.row) else {
+          log.verbose("ReloadRows: cannot resume cell edit after reload: edited row (\(currentCellFocus.row), col=\(currentCellFocus.column)) not in selected rows (\(selectedRows.description))")
+          return
+        }
+        log.verbose("Resuming cell edit after reload: row=\(currentCellFocus.row) col=\(currentCellFocus.column)")
+        editCell(row: currentCellFocus.row, column: currentCellFocus.column)
+      }
     }
   }
 

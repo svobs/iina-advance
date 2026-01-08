@@ -208,7 +208,7 @@ struct TableUIChange: Sendable {
       animationTasks.append(.instantTask {
         log.verbose("TableUIChange: reloading existing rows")
         /// Also uses `newSelectedRowIndexes`, if it is not nil:
-        tableView.reloadExistingRows(reselectRowsAfter: false)
+        tableView.reloadExistingRows(reselectRowsAfter: true)
       })
     }
 

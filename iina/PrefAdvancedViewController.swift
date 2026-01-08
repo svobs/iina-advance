@@ -431,7 +431,7 @@ extension PrefAdvancedViewController: EditableTableViewDelegate {
     var userString = newValue
 
     let lines = userString.split(separator: "\n")
-    if !lines.isEmpty {
+    if lines.count > 1 {
       Logger.log.debug("Entry for col \(columnIndex) has a newline in it: only the text before it will be used.")
       userString = String(lines[0])
     }

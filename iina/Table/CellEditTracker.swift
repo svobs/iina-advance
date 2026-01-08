@@ -13,15 +13,15 @@ import Foundation
 @MainActor
 class CellEditTracker: NSObject, NSTextFieldDelegate {
   // Stores info for the currently focused cell, whether or not the cell is being edited
-  private struct CurrentFocus {
+  struct CurrentFocus {
     let textField: EditableTextField
     let stringValueOrig: String
     let row: Int
     let column: Int
-    // If true, `current` has had `startEdit()` called but not `endEdit()`:
+    /// If true, `current` has had `startEdit()` called but not `endEdit()`.
     let editInProgress: Bool
   }
-  private var current: CurrentFocus? = nil
+  var current: CurrentFocus? = nil
 
   private var parentTable: EditableTableView {  delegate.parentTableView }
   private let delegate: EditableTableViewDelegate
@@ -68,22 +68,21 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
   @objc func controlTextDidEndEditing(_ notification: Notification) {
     log.verbose("DidEndEditing (nextNav: \(getTextMovementName(from: notification)))")
 
-    guard let current = self.current else {
+    guard let current else {
       return
     }
+
+    endEdit()
 
     // Tab / return navigation (if any) will show up in the notification
     if let textMovementInt = notification.userInfo?["NSTextMovement"] as? Int,
        let textMovement = NSTextMovement(rawValue: textMovementInt) {
 
-      self.endEdit(closeEditorExplicitly: true)
-
-      DispatchQueue.main.async {
+      DispatchQueue.main.async { [self] in
         // Start asynchronously so we can return
-        self.editAnotherCellAfterEditEnd(oldRow: current.row, oldColumn: current.column, textMovement)
+        guard let (newRowIndex, newColIndex) = editAnotherCellAfterEditEnd(oldRow: current.row, oldColumn: current.column, textMovement) else { return }
+        parentTable.editCell(row: newRowIndex, column: newColIndex)
       }
-    } else {
-      self.endEdit(closeEditorExplicitly: true)
     }
   }
 
@@ -132,57 +131,53 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
     textField.needsDisplay = true
   }
 
-  @discardableResult
   private func commitChanges(to current: CurrentFocus) -> Bool {
-    if current.textField.stringValue != current.stringValueOrig {
-
-      guard self.parentTable.editableTextColumnIndexes.contains(current.column) else {
-        Logger.fatal("editDidEndWithNewText(): invalid column index: \(current.column)")  // programmer error
-      }
-
-      if self.delegate.editDidEndWithNewText(newValue: current.textField.stringValue, row: current.row, column: current.column) {
-        log.verbose("editDidEndWithNewText() returned TRUE: assuming new value accepted")
-        return true
-      } else {
-        // a return value of false tells us to revert to the previous value
-        log.verbose("editDidEndWithNewText() returned FALSE: reverting displayed value to \"\(current.stringValueOrig)\"")
-        current.textField.stringValue = current.stringValueOrig
-        return false
-      }
-    } else {
+    if current.textField.stringValue == current.stringValueOrig {
       log.verbose("endEdit() calling editDidEndWithNoChange()")
-      self.delegate.editDidEndWithNoChange(row: current.row, column: current.column)
+      delegate.editDidEndWithNoChange(row: current.row, column: current.column)
+      return false
     }
-    return true
+
+    guard delegate.parentTableView.editableTextColumnIndexes.contains(current.column) else {
+      Logger.fatal("endEdit(): invalid column index: \(current.column)")  // programmer error
+    }
+
+    let wasAccepted = delegate.editDidEndWithNewText(newValue: current.textField.stringValue, row: current.row, column: current.column)
+    if wasAccepted {
+      log.verbose("editDidEndWithNewText() returned TRUE: assuming new value accepted")
+      return true
+    }
+
+    // a return value of false tells us to revert to the previous value
+    log.verbose("editDidEndWithNewText() returned FALSE: reverting displayed value to \"\(current.stringValueOrig)\"")
+    current.textField.stringValue = current.stringValueOrig
+    return false
   }
 
-  @discardableResult
-  func endEdit(closeEditorExplicitly: Bool = true) -> Bool {
-    guard let current = current, current.editInProgress else { return false }
+  func endEdit() {
+    guard let current = current, current.editInProgress else { return }
 
     let textField = current.textField
-    log.verbose("END Edit   [\(current.row), \(current.column)] \"\(textField.stringValue)\" closeEditor=\(closeEditorExplicitly.yn)")
+    log.verbose("END Edit   [\(current.row), \(current.column)] \"\(textField.stringValue)\"")
 
-    let shouldContinue = commitChanges(to: current)
+    let didSucceed = commitChanges(to: current)
 
     textField.heightConstraint?.isActive = false
     textField.heightConstraint = nil
 
     self.current = CurrentFocus(textField: textField, stringValueOrig: textField.stringValue, row: current.row, column: current.column, editInProgress: false)
 
-    if closeEditorExplicitly {
-      textField.window?.endEditing(for: textField)
-      // Resign first responder status and give focus back to table row selection:
-      textField.window?.makeFirstResponder(self.parentTable)
-      textField.isEditable = false
-      textField.isSelectable = false
-      textField.needsDisplay = true
-    }
+    textField.window?.endEditing(for: textField)
+    // Resign first responder status and give focus back to table row selection:
+    textField.window?.makeFirstResponder(self.parentTable)
+    textField.isEditable = false
+    textField.isSelectable = false
+    textField.needsDisplay = true
+
+    guard didSucceed else { return }
 
     // Load custom color or other cell changes based on new value:
     parentTable.reloadRow(current.row)
-
-    return shouldContinue
   }
 
   // MARK: Intercellular edit navigation
@@ -233,7 +228,7 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
   /// Returns `true` if it resulted in another editor being opened [asychronously], `false` if not.
   /// Currently, {`up`, `down`, `left`, `right`} text movements are not supported, but may be in the future.
   @discardableResult
-  func editAnotherCellAfterEditEnd(oldRow rowIndex: Int, oldColumn columnIndex: Int, _ textMovement: NSTextMovement) -> Bool {
+  func editAnotherCellAfterEditEnd(oldRow rowIndex: Int, oldColumn columnIndex: Int, _ textMovement: NSTextMovement) -> (newEditRow: Int, newEditCol: Int)? {
     let isInterRowTabEditingEnabled = Preference.bool(for: .tableEditKeyNavContinuesBetweenRows)
 
     var newRowIndex: Int
@@ -244,16 +239,16 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
       newColIndex = nextTabColumnIndex(columnIndex)
       if newColIndex < 0 {
         log.error("Invalid value for next column: \(newColIndex)")
-        return false
+        return nil
       }
       if newColIndex <= columnIndex {
         guard isInterRowTabEditingEnabled else {
-          return false
+          return nil
         }
         newRowIndex = rowIndex + 1
         if newRowIndex >= self.parentTable.numberOfRows {
           // Always done after last row
-          return false
+          return nil
         }
       } else {
         newRowIndex = rowIndex
@@ -263,50 +258,47 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
       newColIndex = prevTabColumnIndex(columnIndex)
       if newColIndex < 0 {
         log.error("Invalid value for prev column: \(newColIndex)")
-        return false
+        return nil
       }
       if newColIndex >= columnIndex {
         guard isInterRowTabEditingEnabled else {
-          return false
+          return nil
         }
         newRowIndex = rowIndex - 1
         if newRowIndex < 0 {
-          return false
+          return nil
         }
       } else {
         newRowIndex = rowIndex
       }
     case .up:
       guard isInterRowTabEditingEnabled else {
-        return false
+        return nil
       }
       newRowIndex = rowIndex - 1
       if newRowIndex < 0 {
-        return false
+        return nil
       }
       newColIndex = columnIndex
     case .return:
       // Always just end editing when RETURN/ENTER is pressed.
-      return false
+      return nil
     case .down:
       guard isInterRowTabEditingEnabled else {
-        return false
+        return nil
       }
       // Go to cell directly below
       newRowIndex = rowIndex + 1
       if newRowIndex >= self.parentTable.numberOfRows {
         // Always done after last row
-        return false
+        return nil
       }
       newColIndex = columnIndex
-    default: return false
+    default: return nil
     }
 
-    DispatchQueue.main.async {
-      self.parentTable.editCell(row: newRowIndex, column: newColIndex)
-    }
     // handled
-    return true
+    return (newRowIndex, newColIndex)
   }
 
 }

@@ -26,6 +26,8 @@ final class BindingTableViewController: NSObject {
 
   private unowned let tableView: EditableTableView!
 
+  var log: any Logger.Subsystem { tableView.log }
+
   // Gets current snapshot of table data. Do not save result past the life of the calling function
   private var bindingTableState: BindingTableState {
     return BindingTableState.current
@@ -43,7 +45,7 @@ final class BindingTableViewController: NSObject {
   fileprivate var builtinMenuItemIconColor: NSColor = .textColor
 
   init(_ bindingTableView: EditableTableView, selectionDidChangeHandler: @escaping () -> Void) {
-    Logger.log.verbose("BindingTableViewController init")
+    bindingTableView.log.verbose("BindingTableViewController init")
     self.tableView = bindingTableView
     self.selectionDidChangeHandler = selectionDidChangeHandler
 
@@ -75,7 +77,7 @@ final class BindingTableViewController: NSObject {
     tableView.draggingDestinationFeedbackStyle = .regular
 
     if bindingTableState.appInputConfig.version < AppInputConfig.current.version {
-      Logger.log("Binding table is out of date. Requesting rebuild")
+      log.verbose("Binding table state is out of date; requesting rebuild")
       AppInputConfig.rebuildForLastActivePlayer()
     }
   }
@@ -89,14 +91,14 @@ final class BindingTableViewController: NSObject {
   }
 
   private func systemColorSettingsDidChange(notification: Notification) {
-    Logger.log("Detected change to system color prefs; reloading Binding table", level: .verbose)
+    log.verbose("Detected change to system color prefs; reloading Binding table")
     self.tableView.reloadExistingRows(reselectRowsAfter: true)
   }
 
   // Display error alert for errors:
   private func errorDidOccur(_ notification: Notification) {
     guard let alertInfo = notification.object as? Utility.AlertInfo else {
-      Logger.log("Notification \(notification.name.rawValue.quoted): cannot display error: invalid object: \(type(of: notification.object))", level: .error)
+      log.error("Notification \(notification.name.rawValue.quoted): cannot display error: invalid object: \(type(of: notification.object))")
       return
     }
     Utility.showAlert(alertInfo.key, arguments: alertInfo.args, sheetWindow: self.tableView.window)
@@ -134,6 +136,7 @@ extension BindingTableViewController: NSTableViewDelegate {
 
    /// Makes cell view for given `tableColumn` & `row` when asked
   @objc func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+    guard tableView == self.tableView else { Logger.fatal("Unexpected tableView!") }
     guard let bindingRow = bindingTableState.getDisplayedRow(at: row) else {
       return nil
     }
@@ -206,7 +209,7 @@ extension BindingTableViewController: NSTableViewDelegate {
       return cell
 
     default:
-      Logger.log("Unrecognized column: '\(columnName)'", level: .error)
+      log.error("Unrecognized column: '\(columnName)'")
       return nil
     }
   }
@@ -249,18 +252,14 @@ extension BindingTableViewController: NSTableViewDelegate {
 // MARK: NSTableViewDataSource
 
 extension BindingTableViewController: NSTableViewDataSource {
-  /*
-   Tell AppKit the number of rows when it asks
-   */
+  /// Tell AppKit the number of rows when it asks.
   @objc func numberOfRows(in tableView: NSTableView) -> Int {
     return bindingTableState.displayedRowCount
   }
 
   // MARK: Drag & Drop
 
-  /*
-   Drag start: define which operations are allowed, and in which contexts
-   */
+  /// Drag start: define which operations are allowed, and in which contexts
   @objc func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
     session.draggingFormation = draggingFormation
 
@@ -274,9 +273,7 @@ extension BindingTableViewController: NSTableViewDataSource {
     }
   }
 
-  /*
-   Drag start: convert tableview rows to clipboard items
-   */
+  /// Drag start: convert tableview rows to clipboard items
   @objc func tableView(_ tableView: NSTableView, pasteboardWriterForRow rowIndex: Int) -> NSPasteboardWriting? {
     let row = bindingTableState.getDisplayedRow(at: rowIndex)
     if let row = row, row.canBeCopied {
@@ -285,9 +282,7 @@ extension BindingTableViewController: NSTableViewDataSource {
     return nil
   }
 
-  /*
-   Drag start: set session variables.
-   */
+  /// Drag start: set session variables.
   @objc func tableView(_ tableView: NSTableView,
                        draggingSession session: NSDraggingSession,
                        willBeginAt screenPoint: NSPoint, forRowIndexes rowIndexes: IndexSet) {
@@ -295,9 +290,7 @@ extension BindingTableViewController: NSTableViewDataSource {
     self.tableView.setDraggingImageToAllColumns(session, screenPoint, rowIndexes)
   }
 
-  /**
-   This is implemented to support dropping items onto the Trash icon in the Dock.
-   */
+  /// This is implemented to support dropping items onto the Trash icon in the Dock.
   @objc func tableView(_ tableView: NSTableView,
                        draggingSession session: NSDraggingSession,
                        endedAt screenPoint: NSPoint, operation: NSDragOperation) {
@@ -314,20 +307,18 @@ extension BindingTableViewController: NSTableViewDataSource {
     guard let (sequenceNumber, draggedRowIndexes) = self.draggedRowInfo,
           session.draggingSequenceNumber == sequenceNumber
             && mappings.count == draggedRowIndexes.count else {
-      Logger.log("Cancelling drop: dragged data does not match!", level: .error)
+      log.error("Cancelling drop: dragged data does not match!")
       return
     }
 
-    Logger.log("User dragged to the trash: \(mappings)", level: .verbose)
+    log.verbose("User dragged to the trash: \(mappings)")
     // TODO: this is the wrong animation
     NSAnimationEffect.disappearingItemDefault.show(centeredAt: screenPoint, size: NSSize(width: 50.0, height: 50.0), completionHandler: {
       self.bindingTableState.removeBindings(at: draggedRowIndexes)
     })
   }
 
-  /*
-   Validate drop while hovering.
-   */
+  /// Validate drop while hovering.
   @objc func tableView(_ tableView: NSTableView,
                        validateDrop info: NSDraggingInfo,
                        proposedRow rowIndex: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
@@ -371,7 +362,7 @@ extension BindingTableViewController: NSTableViewDataSource {
       guard let (sequenceNumber, draggedRowIndexes) = self.draggedRowInfo,
             sequenceNumber == info.draggingSequenceNumber,
             draggedRowIndexes.count == mappingList.count else {
-        Logger.log("Denying move within table: dragged data does not match!", level: .error)
+        log.error("Denying move within table: dragged data does not match!")
         return []
       }
       // Only allow "move" if all dragged rows are editable
@@ -386,21 +377,19 @@ extension BindingTableViewController: NSTableViewDataSource {
     return .copy
   }
 
-  /*
-   Accept the drop and execute changes, or reject drop.
-   */
+  /// Accept the drop and execute changes, or reject drop.
   @objc func tableView(_ tableView: NSTableView,
                        acceptDrop info: NSDraggingInfo,
                        row rowIndex: Int, dropOperation: NSTableView.DropOperation) -> Bool {
 
     let mappingList = KeyMapping.deserializeList(from: info.draggingPasteboard)
-    Logger.log("User dropped \(mappingList.count) binding rows into KeyBinding table \(dropOperation == .on ? "on" : "above") rowIndex \(rowIndex)")
+    log.debug("User dropped \(mappingList.count) binding rows into KeyBinding table \(dropOperation == .on ? "on" : "above") rowIndex \(rowIndex)")
     guard !mappingList.isEmpty else {
       return false
     }
 
     guard dropOperation == .above else {
-      Logger.log("KeyBindingTableView: expected dropOperaion==.above but got: \(dropOperation); aborting drop")
+      log.debug("KeyBindingTableView: expected dropOperaion==.above but got: \(dropOperation); aborting drop")
       return false
     }
 
@@ -427,7 +416,7 @@ extension BindingTableViewController: NSTableViewDataSource {
       guard let (sequenceNumber, draggedRowIndexes) = self.draggedRowInfo,
             sequenceNumber == info.draggingSequenceNumber,
             draggedRowIndexes.count == mappingList.count else {
-        Logger.log("Something went wrong keeping track of moved row indexes! Rejecting drop!", level: .error)
+        log.error("Something went wrong keeping track of moved row indexes! Rejecting drop!")
         return false
       }
       // Only allow "move" if all dragged rows are editable
@@ -441,7 +430,7 @@ extension BindingTableViewController: NSTableViewDataSource {
       }
       return true
     } else {
-      Logger.log("Rejecting drop: got unexpected drag mask: \(dragMask)")
+      log.debug("Rejecting drop: got unexpected drag mask: \(dragMask)")
       return false
     }
   }
@@ -454,35 +443,40 @@ extension BindingTableViewController: EditableTableViewDelegate {
   var parentTableView: EditableTableView! { tableView }
 
   func userDidDoubleClickOnCell(row rowIndex: Int, column columnIndex: Int) -> Bool {
-    Logger.log("Double-click: Edit requested for row \(rowIndex), col \(columnIndex)")
+    log.verbose("Double-click: Edit requested for row \(rowIndex), col \(columnIndex)")
     return edit(rowIndex: rowIndex, columnIndex: columnIndex, skipInlineEdit: true)
   }
 
   func userDidPressEnterOnRow(_ rowIndex: Int) -> Bool {
-    Logger.log("Enter key: Edit requested for row \(rowIndex)")
+    log.verbose("Enter key: Edit requested for row \(rowIndex)")
     return edit(rowIndex: rowIndex, skipInlineEdit: true)
   }
 
   func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool {
     guard bindingTableState.isRowModifiable(rowIndex) else {
       // An error here would be really bad
-      Logger.log("Cannot save binding row \(rowIndex): edit is not allowed for this row type! If you see this message please report it.", level: .error)
+      log.error("Cannot save binding row \(rowIndex): edit is not allowed for this row type! If you see this message please report it.")
       return false
     }
 
     guard let editedRow = bindingTableState.getDisplayedRow(at: rowIndex) else {
-      Logger.log("userDidEndEditing(): failed to get row \(rowIndex) (newValue='\(newValue)')")
+      log.error("userDidEndEditing(): failed to get row \(rowIndex) (newValue='\(newValue)')")
       return false
     }
 
-    Logger.log("User finished editing value for row \(rowIndex), col \(columnIndex): \(newValue.quoted)", level: .verbose)
+    log.verbose("User finished editing value for row \(rowIndex), col \(columnIndex): \(newValue.quoted)")
+    guard (columnIndex == keyColumnIndex) || (columnIndex == actionColumnIndex) else {
+      log.error("userDidEndEditing(): bad column index: \(columnIndex)")
+      return false
+    }
 
     let rawKey, rawAction: String?
-    var isIINA: Bool? = nil
+    let isIINA: Bool?
     switch columnIndex {
     case keyColumnIndex:
       rawKey = KeyCodeHelper.escapeReservedMpvKeys(newValue)
       rawAction = nil
+      isIINA = nil
     case actionColumnIndex:
       rawKey = nil
       if let trimmedValue = KeyMapping.removeIINAPrefix(from: newValue) {
@@ -493,7 +487,6 @@ extension BindingTableViewController: EditableTableViewDelegate {
         rawAction = newValue
       }
     default:
-      Logger.log("userDidEndEditing(): bad column index: \(columnIndex)")
       return false
     }
 
@@ -511,7 +504,7 @@ extension BindingTableViewController: EditableTableViewDelegate {
 
     guard bindingTableState.isRowModifiable(rowIndex) else {
       // Should never see this message
-      Logger.log("Cannot edit binding row \(rowIndex): row cannot be modified! Aborting", level: .error)
+      log.error("Cannot edit binding row \(rowIndex): row cannot be modified! Aborting")
       return false
     }
 
@@ -527,15 +520,15 @@ extension BindingTableViewController: EditableTableViewDelegate {
     }
   }
 
-  // Use this if isRaw==false (i.e., not inline editing)
+  /// Use this if isRaw==false (i.e., not inline editing)
   private func editWithPopup(rowIndex: Int) {
-    Logger.log("Opening key binding pop-up for row #\(rowIndex)", level: .verbose)
+    log.verbose("Opening key binding pop-up for row #\(rowIndex)")
 
     guard let row = bindingTableState.getDisplayedRow(at: rowIndex) else {
       return
     }
     guard let readableAction = row.keyMapping.readableAction else {
-      Logger.log.error("Cannot edit binding row \(rowIndex): action missing from KeyMapping (\(row.keyMapping))!")
+      log.error("Cannot edit binding row \(rowIndex): action missing from KeyMapping (\(row.keyMapping))!")
       return
     }
     showEditBindingPopup(key: row.keyMapping.rawKey, action: readableAction, ok: { rawKey, rawAction, isIINACommand in
@@ -544,8 +537,8 @@ extension BindingTableViewController: EditableTableViewDelegate {
     })
   }
 
-  // Adds a new binding after the current selection and then opens an editor for it. The editor with either be inline or using the popup,
-  // depending on whether isRaw is true or false, respectively.
+  /// Adds a new binding after the current selection and then opens an editor for it. The editor with either be inline or using the
+  /// popup, depending on whether isRaw is true or false, respectively.
   func addNewBinding() {
     var rowIndex: Int
     // If there are selected rows, add the new row right below the last selection. Otherwise add to end of table.
@@ -563,7 +556,7 @@ extension BindingTableViewController: EditableTableViewDelegate {
   private func editNewEmptyBinding(relativeTo rowIndex: Int, isAfterNotAt: Bool = false) {
     guard requireCurrentConfIsEditable(forAction: "insert binding") else { return }
 
-    Logger.log("Inserting new binding \(isAfterNotAt ? "after" : "at") current row index: \(rowIndex)", level: .verbose)
+    log.verbose("Inserting new binding \(isAfterNotAt ? "after" : "at") current row index: \(rowIndex)")
 
     if isRaw {
       // The table will execute asynchronously, but we need to wait for it to complete in order to guarantee we have something to edit
@@ -639,7 +632,7 @@ extension BindingTableViewController: EditableTableViewDelegate {
   }
 
   func removeSelectedBindings() {
-    Logger.log("Removing selected bindings", level: .verbose)
+    log.verbose("Removing selected bindings")
     bindingTableState.removeBindings(at: tableView.selectedRowIndexes)
   }
 
@@ -649,7 +642,7 @@ extension BindingTableViewController: EditableTableViewDelegate {
     }
 
     // Should never see this ideally. If we do, something went wrong with UI enablement.
-    Logger.log("Cannot \(action): cannot modify a default config. Telling user to duplicate the config instead", level: .verbose)
+    log.verbose("Cannot \(action): cannot modify a default config. Telling user to duplicate the config instead")
     Utility.showAlert("duplicate_config", sheetWindow: tableView.window)
     return false
   }
@@ -710,7 +703,7 @@ extension BindingTableViewController: EditableTableViewDelegate {
     }
 
     if rows.isEmpty {
-      Logger.log.verbose("No bindings to copy: not touching clipboard")
+      log.verbose("No bindings to copy: not touching clipboard")
       return false
     }
 
@@ -718,17 +711,17 @@ extension BindingTableViewController: EditableTableViewDelegate {
 
     NSPasteboard.general.clearContents()
     NSPasteboard.general.writeObjects(mappings)
-    Logger.log.verbose("Copied \(rows.count) bindings to the clipboard")
+    log.verbose("Copied \(rows.count) bindings to the clipboard")
     return true
   }
 
   private func pasteFromClipboard(relativeTo rowIndex: Int, isAfterNotAt: Bool = false) {
     let mappingsToInsert = readBindingsFromClipboard()
     guard !mappingsToInsert.isEmpty else {
-      Logger.log.warn("Aborting Paste action because there is nothing to paste")
+      log.warn("Aborting Paste action because there is nothing to paste")
       return
     }
-    Logger.log.verbose("Pasting \(mappingsToInsert.count) bindings \(isAfterNotAt ? "after" : "at") index \(rowIndex)")
+    log.verbose("Pasting \(mappingsToInsert.count) bindings \(isAfterNotAt ? "after" : "at") index \(rowIndex)")
     bindingTableState.insertNewBindings(relativeTo: rowIndex, isAfterNotAt: isAfterNotAt, mappingsToInsert)
   }
 
@@ -802,7 +795,7 @@ extension BindingTableViewController: NSMenuDelegate {
       case .staticMenuItem:
         culprit = "a built-in menu item"
       default:
-        Logger.log("Unrecognized binding origin for rowIndex \(clickedRowIndex): \(clickedRow.origin)", level: .error)
+        log.error("Unrecognized binding origin for rowIndex \(clickedRowIndex): \(clickedRow.origin)")
         culprit = "<unknown>"
       }
       mib.addItalicDisabledItem("Cannot modify binding: it was set by \(culprit)")

@@ -376,7 +376,7 @@ extension PlayerCore {
     guard !rowIndexes.isEmpty else { return }
 
     let (tableUIChange, allItemsNew) = TableUIChangeBuilder.shared.buildRemove(rowIndexes, in: displayedPlaylist,
-                                                                         selectNextRowAfterDelete: playlistTableSelectNextRowAfterDelete)
+                                                                               selectNextRowAfterDelete: playlistTableSelectNextRowAfterDelete)
     let allItemsOld = displayedPlaylist     // save in case of undo
 
     mpv.queue.async { [self] in

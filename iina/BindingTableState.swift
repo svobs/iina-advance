@@ -112,7 +112,7 @@ struct BindingTableState: Sendable {
 
     let srcIndexes = ensureUnfilteredIndexes(forRowIndexes: rowIndexes)  // guarantees unfiltered indexes
     let (tableUIChange, allRowsUpdated) = TableUIChangeBuilder.shared.buildMove(rowIndexes, to: insertIndex, in: allRows,
-                                                                          completionHandler: afterComplete)
+                                                                                completionHandler: afterComplete)
 
     Logger.log.verbose("Generated \(tableUIChange.toMove!.count) movePairs: \(tableUIChange.toMove!); will change selection: \(srcIndexes.map{$0}) → \(tableUIChange.newSelectedRowIndexes!.map{$0})")
     doAction(allRowsUpdated, tableUIChange)
@@ -138,7 +138,7 @@ struct BindingTableState: Sendable {
     let insertedRows = mappingList.map{InputBinding($0, origin: .confFile, srcSectionName: MPVInputSection.Shared.USER_CONF_SECTION_NAME)}
 
     let (tableUIChange, allRowsNew) = TableUIChangeBuilder.shared.buildInsert(of: insertedRows, at: insertIndex, in: allRows,
-                                                                        completionHandler: afterComplete)
+                                                                              completionHandler: afterComplete)
 
     doAction(allRowsNew, tableUIChange)
   }
@@ -168,7 +168,7 @@ struct BindingTableState: Sendable {
     }
 
     let (tableUIChange, remainingRowsUnfiltered) = TableUIChangeBuilder.shared.buildRemove(indexesToRemove, in: allRows,
-                                                                                     selectNextRowAfterDelete: BindingTableState.selectNextRowAfterDelete)
+                                                                                           selectNextRowAfterDelete: BindingTableState.selectNextRowAfterDelete)
     doAction(remainingRowsUnfiltered, tableUIChange)
   }
 

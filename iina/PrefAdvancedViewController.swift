@@ -453,12 +453,32 @@ extension PrefAdvancedViewController: EditableTableViewDelegate {
       optNew = MPVOptPair(key: optOld.key, val: userString)
     }
 
-    optionsList[rowIndex] = optNew
-    MPVOptPair.writeToPrefs(optionsList)
+    let (tableUIChange, allItemsNew) = optionsTableView.buildUpdate(ofRow: rowIndex, to: optNew, in: optionsList,
+                                                                    completionHandler: { [self] tableUIChange in
+      removeButton.isHidden = !tableUIChange.hasSelectionAfterChange
+      if let doAfter {
+        doAfter()
+      }
+    })
+    let allItemsOld = optionsList         // needed for Undo
 
-    if let doAfter {
-      doAfter()
+    let doAction = { [self] in
+      doAtomicTableUpdate(tableUIChange, allItemsNew)
     }
+
+    doAction()
+
+    undoHelper.register(undoHelper.buildActionName(basedOn: tableUIChange), undo: { [self] in
+      let tableUIChangeUndo = TableUIChangeBuilder.shared.inverted(from: tableUIChange,
+                                                                   selectNextRowAfterDelete: optionsTableView.selectNextRowAfterDelete,
+                                                                   useFlashForChangedRows: true, completionHandler: { [self] tableUIChange in
+        removeButton.isHidden = !tableUIChange.hasSelectionAfterChange
+      })
+      doAtomicTableUpdate(tableUIChangeUndo, allItemsOld)
+    }, redo: {
+      doAction()
+    })
+
     return true
   }
 

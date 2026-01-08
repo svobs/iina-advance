@@ -72,7 +72,12 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
       return
     }
 
+    // Use a nonce to prevent NSTextMovement being duplicated when using Undo/Redo:
+    var wasUsed = false
     endEdit(then: { [self] in
+      guard !wasUsed else { return }
+      wasUsed = true
+
       // Tab / return navigation (if any) will show up in the notification
       if let textMovementInt = notification.userInfo?["NSTextMovement"] as? Int,
          let textMovement = NSTextMovement(rawValue: textMovementInt) {

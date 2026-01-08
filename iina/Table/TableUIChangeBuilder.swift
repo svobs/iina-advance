@@ -290,13 +290,32 @@ struct TableUIChangeBuilder {
 
     return (tableUIChange, allRowsUpdated)
   }
+
+  func buildUpdate<T>(ofRow indexToUpdate: Int,
+                      to newValue: T,
+                      in allCurrentRows: [T],
+                      completionHandler: TableUIChange.CompletionHandler? = nil) -> (TableUIChange, [T]) {
+
+    let toUpdate = IndexSet(integer: indexToUpdate)
+    let tableUIChange = TableUIChange(.updateRows,
+                                      toUpdate: toUpdate,
+                                      newSelectedRowIndexes: toUpdate,
+                                      oldSelectedRowIndexes: toUpdate,
+                                      completionHandler: completionHandler)
+
+    var allRowsUpdated = allCurrentRows
+    allRowsUpdated[indexToUpdate] = newValue
+
+    return (tableUIChange, allRowsUpdated)
+  }
 }
 
 // MARK: - EditableTableView
 
 extension EditableTableView {
+
   func buildInsert<T>(of itemsToInsert: [T], at desiredInsertIndex: Int? = nil, in allCurrentItems: [T],
-  completionHandler: TableUIChange.CompletionHandler? = nil) -> (TableUIChange, [T]) {
+                      completionHandler: TableUIChange.CompletionHandler? = nil) -> (TableUIChange, [T]) {
     // Append row after last selected row, or if no selection, to end of table
     let insertIndex: Int
     if let desiredInsertIndex {
@@ -307,19 +326,29 @@ extension EditableTableView {
       insertIndex = numberOfRows
     }
     return TableUIChangeBuilder.shared.buildInsert(of: itemsToInsert, at: insertIndex, in: allCurrentItems,
-                                             completionHandler: completionHandler)
+                                                   completionHandler: completionHandler)
   }
+
   func buildRemove<T>(_ indexesToRemove: IndexSet, in allCurrentRows: [T],
                       completionHandler: TableUIChange.CompletionHandler? = nil) -> (TableUIChange, [T]) {
     return TableUIChangeBuilder.shared.buildRemove(indexesToRemove, in: allCurrentRows,
-                                             selectNextRowAfterDelete: selectNextRowAfterDelete,
-                                             completionHandler: completionHandler)
+                                                   selectNextRowAfterDelete: selectNextRowAfterDelete,
+                                                   completionHandler: completionHandler)
   }
+
   func buildMove<T>(_ indexesToMove: IndexSet,
                     to insertIndex: Int,
                     in allCurrentRows: [T],
                     completionHandler: TableUIChange.CompletionHandler? = nil) -> (TableUIChange, [T]) {
     return TableUIChangeBuilder.shared.buildMove(indexesToMove, to: insertIndex, in: allCurrentRows,
-                                           completionHandler: completionHandler)
+                                                 completionHandler: completionHandler)
+  }
+
+  func buildUpdate<T>(ofRow rowIndex: Int,
+                      to newValue: T,
+                      in allCurrentRows: [T],
+                      completionHandler: TableUIChange.CompletionHandler? = nil) -> (TableUIChange, [T]) {
+    return TableUIChangeBuilder.shared.buildUpdate(ofRow: rowIndex, to: newValue, in: allCurrentRows,
+                                                   completionHandler: completionHandler)
   }
 }

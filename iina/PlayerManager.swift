@@ -111,7 +111,7 @@ final class PlayerManager {
     playerCores.filter { $0.isActive && ($0.state != .idle) }
   }
 
-  func getIdleOrCreateNew() -> PlayerCore {
+  func getIdleOrCreateNew(loadAdditionalMpvOptionsFromPrefs: Bool = true) -> PlayerCore {
     if let idleCore = findIdlePlayerCore() {
       Logger.log.debug("Found idle player: #\(idleCore.label)")
       return idleCore
@@ -177,18 +177,25 @@ final class PlayerManager {
       while playerExists(withLabel: playerLabel) {
         playerCoreCounter += 1
       }
-      var userOptions = PlayerCore.getMpvAdditionalOptionsFromPrefs(Logger.log)
+      var userOptions: [MPVOptPair] = []
       if let cli {
+        // Need to apply CLI options after user's "additional options". So load everything here instead of at window open:
+        userOptions.append(contentsOf: PlayerCore.getMpvAdditionalOptionsFromPrefs(Logger.log))
         userOptions.append(contentsOf: cli.mpvArguments)
       }
       Logger.log.debug("Creating new PlayerCore instance with ID=\(playerLabel.quoted) & \(userOptions.count) user options")
       player = PlayerCore(playerLabel, userOptions: userOptions)
       playerCoreCounter += 1
 
-      if let cli, cli.needsShufflePlaylist {
-        // Special handling for this one
-        player.log.debug("Found \"shuffle\" request in command-line args. Adding mpv hook to shuffle playlist")
-        player.addShufflePlaylistHook()
+      if let cli {
+        // Mark this as a special CLI state so the CLI userOptions don't get overwritten when window opens:
+        player.pwc.sessionState = .creatingCLI
+
+        if cli.needsShufflePlaylist {
+          // Special handling for this one
+          player.log.debug("Found \"shuffle\" request in command-line args. Adding mpv hook to shuffle playlist")
+          player.addShufflePlaylistHook()
+        }
       }
     }
     Logger.log.debug("Successfully created PlayerCore \(player.label)")

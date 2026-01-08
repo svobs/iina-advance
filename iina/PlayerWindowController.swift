@@ -599,8 +599,8 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
     } else {
       player.log.verbose("PlayerWindowController init: using lastClosed geometries for now")
       geoSetToUse = GeometrySet(windowed: PlayerWindowController.windowedModeGeoLastClosed,
-                             musicMode: PlayerWindowController.musicModeGeoLastClosed,
-                             video: VideoGeometry.defaultGeometry(player.log))
+                                musicMode: PlayerWindowController.musicModeGeoLastClosed,
+                                video: VideoGeometry.defaultGeometry(player.log))
     }
 
     self.geo = geoSetToUse
@@ -1999,7 +1999,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   // MARK: - Sync UI with playback
 
   func isUITimerNeeded() -> Bool {
-    //    log.verbose("Checking if UITimer needed. hasPermanentControlBar:\(currentLayout.hasPermanentControlBar.yn) fadeableViews:\(fadeableViewsAnimationState) topBar: \(fadeableTopBarAnimationState) OSD:\(osd.animationState)")
+    log.trace("Checking if UITimer needed. hasPermanentControlBar:\(currentLayout.hasPermanentControlBar.yn) fadeableViews:\(fadeableViews.animationState) topBar: \(fadeableViews.topBarAnimationState) OSD:\(osd.animationState)")
     if currentLayout.hasPermanentControlBar {
       return true
     }

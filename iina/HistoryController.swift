@@ -198,7 +198,7 @@ final class HistoryController {
       return
     }
 
-    log.verbose("Saving history done, in \(sw.secElapsedString)")
+    log.verbose("Saving playback history done, in \(sw.secElapsedString)")
   }
 
   /// Returns `true` if successful; `false` if not

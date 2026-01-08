@@ -445,7 +445,7 @@ struct GeometryTransform: Sendable {
           assert(tf.pWinGeoTransform == nil)
           return []
 
-        case .creatingNew, .newReplacingClosed:
+        case .creatingNew, .newReplacingClosed, .creatingCLI:
           // Just opened new window. Use a longer duration for this one, because the window starts small & will zoom into place.
           assert(tf.pWinGeoTransform == nil)
           duration = Constants.AnimationDuration.initialVideoReconfig

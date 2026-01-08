@@ -635,7 +635,7 @@ final class PlayerCore: NSObject {
       }
 
       switch pwc.sessionState {
-      case .noSession, .restoring:
+      case .restoring, .creatingCLI:
         break
       default:
         resetOptionsForNewSession(reuseExistingWindow: pwc.sessionState.hasOpenSession)

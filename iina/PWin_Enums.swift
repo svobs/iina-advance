@@ -23,6 +23,10 @@ enum PWinSessionState: Sendable, CustomStringConvertible {
   /// `playerState`: contains state data needed to restore the UI state from a previous launch, loaded from prefs.
   case restoring(playerState: PlayerSaveState)
 
+  /// Like `.restoring`, this state can only exist for players created at launch.
+  /// Indicates that the player may have CLI options loaded (is really only needed to avoid `resetOptionsForNewSession()`)
+  case creatingCLI
+
   /// Opening window (or reopening closed window) for new session & new file.
   case creatingNew
 
@@ -51,6 +55,8 @@ enum PWinSessionState: Sendable, CustomStringConvertible {
       "closedSession"
     case .restoring:
       "restoring"
+    case .creatingCLI:
+      "creatingCLI"
     case .creatingNew:
       "creatingNew"
     case .newReplacingOpen:
@@ -115,6 +121,7 @@ enum PWinSessionState: Sendable, CustomStringConvertible {
     switch self {
     case .restoring,
         .creatingNew,
+        .creatingCLI,
         .newReplacingOpen,
         .newReplacingClosed,
         .existingSession_startingNewPlayback,
@@ -132,6 +139,7 @@ enum PWinSessionState: Sendable, CustomStringConvertible {
     switch self {
     case .restoring,
         .creatingNew,
+        .creatingCLI,
         .newReplacingOpen,
         .newReplacingClosed,
         .existingSession_startingNewPlayback:
@@ -151,6 +159,7 @@ enum PWinSessionState: Sendable, CustomStringConvertible {
     switch self {
     case .restoring,
         .creatingNew,
+        .creatingCLI,
         .newReplacingOpen,
         .newReplacingClosed:
       return true

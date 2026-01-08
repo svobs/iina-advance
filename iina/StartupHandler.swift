@@ -728,7 +728,9 @@ final class StartupHandler {
         DispatchQueue.main.async {
           // Pre-load if no player, for a snappier drag & drop effect in Welcome window
           log.debug("No players were explicitly opened at launch - will preemptively create a new idle player")
-          _ = PlayerManager.shared.getIdleOrCreateNew()
+          // Don't load "Additional mpv options" yet - they may immediately show error pop-ups if invalid.
+          // And they will be loaded again when the user actually opens a window, so don't do duplicate work.
+          _ = PlayerManager.shared.getIdleOrCreateNew(loadAdditionalMpvOptionsFromPrefs: false)
         }
       }
     }

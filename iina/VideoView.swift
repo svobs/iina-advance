@@ -17,10 +17,6 @@ import Cocoa
 /// `VideoView_Constraints.swift`: for enforcing aspect ratio & other AutoLayout constraints.
 /// `GLVideoLayer.swift`: the OpenGL video layer for this view.
 class VideoView: NSView {
-  /// `true`: use legacy OpenGL / libmpv
-  /// `false`: use gpu-next / Vulkan
-  let useOpenGL = true
-
   unowned var player: PlayerCore!
   var link: CVDisplayLink?
 
@@ -28,10 +24,14 @@ class VideoView: NSView {
     return player.log
   }
 
-  /// The GLVideoLayer layer, if using OpenGL with proper init
-  var glLayer: GLVideoLayer? { layer as? GLVideoLayer }
+#if USE_GPU_NEXT
   /// The Metal layer, if using MoltenVK with proper init
   var metalLayer: CAMetalLayer? { layer as? CAMetalLayer }
+#else
+  /// The GLVideoLayer layer, if using OpenGL with proper init
+  var glLayer: GLVideoLayer? { layer as? GLVideoLayer }
+
+#endif
 
   /// Roughly equivalent to `player.info.isVideoTrackSelected`, but more performant
   var isVidEnabled = false
@@ -39,7 +39,11 @@ class VideoView: NSView {
   var isReadyToRender = false
 
   var layerColorspace: CGColorSpace? {
-    return glLayer?.colorspace ?? metalLayer?.colorspace
+#if USE_GPU_NEXT
+    return metalLayer?.colorspace
+#else
+    return glLayer?.colorspace
+#endif
   }
 
   @Atomic var isUninited = false
@@ -165,25 +169,25 @@ class VideoView: NSView {
 
   /// Called when property `self.wantsLayer` is set to `true`.
   override func makeBackingLayer() -> CALayer {
-    if useOpenGL {
-      return GLVideoLayer(self)
-    } else {
-      return MetalVideoLayer()
-    }
+#if USE_GPU_NEXT
+    return MetalVideoLayer()
+#else
+    return GLVideoLayer(self)
+#endif
   }
 
   @MainActor
   func initVideoLayer() {
-    if useOpenGL {
-      log.verbose("Init OpenGL layer")
-      /// This will create & add the layer if it was not already init'd:
-      wantsLayer = true
-      glLayer?.initGLRendering()
-      displayActive()
-    } else {
-      log.verbose("Init Metal layer")
-      wantsLayer = true
-    }
+#if USE_GPU_NEXT
+    log.verbose("Init Metal layer")
+    wantsLayer = true
+#else
+    log.verbose("Init OpenGL layer")
+    /// This will create & add the layer if it was not already init'd:
+    wantsLayer = true
+    glLayer?.initGLRendering()
+    displayActive()
+#endif
   }
 
   /// Lock the OpenGL context associated with the mpv renderer and set it to be the current context for this thread.

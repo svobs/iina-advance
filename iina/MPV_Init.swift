@@ -509,30 +509,29 @@ extension MPVController {
         chkErr(setString(MPVOption.Window.keepaspect, no, level: .verbose))
       }
 
-      if player.videoView.useOpenGL {
-        if !player.isPresentInUserOptions(MPVOption.Video.vo) {
-          log.verbose("Using legacy libmpv + OpenGEL rendering")
-          // Set options that can be override by user's config. mpv will log user config when initialize,
-          // so we put them here.
-          chkErr(setString(MPVOption.Video.vo, "libmpv", level: .debug))
-        }
+#if USE_GPU_NEXT
+      log.verbose("Using gpu-next + Vulkan rendering")
+      let widPtr = UnsafeMutablePointer<Int64>.allocate(capacity: 1)
+      widPtr.pointee = unsafeBitCast(player.window, to: Int64.self)
+      mpv_set_option(mpv, MPVOption.Window.wid, MPV_FORMAT_INT64, widPtr)
 
-      } else {
-        log.verbose("Using gpu-next + Vulkan rendering")
-        let widPtr = UnsafeMutablePointer<Int64>.allocate(capacity: 1)
-        widPtr.pointee = unsafeBitCast(player.window, to: Int64.self)
-        mpv_set_option(mpv, MPVOption.Window.wid, MPV_FORMAT_INT64, widPtr)
-
-        if !player.isPresentInUserOptions(MPVOption.Video.vo) {
-          chkErr(setString(MPVOption.Video.vo, "gpu-next", level: .debug))
-        }
-        if !player.isPresentInUserOptions(MPVOption.GPURendererOptions.gpuApi) {
-          chkErr(setString(MPVOption.GPURendererOptions.gpuApi, "vulkan", level: .debug))
-        }
-        if !player.isPresentInUserOptions(MPVOption.Video.hwdec) {
-          chkErr(setString(MPVOption.Video.hwdec, "vulkan", level: .debug))
-        }
+      if !player.isPresentInUserOptions(MPVOption.Video.vo) {
+        chkErr(setString(MPVOption.Video.vo, "gpu-next", level: .debug))
       }
+      if !player.isPresentInUserOptions(MPVOption.GPURendererOptions.gpuApi) {
+        chkErr(setString(MPVOption.GPURendererOptions.gpuApi, "vulkan", level: .debug))
+      }
+      if !player.isPresentInUserOptions(MPVOption.Video.hwdec) {
+        chkErr(setString(MPVOption.Video.hwdec, "vulkan", level: .debug))
+      }
+#else
+      if !player.isPresentInUserOptions(MPVOption.Video.vo) {
+        log.verbose("Using legacy libmpv + OpenGEL rendering")
+        // Set options that can be override by user's config. mpv will log user config when initialize,
+        // so we put them here.
+        chkErr(setString(MPVOption.Video.vo, "libmpv", level: .debug))
+      }
+#endif
       if !player.isPresentInUserOptions(MPVOption.Video.gpuHwdecInterop) {
         chkErr(setString(MPVOption.Video.gpuHwdecInterop, "auto", level: .verbose))
       }

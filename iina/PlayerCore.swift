@@ -753,18 +753,18 @@ final class PlayerCore: NSObject {
       // already checks whether `!pwc.loaded` and gracefully handles it.
       pwc.finishLoading()
     }
-
-    if videoView.useOpenGL {
-      startMPV()
-      if isInteractivePlayer {
-        videoView.initVideoLayer()
-      }
-    } else {
-      if isInteractivePlayer {
-        videoView.initVideoLayer()
-      }
-      startMPV()
+    
+#if USE_GPU_NEXT
+    if isInteractivePlayer {
+      videoView.initVideoLayer()
     }
+    startMPV()
+#else
+    startMPV()
+    if isInteractivePlayer {
+      videoView.initVideoLayer()
+    }
+#endif
 
     if state == .notYetStarted {
       state = .started
@@ -2946,10 +2946,6 @@ final class PlayerCore: NSObject {
   }
 
   func updatePlaybackTimeInfo() {
-    guard videoView.useOpenGL || DispatchQueue.isExecutingIn(mpv.queue, logError: false) else {
-      log.warn("FIXME: SyncUI: skipping sync of playback time info for gpu-next")
-      return
-    }
     guard state.isAtLeast(.started), state.isNotYet(.stopping) else {
       log.verbose("SyncUI: not syncing")
       return

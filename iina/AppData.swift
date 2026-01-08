@@ -93,6 +93,7 @@ struct Constants {
     static let V1_4 = 7
     static let V1_4_1 = 8
     static let V1_4_2 = 9
+    static let V1_4_3 = 10
   }
 
   struct String {

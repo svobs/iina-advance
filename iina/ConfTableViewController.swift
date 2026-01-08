@@ -206,21 +206,28 @@ extension ConfTableViewController: EditableTableViewDelegate {
 
   // User finished editing (callback from EditableTextField).
   // Renames current conf & its file on disk
-  func editDidEndWithNewText(newValue newName: String, row: Int, column: Int) -> Bool {
+  func editDidEndWithNewText(newValue newName: String, row: Int, column: Int,
+                             then doAfter: OnSuccessCallback? = nil) -> Bool {
+    let completionHandler: TableUIChange.CompletionHandler = { tableUIChange in
+      if let doAfter {
+        doAfter()
+      }
+    }
+
     if confTableState.isAddingNewConfInline { // New file
-      let succeeded = self.completeInlineAdd(newName: newName)
+      let succeeded = self.completeInlineAdd(newName: newName, completionHandler: completionHandler)
       if !succeeded {
         confTableState.cancelInlineAdd()
       }
       return succeeded
 
     } else { // Renaming existing file
-      return self.moveFileAndRenameCurrentConf(newName: newName)
+      return self.moveFileAndRenameCurrentConf(newName: newName, completionHandler: completionHandler)
     }
   }
 
   @MainActor
-  private func completeInlineAdd(newName: String) -> Bool {
+  private func completeInlineAdd(newName: String, completionHandler: TableUIChange.CompletionHandler? = nil) -> Bool {
     guard !self.confTableState.isRow(newName) else {
       // Disallow overwriting another entry in list
       Utility.showAlert("config.name_existing", sheetWindow: self.tableView.window)
@@ -239,12 +246,12 @@ extension ConfTableViewController: EditableTableViewDelegate {
       Utility.showAlert("config.cannot_create", sheetWindow: self.tableView.window)
       return false
     }
-    confTableState.completeInlineAdd(confName: newName, filePath: newFilePath)
+    confTableState.completeInlineAdd(confName: newName, filePath: newFilePath, completionHandler: completionHandler)
     return true
   }
 
   @MainActor
-  private func moveFileAndRenameCurrentConf(newName: String) -> Bool {
+  private func moveFileAndRenameCurrentConf(newName: String, completionHandler: TableUIChange.CompletionHandler? = nil) -> Bool {
     // Validate name change
     guard !self.confTableState.selectedConfName.equalsIgnoreCase(newName) else {
       // No change to current entry: ignore
@@ -270,7 +277,7 @@ extension ConfTableViewController: EditableTableViewDelegate {
     }
 
     // Let confTableState rename the file, update conf lists and send UI update
-    return confTableState.renameSelectedConf(newName: newName)
+    return confTableState.renameSelectedConf(newName: newName, completionHandler: completionHandler)
   }
 
   // MARK: Cut, copy, paste, delete support.

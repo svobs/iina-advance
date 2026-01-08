@@ -422,7 +422,7 @@ extension PrefAdvancedViewController: EditableTableViewDelegate {
     return true
   }
 
-  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool {
+  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int, then doAfter: OnSuccessCallback? = nil) -> Bool {
     Logger.log.verbose("User finished editing option value for row \(rowIndex), col \(columnIndex): \(newValue.quoted)")
     guard rowIndex < optionsList.count else {
       return false
@@ -456,8 +456,8 @@ extension PrefAdvancedViewController: EditableTableViewDelegate {
     optionsList[rowIndex] = optNew
     MPVOptPair.writeToPrefs(optionsList)
 
-    DispatchQueue.main.async { [self] in
-      optionsTableView.reloadRow(rowIndex)
+    if let doAfter {
+      doAfter()
     }
     return true
   }

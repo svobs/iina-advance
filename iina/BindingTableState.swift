@@ -173,7 +173,7 @@ struct BindingTableState: Sendable {
   }
 
   @MainActor
-  func updateBinding(at displayIndex: Int, to mapping: KeyMapping) {
+  func updateBinding(at displayIndex: Int, to mapping: KeyMapping, completionHandler: TableUIChange.CompletionHandler? = nil) {
     guard canModifyCurrentConf else {
       Logger.log("Aborting updateBinding(): cannot modify current conf!", level: .error)
       return
@@ -206,7 +206,7 @@ struct BindingTableState: Sendable {
 
     let toUpdate = IndexSet(integer: indexToUpdate)
     let newSelectedRowIndexes = IndexSet(integer: indexToUpdate)
-    let tableUIChange = TableUIChange(.updateRows, toUpdate: toUpdate, newSelectedRowIndexes: newSelectedRowIndexes)
+    let tableUIChange = TableUIChange(.updateRows, toUpdate: toUpdate, newSelectedRowIndexes: newSelectedRowIndexes, completionHandler: completionHandler)
 
     doAction(allRowsNew, tableUIChange)
   }

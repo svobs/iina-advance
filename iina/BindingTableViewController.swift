@@ -452,7 +452,8 @@ extension BindingTableViewController: EditableTableViewDelegate {
     return edit(rowIndex: rowIndex, skipInlineEdit: true)
   }
 
-  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool {
+  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int,
+                             then doAfter: OnSuccessCallback? = nil) -> Bool {
     guard bindingTableState.isRowModifiable(rowIndex) else {
       // An error here would be really bad
       log.error("Cannot save binding row \(rowIndex): edit is not allowed for this row type! If you see this message please report it.")
@@ -490,8 +491,14 @@ extension BindingTableViewController: EditableTableViewDelegate {
       return false
     }
 
+    let completionHandler: TableUIChange.CompletionHandler = { tableUIChange in
+      if let doAfter {
+        doAfter()
+      }
+    }
+
     let newVersion = editedRow.keyMapping.clone(rawKey: rawKey, rawAction: rawAction, isIINACommand: isIINA)
-    bindingTableState.updateBinding(at: rowIndex, to: newVersion)
+    bindingTableState.updateBinding(at: rowIndex, to: newVersion, completionHandler: completionHandler)
     return true
   }
 

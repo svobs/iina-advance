@@ -9,9 +9,6 @@
 import Cocoa
 
 final class PlayerCore: NSObject {
-  typealias Callback = () -> Void
-  typealias OnSuccessCallback = () -> Void
-  typealias OnErrorCallback = (String) -> Void
 
   /// Should always be updated in mpv DQ
   enum LifecycleState: Int, StateEnum {

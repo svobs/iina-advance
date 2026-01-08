@@ -72,18 +72,18 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
       return
     }
 
-    endEdit()
+    endEdit(then: { [self] in
+      // Tab / return navigation (if any) will show up in the notification
+      if let textMovementInt = notification.userInfo?["NSTextMovement"] as? Int,
+         let textMovement = NSTextMovement(rawValue: textMovementInt) {
 
-    // Tab / return navigation (if any) will show up in the notification
-    if let textMovementInt = notification.userInfo?["NSTextMovement"] as? Int,
-       let textMovement = NSTextMovement(rawValue: textMovementInt) {
-
-      DispatchQueue.main.async { [self] in
-        // Start asynchronously so we can return
-        guard let (newRowIndex, newColIndex) = editAnotherCellAfterEditEnd(oldRow: current.row, oldColumn: current.column, textMovement) else { return }
-        parentTable.editCell(row: newRowIndex, column: newColIndex)
+        DispatchQueue.main.async { [self] in
+          // Start asynchronously so we can return
+          guard let (newRowIndex, newColIndex) = editAnotherCellAfterEditEnd(oldRow: current.row, oldColumn: current.column, textMovement) else { return }
+          parentTable.editCell(row: newRowIndex, column: newColIndex)
+        }
       }
-    }
+    })
   }
 
   func changeCurrentCell(to textField: EditableTextField, row: Int, column: Int) {
@@ -131,7 +131,7 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
     textField.needsDisplay = true
   }
 
-  private func commitChanges(to current: CurrentFocus) -> Bool {
+  private func commitChanges(to current: CurrentFocus, then doAfter: OnSuccessCallback? = nil) -> Bool {
     if current.textField.stringValue == current.stringValueOrig {
       log.verbose("endEdit() calling editDidEndWithNoChange()")
       delegate.editDidEndWithNoChange(row: current.row, column: current.column)
@@ -142,7 +142,7 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
       Logger.fatal("endEdit(): invalid column index: \(current.column)")  // programmer error
     }
 
-    let wasAccepted = delegate.editDidEndWithNewText(newValue: current.textField.stringValue, row: current.row, column: current.column)
+    let wasAccepted = delegate.editDidEndWithNewText(newValue: current.textField.stringValue, row: current.row, column: current.column, then: doAfter)
     if wasAccepted {
       log.verbose("editDidEndWithNewText() returned TRUE: assuming new value accepted")
       return true
@@ -154,30 +154,37 @@ class CellEditTracker: NSObject, NSTextFieldDelegate {
     return false
   }
 
-  func endEdit() {
-    guard let current = current, current.editInProgress else { return }
+  func endEdit(then doAfter: OnSuccessCallback? = nil) {
+    if let current = current, current.editInProgress {
+      let textField = current.textField
+      log.verbose("END Edit   [\(current.row), \(current.column)] \"\(textField.stringValue)\"")
 
-    let textField = current.textField
-    log.verbose("END Edit   [\(current.row), \(current.column)] \"\(textField.stringValue)\"")
+      let didSucceed = commitChanges(to: current, then: doAfter)
 
-    let didSucceed = commitChanges(to: current)
+      textField.heightConstraint?.isActive = false
+      textField.heightConstraint = nil
 
-    textField.heightConstraint?.isActive = false
-    textField.heightConstraint = nil
+      self.current = CurrentFocus(textField: textField, stringValueOrig: textField.stringValue, row: current.row, column: current.column, editInProgress: false)
 
-    self.current = CurrentFocus(textField: textField, stringValueOrig: textField.stringValue, row: current.row, column: current.column, editInProgress: false)
+      textField.window?.endEditing(for: textField)
+      // Resign first responder status and give focus back to table row selection:
+      textField.window?.makeFirstResponder(self.parentTable)
+      textField.isEditable = false
+      textField.isSelectable = false
+      textField.needsDisplay = true
 
-    textField.window?.endEditing(for: textField)
-    // Resign first responder status and give focus back to table row selection:
-    textField.window?.makeFirstResponder(self.parentTable)
-    textField.isEditable = false
-    textField.isSelectable = false
-    textField.needsDisplay = true
+      if didSucceed {
+        // Load custom color or other cell changes based on new value:
+        parentTable.reloadRow(current.row)
+        return
+      }
+      // else fall through
+    }
 
-    guard didSucceed else { return }
-
-    // Load custom color or other cell changes based on new value:
-    parentTable.reloadRow(current.row)
+    // Did not succeed. Need to execute completionHandler ourselves.
+    if let doAfter {
+      doAfter()
+    }
   }
 
   // MARK: Intercellular edit navigation

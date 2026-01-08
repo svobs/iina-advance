@@ -388,6 +388,18 @@ class EditableTableView: NSTableView {
     }
 
     log.trace("Received \"\(notification.name.rawValue)\" notification with changeType \(tableUIChange.changeType)")
+    // This will execute animation tasks using `submit` below.
     tableUIChange.execute(on: self)
+  }
+
+  /// Submits the given list of  `IINAAnimation.Task`s, using the most appropriate Pipeline which can be found.
+  func submit(_ animationTasks: [IINAAnimation.Task]) {
+    if let animationPipeline = animationPipeline {
+      animationPipeline.submit(animationTasks)
+    } else if let animationPipeline = pwc?.animationPipeline {
+      animationPipeline.submit(animationTasks)
+    } else {
+      IINAAnimation.runAsync(animationTasks)
+    }
   }
 }

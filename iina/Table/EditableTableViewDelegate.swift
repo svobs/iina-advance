@@ -15,7 +15,9 @@ protocol EditableTableViewDelegate {
   /// Implementors need to provide this
   var parentTableView: EditableTableView! { get }
 
-  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool
+  /// If `true` is returned, the caller will assume that `newValue` was accepted & that `completionHandler` will be handled.
+  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int,
+                             then doAfter: OnSuccessCallback?) -> Bool
 
   func editDidEndWithNoChange(row rowIndex: Int, column columnIndex: Int)
 
@@ -82,7 +84,8 @@ extension EditableTableViewDelegate {
   func handleMouseDown(with event: NSEvent) -> Bool { false }
   func handleMouseUp(with event: NSEvent) -> Bool { false }
 
-  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool {
+  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int,
+                             then doAfter: OnSuccessCallback? = nil) -> Bool {
     // If in-line editing is enabled, then this method should be overriden, so this message should never be seen.
     Logger.log("EditableTableViewDelegate.editDidEndWithNewText(): null default method was called!", level: .warning)
     return false

@@ -208,7 +208,7 @@ struct TableUIChange: Sendable {
       animationTasks.append(.instantTask {
         log.verbose("TableUIChange: reloading existing rows")
         /// Also uses `newSelectedRowIndexes`, if it is not nil:
-        tableView.reloadExistingRows(reselectRowsAfter: true)
+        tableView.reloadExistingRows(reselectRowsAfter: false)
       })
     }
 
@@ -254,13 +254,7 @@ struct TableUIChange: Sendable {
       })
     }
 
-    if let animationPipeline = tableView.animationPipeline {
-      animationPipeline.submit(animationTasks)
-    } else if let animationPipeline = tableView.pwc?.animationPipeline {
-      animationPipeline.submit(animationTasks)
-    } else {
-      IINAAnimation.runAsync(animationTasks)
-    }
+    tableView.submit(animationTasks)
   }
 
   @MainActor

@@ -8,6 +8,10 @@
 
 import Cocoa
 
+typealias Callback = () -> Void
+typealias OnSuccessCallback = () -> Void
+typealias OnErrorCallback = (String) -> Void
+
 /// Trying to deprecate this struct. New constants should be added to `Constants` struct.
 struct AppData {
   /// Time interval to sync play slider position, time labels, volume indicator & other UI.

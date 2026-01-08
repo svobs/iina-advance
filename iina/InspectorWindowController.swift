@@ -714,7 +714,8 @@ extension InspectorWindowController: EditableTableViewDelegate {
     return true
   }
 
-  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int) -> Bool {
+  func editDidEndWithNewText(newValue: String, row rowIndex: Int, column columnIndex: Int,
+                             then doAfter: OnSuccessCallback? = nil) -> Bool {
     Logger.log.verbose("Watch table: user finished editing value for row \(rowIndex), col \(columnIndex): \(newValue.quoted)")
     guard columnIndex == 0 else { return false }
     guard rowIndex < watchProperties.count else { return false }
@@ -724,8 +725,8 @@ extension InspectorWindowController: EditableTableViewDelegate {
     self.watchProperties = watchProperties
     saveWatchList()
 
-    DispatchQueue.main.async { [self] in
-      watchTableView.reloadRow(rowIndex)
+    if let doAfter {
+      doAfter()
     }
     return true
   }

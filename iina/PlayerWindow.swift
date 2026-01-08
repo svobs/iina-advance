@@ -48,6 +48,7 @@ final class PlayerWindow: NSWindow {
 
   // MARK: - Key event handling
 
+  // FIXME: Arrow key navigation still doesn't work for some text fields!
   override func keyDown(with event: NSEvent) {
     assert(DispatchQueue.isExecutingIn(.main))
     let keyCode = KeyCodeHelper.mpvKeyCode(from: event)
@@ -128,12 +129,12 @@ final class PlayerWindow: NSWindow {
     guard let pwc else { log.fatalError("No PlayerWindowController for PlayerWindow.performKeyEquivalent!") }
     let keyCode: String = KeyCodeHelper.mpvKeyCode(from: event)
 
+    let normalizedKeyCode = KeyCodeHelper.normalizeMpv(keyCode)
+    log.verbose("KEY Equiv: \(normalizedKeyCode.quoted)")
+
     if processForImmediateView(keyCode: keyCode, pwc) {
       return true
     }
-
-    let normalizedKeyCode = KeyCodeHelper.normalizeMpv(keyCode)
-    log.verbose("KEY Equiv: \(normalizedKeyCode.quoted)")
 
     /// AppKit by default will prioritize menu item key equivalents over arrow key navigation
     /// (although for some reason it is the opposite for `ESC`, `TAB`, `ENTER` or `RETURN`).

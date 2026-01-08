@@ -262,7 +262,7 @@ struct ConfTableState: Sendable {
   }
 
   @MainActor
-  func renameSelectedConf(newName: String) -> Bool {
+  func renameSelectedConf(newName: String, completionHandler: TableUIChange.CompletionHandler? = nil) -> Bool {
     var userConfDictUpdated = userConfDict
     Logger.log("Renaming conf in prefs: \(selectedConfName.pii.quoted) -> \(newName.pii.quoted)")
     guard !selectedConfName.equalsIgnoreCase(newName) else {
@@ -283,7 +283,7 @@ struct ConfTableState: Sendable {
     let newFilePath = Utility.buildConfFilePath(for: newName)
     userConfDictUpdated[newName] = newFilePath
 
-    manager.changeState(userConfDictUpdated, selectedConfName: newName)
+    manager.changeState(userConfDictUpdated, selectedConfName: newName, completionHandler: completionHandler)
     return true
   }
 

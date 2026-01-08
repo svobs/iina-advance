@@ -125,20 +125,12 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   var isOnTop: Bool = false
 
   /// True if window is either visible, hidden, or minimized. False if window is closed.
-  var isOpen: Bool {
+  override var isOpen: Bool {
     assert(DispatchQueue.isExecutingIn(.main))
     if !self.loaded {
       return false
     }
-    guard let window = self.window else { return false }
-    /// Also check if hidden due to PIP, or minimized.
-    /// NOTE: `window.isVisible` returns `false` if the window is ordered out, which we do sometimes,
-    /// as well as in the minimized or hidden states.
-    /// Check against our internally tracked window state lists also:
-    let savedStateName = window.savedStateName
-    let isVisible = window.isVisible || UIState.shared.windowsOpen.contains(savedStateName)
-    let isMinimized = UIState.shared.windowsMinimized.contains(savedStateName)
-    return isVisible || isMinimized
+    return super.isOpen
   }
 
   /// Make sure the event loop is emptied before setting to false again. Otherwise a simple click can result in a resize.

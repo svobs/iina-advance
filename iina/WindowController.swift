@@ -10,6 +10,18 @@
 /// All window controllers in the app are expected to inherit from this class.
 class WindowController: NSWindowController {
 
+  var isOpen: Bool {
+    guard let window else { return false }
+    /// Also check if hidden due to PIP, or minimized.
+    /// NOTE: `window.isVisible` returns `false` if the window is ordered out, which we do sometimes,
+    /// as well as in the minimized or hidden states.
+    /// Check against our internally tracked window state lists also:
+    let savedStateName = window.savedStateName
+    let isVisible = window.isVisible || UIState.shared.windowsOpen.contains(savedStateName)
+    let isMinimized = UIState.shared.windowsMinimized.contains(savedStateName)
+    return isVisible || isMinimized
+  }
+
   var mouseLocationInWindow: NSPoint {
     return window!.convertPoint(fromScreen: NSEvent.mouseLocation)
   }

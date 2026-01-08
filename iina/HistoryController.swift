@@ -306,14 +306,15 @@ final class HistoryController {
       version += 1
       return version
     }
-    let historyList = history
-    fileExistsDQ.async { [self] in
-      log.verbose("Starting fileExists work for \(historyList.count) entries, historyVersion=\(historyListVersion)")
-      reloadFileExistsAndProgress(forList: historyList, startingAt: 0, withVersion: historyListVersion)
-    }
+    DispatchQueue.main.async { [self] in
+      // This can be a very long-running operation, but is only needed for the History window.
+      if !isAppTerminating, AppDelegate.shared.isInteractiveLaunch, AppDelegate.shared.historyWindow.isOpen {
+        startAsyncReloadOfFileExistsAndProgress(forVersion: historyListVersion)
+      }
 
-    log.verbose("Posting iinaHistoryListUpdated")
-    postNotification(Notification(name: .iinaHistoryListUpdated))
+      log.verbose("Posting iinaHistoryListUpdated")
+      postNotification(Notification(name: .iinaHistoryListUpdated))
+    }
   }
 
   // MARK: - Recent Documents
@@ -542,6 +543,16 @@ final class HistoryController {
   }
 
   // MARK: - FileExists & Progress from watch-later
+
+  func startAsyncReloadOfFileExistsAndProgress(forVersion historyListVersion: Int) {
+    HistoryController.shared.async { [self] in
+      let historyList = history
+      fileExistsDQ.async { [self] in
+        log.verbose("Starting fileExists work for \(historyList.count) entries, historyVersion=\(historyListVersion)")
+        reloadFileExistsAndProgress(forList: historyList, startingAt: 0, withVersion: historyListVersion)
+      }
+    }
+  }
 
   /// Fills in watch-later meta & the fileExists map for the given single history entry.
   /// NOTE: Unlike `reloadFileExistsAndProgress(forList:)`, this will overwrite any existing entry in the current `fileExistsMap`.

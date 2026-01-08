@@ -100,6 +100,7 @@ final class HistoryWindowController: WindowController, NSOutlineViewDelegate, NS
   private var historyData: [String: [URL]] = loadingData
   private var historyDataKeys: [String] = [loadingKey]
 
+  private var historyVersion: Int = 0
   /// List of "file exists" metadata from `HistoryController`. Cached to prevent races.
   private var fileExistsMap: [URL: Bool] = [:]
 
@@ -209,6 +210,9 @@ final class HistoryWindowController: WindowController, NSOutlineViewDelegate, NS
         // Load history if not started already:
         HistoryController.shared.start()
       }
+    } else {
+      // Refresh this if needed. This will not be refreshed while the History window is closed and may be very stale.
+      HistoryController.shared.startAsyncReloadOfFileExistsAndProgress(forVersion: historyVersion)
     }
 
     updateProgressColumnVisibility()
@@ -434,7 +438,9 @@ final class HistoryWindowController: WindowController, NSOutlineViewDelegate, NS
     guard !AppDelegate.shared.isTerminating else { return }
 
     // Reload table again to refresh statuses
-    log.verbose("Reloading History table with updated fileExists data")
+    let historyVersion = HistoryController.shared.historyListVersion
+    log.verbose("Reloading History table with updated fileExists data (v\(historyVersion))")
+    self.historyVersion = historyVersion
     self.fileExistsMap = HistoryController.shared.fileExistsMap
     outlineView.reloadExistingRows(reselectRowsAfter: true)
     log.verbose("Reloaded History table with fileExists data: done")

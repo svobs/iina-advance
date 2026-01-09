@@ -140,30 +140,33 @@ class InitialWindowController: WindowController, NSWindowDelegate {
   }
 
   override func openWindow(_ sender: Any?) {
+    // Load window if not already loaded:
     guard let _ = window else { return }
 
     /// If welcome window is shown at startup, recentDocuments may not be finished loading.
     /// We want to wait until recentDocuments are done loading before displaying the window.
     assert(isWindowLoaded, "Expected WelcomeWindow to be loaded!")
 
+    Logger.log.verbose("Open WelcomeWindow: start, firstLoad=\(isFirstLoad.yn)")
+
     if isFirstLoad {
+      let sw = Utility.Stopwatch()
       // Start history if not already started
       HistoryController.shared.start()
       /// Enquque in `HistoryController.shared.queue` to establish a happens-after relationship with recentDocuments load:
       HistoryController.shared.async {
         DispatchQueue.main.async {
           guard !AppDelegate.shared.isTerminating else { return }
-          let sw = Utility.Stopwatch()
           self.refreshUI()  // async!
-          Logger.log.verbose("Total time for WelcomeWindow initial reload: \(sw) ms. Showing window")
           super.openWindow(sender)
           // Do this after super.openWindow, to ensure zoom animation is activated
           self.isFirstLoad = false
+          Logger.log.verbose("Open WelcomeWindow (firstLoad): done in \(sw.secElapsed)")
         }
       }
     } else {
-      Logger.log.verbose("Opening WelcomeWindow")
       super.openWindow(sender)
+      Logger.log.verbose("Open WelcomeWindow: done")
     }
   }
 

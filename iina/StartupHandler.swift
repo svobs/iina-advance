@@ -722,15 +722,32 @@ final class StartupHandler {
 
       let didRestoreSomething = !wcsToRestore.isEmpty || restoreOpenFileWindow
       let didShowSomething = didRestoreSomething || (pwcsForOpenFiles != nil)
-      if !isCommandLine, !didShowSomething {
-        // Fall back to default action:
-        AppDelegate.shared.doLaunchOrReopenAction()
-        DispatchQueue.main.async {
-          // Pre-load if no player, for a snappier drag & drop effect in Welcome window
-          log.debug("No players were explicitly opened at launch - will preemptively create a new idle player")
-          // Don't load "Additional mpv options" yet - they may immediately show error pop-ups if invalid.
-          // And they will be loaded again when the user actually opens a window, so don't do duplicate work.
-          _ = PlayerManager.shared.getIdleOrCreateNew(loadAdditionalMpvOptionsFromPrefs: false)
+      let canShowWelcomeWindowByDefault = Preference.enum(for: .actionAfterLaunch) == Preference.ActionAfterLaunch.welcomeWindow
+      var didShowWelcomeWindow = wcsToRestore.contains(where: { $0.windowFrameAutosaveName == WindowAutosaveName.welcome.string })
+      if !isCommandLine {
+        if !didShowSomething {
+          // Fall back to default action:
+          AppDelegate.shared.doLaunchOrReopenAction()
+          if canShowWelcomeWindowByDefault {
+            didShowWelcomeWindow = true
+          }
+          DispatchQueue.main.async {
+            // Optimization: pre-load a new idle player if none started, for a snappier drag & drop effect in Welcome window
+            log.debug("No players were explicitly opened at launch - will preemptively create a new idle player")
+            // Don't load "Additional mpv options" yet - they may immediately show error pop-ups if invalid.
+            // And they will be loaded again when the user actually opens a window, so don't do duplicate work.
+            _ = PlayerManager.shared.getIdleOrCreateNew(loadAdditionalMpvOptionsFromPrefs: false)
+          }
+        }
+
+        // Optimization: pre-load welcome window dependencies if it can be shown
+        if !didShowWelcomeWindow {
+          let canShowWelcomeWindow = Preference.bool(for: .enableCmdN) || canShowWelcomeWindowByDefault
+          if canShowWelcomeWindow {
+            log.debug("Welcome window can be shown but is not yet shown; will preemptively load it from XIB & start History service for it")
+            let _ = AppDelegate.shared.initialWindow.window
+            HistoryController.shared.start()
+          }
         }
       }
     }

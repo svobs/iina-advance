@@ -119,6 +119,7 @@ final class HistoryController {
       }
       guard !started else { return }
       started = true
+      let sw = Utility.Stopwatch()
       log.verbose("Starting History")
       startOrStopMonitoringWatchLaterDir()
       reloadAll()
@@ -126,6 +127,7 @@ final class HistoryController {
       // Workaround for macOS Sonoma clearing the recent documents list when the IINA code is not signed
       // with IINA's certificate as is the case for developer and nightly builds.
       restoreRecentDocuments()
+      log.verbose("Starting History: done in \(sw.secElapsedString)")
     }
   }
 

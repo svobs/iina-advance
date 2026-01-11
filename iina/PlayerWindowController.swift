@@ -569,7 +569,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
     return [leadingSidebarView, trailingSidebarView, topBarView, currentControlBar, subPopoverView]
   }
 
-  let pluginOverlayViewContainer = NSView(frame: .zero)
+  let pluginOverlayViewContainer = ClickThroughView(frame: .zero)
 
   lazy var subPopoverView = playlistView.subPopover?.contentViewController?.view
 

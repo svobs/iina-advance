@@ -39,6 +39,9 @@ class PrefControlViewController: PreferenceViewController, PreferenceWindowEmbed
   @IBOutlet weak var seekScrollSensitivityLabel: NSTextField!
   @IBOutlet weak var volumeScrollSensitivityLabel: NSTextField!
 
+  @IBOutlet var relativeSeekAmountSlider: NSSlider!
+  @IBOutlet var volumeScrollAmountSlider: NSSlider!
+
   /// Weak reference to `PreferenceWindowController.animationPipeline`.
   private unowned var animationPipeline: IINAAnimation.Pipeline!
 

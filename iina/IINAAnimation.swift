@@ -184,7 +184,6 @@ extension IINAAnimation {
     // Convenience function. Run the task with no animation / zero duration.
     // Useful for updating constraints, etc., which cannot be animated or do not look good animated.
     func submitInstantTask(_ runFunc: @escaping TaskFunc, then doAfter: TaskFunc? = nil) {
-      // TODO: investigate smart enqueuing in main queue
       submit(.instantTask(runFunc), then: doAfter)
     }
 

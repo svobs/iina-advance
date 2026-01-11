@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PrefControlViewController" customModule="IINA_Advance" customModuleProvider="target">
             <connections>
                 <outlet property="forceTouchLabel" destination="rUe-Ix-oaI" id="RWA-jP-now"/>
+                <outlet property="relativeSeekAmountSlider" destination="WC2-9P-fCe" id="MpN-Ga-0KK"/>
                 <outlet property="scrollVerticallyLabel" destination="oVB-QD-c1C" id="qip-5h-7Je"/>
                 <outlet property="sectionMouseView" destination="Wmg-PT-BGO" id="5YU-mu-IUc"/>
                 <outlet property="sectionTrackpadView" destination="VSf-E0-Btw" id="xIc-t9-VIf"/>
@@ -16,6 +17,7 @@
                 <outlet property="touchpadGridView" destination="hts-ed-w42" id="EHK-XJ-6t7"/>
                 <outlet property="videoZoomContainerView" destination="JBB-y9-cLd" id="R19-WX-LQE"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+                <outlet property="volumeScrollAmountSlider" destination="Muz-Ou-Hbv" id="zwi-hA-Od4"/>
                 <outlet property="volumeScrollSensitivityLabel" destination="ZXJ-Ad-DoZ" id="1hw-mj-ONv"/>
             </connections>
         </customObject>
@@ -27,7 +29,7 @@
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="Yrj-d0-KaY"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Wmg-PT-BGO" userLabel="Prefs &gt; Control &gt; Mouse">
-            <rect key="frame" x="0.0" y="0.0" width="504" height="392"/>
+            <rect key="frame" x="0.0" y="0.0" width="521" height="392"/>
             <subviews>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oVB-QD-c1C">
                     <rect key="frame" x="56" y="366" width="174" height="16"/>
@@ -139,14 +141,14 @@
                     </textFieldCell>
                 </textField>
                 <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WC2-9P-fCe" userLabel="SeekScrollSensitivity Horizontal Slider">
-                    <rect key="frame" x="236" y="210" width="231" height="18"/>
+                    <rect key="frame" x="236" y="210" width="260" height="18"/>
                     <sliderCell key="cell" controlSize="small" state="on" alignment="left" minValue="1" maxValue="8" doubleValue="4" tickMarkPosition="below" numberOfTickMarks="8" allowsTickMarkValuesOnly="YES" sliderType="linear" id="6dr-c1-Y38"/>
                     <connections>
                         <binding destination="Yrj-d0-KaY" name="value" keyPath="values.relativeSeekAmount" id="233-fX-XiG"/>
                     </connections>
                 </slider>
                 <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b09-X3-Mpi" userLabel="SeekScrollSensitivity Label">
-                    <rect key="frame" x="477" y="211" width="17" height="16"/>
+                    <rect key="frame" x="506" y="211" width="17" height="16"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" state="on" title="1x" id="CzJ-YR-JrF" userLabel="WindowOpacity Text Field Cell">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -165,14 +167,14 @@
                     </textFieldCell>
                 </textField>
                 <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Muz-Ou-Hbv" userLabel="VolumeScrollSensitivity Horizontal Slider">
-                    <rect key="frame" x="236" y="184" width="231" height="18"/>
+                    <rect key="frame" x="236" y="184" width="260" height="18"/>
                     <sliderCell key="cell" controlSize="small" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="4" tickMarkPosition="below" numberOfTickMarks="5" allowsTickMarkValuesOnly="YES" sliderType="linear" id="ilE-G8-oLz"/>
                     <connections>
                         <binding destination="Yrj-d0-KaY" name="value" keyPath="values.volumeScrollAmount" id="82d-7Z-8rD"/>
                     </connections>
                 </slider>
                 <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZXJ-Ad-DoZ" userLabel="VolumeScrollSensitivity Label">
-                    <rect key="frame" x="477" y="185" width="17" height="16"/>
+                    <rect key="frame" x="506" y="185" width="17" height="16"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" state="on" title="1x" id="GTQ-6I-S5t" userLabel="WindowOpacity Text Field Cell">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -379,6 +381,7 @@
                 <constraint firstItem="Muz-Ou-Hbv" firstAttribute="leading" secondItem="hVI-sA-syi" secondAttribute="trailing" constant="8" id="bWP-D4-1oQ"/>
                 <constraint firstItem="mdI-b4-54O" firstAttribute="leading" secondItem="2rD-uu-WVu" secondAttribute="trailing" constant="8" id="bWi-NF-ICn"/>
                 <constraint firstItem="Muz-Ou-Hbv" firstAttribute="top" secondItem="WC2-9P-fCe" secondAttribute="bottom" constant="8" id="bz4-ZF-1gr"/>
+                <constraint firstItem="WC2-9P-fCe" firstAttribute="trailing" secondItem="VlR-LI-plv" secondAttribute="trailing" id="c5C-VU-gHY"/>
                 <constraint firstItem="l7e-jz-0cj" firstAttribute="top" secondItem="Muz-Ou-Hbv" secondAttribute="bottom" constant="16" id="cG4-5S-G3O"/>
                 <constraint firstItem="WC2-9P-fCe" firstAttribute="top" secondItem="LN0-rs-jJB" secondAttribute="bottom" constant="12" id="cM7-4f-jjy"/>
                 <constraint firstAttribute="bottom" secondItem="36e-IQ-z4e" secondAttribute="bottom" constant="4" id="ciH-Ne-36d"/>
@@ -397,7 +400,6 @@
                 <constraint firstItem="oVB-QD-c1C" firstAttribute="width" secondItem="zSQ-pa-Urx" secondAttribute="width" id="hqz-ic-b3c"/>
                 <constraint firstItem="LN0-rs-jJB" firstAttribute="leading" secondItem="zSQ-pa-Urx" secondAttribute="leading" id="iix-hc-ISA"/>
                 <constraint firstItem="WC2-9P-fCe" firstAttribute="leading" secondItem="VlR-LI-plv" secondAttribute="leading" id="ika-Tm-Lk7"/>
-                <constraint firstItem="VlR-LI-plv" firstAttribute="trailing" secondItem="b09-X3-Mpi" secondAttribute="trailing" constant="4" id="jec-Ou-94s"/>
                 <constraint firstItem="Ltc-ek-XnI" firstAttribute="baseline" secondItem="E8B-5D-NHc" secondAttribute="baseline" id="l57-Ag-rdh"/>
                 <constraint firstItem="518-30-0zs" firstAttribute="top" secondItem="tL8-ht-RBh" secondAttribute="bottom" constant="8" id="mzE-Gv-f76"/>
                 <constraint firstItem="mdI-b4-54O" firstAttribute="width" secondItem="0Qc-Uz-odw" secondAttribute="width" id="not-ZS-SxO"/>

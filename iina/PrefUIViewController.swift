@@ -107,7 +107,6 @@ class PrefUIViewController: PreferenceViewController, PreferenceWindowEmbeddable
   @IBOutlet weak var oscBottomPlacementContainerView: NSView!
   @IBOutlet weak var oscSnapToCenterContainerView: NSView!
   @IBOutlet weak var oscWidthStackView: NSStackView!
-  @IBOutlet weak var oscBarWidthTextField: NSTextField!
   @IBOutlet weak var oscHeightStackView: NSStackView!
   @IBOutlet weak var oscBarHeightTextField: NSTextField!
   @IBOutlet weak var playbackBtnDimensionsHStackView: NSStackView!
@@ -115,6 +114,8 @@ class PrefUIViewController: PreferenceViewController, PreferenceWindowEmbeddable
   @IBOutlet weak var toolbarIconDimensionsHStackView: NSStackView!
   @IBOutlet weak var oscToolbarStackView: NSStackView!
   @IBOutlet weak var oscToolbarPreviewBox: NSBox!
+
+  @IBOutlet weak var oscTimeLabelsAlwaysWrapSliderStackView: NSStackView!
 
   @IBOutlet weak var autoHideAfterCheckBox: NSButton!
   @IBOutlet weak var oscAutoHideTimeoutTextField: NSTextField!
@@ -489,6 +490,8 @@ class PrefUIViewController: PreferenceViewController, PreferenceWindowEmbeddable
     viewHidePairs.append((showTopBarTriggerContainerView, !showTopBarTrigger))
 
     viewHidePairs.append((oscForceSingleRowContainerView, !showForceSingleRowCheckbox))
+    viewHidePairs.append((oscTimeLabelsAlwaysWrapSliderStackView, Preference.bool(for: .oscForceSingleRow)))
+
     viewHidePairs.append((oscColorSchemeHStackView, !showOverlayStyleTrigger))
     viewHidePairs.append((oscBottomPlacementContainerView, !oscIsBottom))
 

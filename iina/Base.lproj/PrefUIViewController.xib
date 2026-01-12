@@ -1670,7 +1670,7 @@ For smoothest results, also enable custom full screen.</string>
                             <subviews>
                                 <button horizontalHuggingPriority="252" verticalHuggingPriority="252" verticalCompressionResistancePriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="VAZ-Ki-EPD">
                                     <rect key="frame" x="0.0" y="1" width="426" height="18"/>
-                                    <buttonCell key="cell" type="check" title="Use 2-row style (when OSC height is large enough)" bezelStyle="regularSquare" imagePosition="left" controlSize="large" state="on" inset="2" id="jSW-qu-mfN">
+                                    <buttonCell key="cell" type="check" title="Use 2-row style (if given enough height)" bezelStyle="regularSquare" imagePosition="left" controlSize="large" state="on" inset="2" id="jSW-qu-mfN">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>

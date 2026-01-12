@@ -534,6 +534,7 @@ struct Constants {
 
     static let clearBlackGradientColors = [CGColor(red: 0, green: 0, blue: 0, alpha: 0.0),
                                            CGColor(red: 0, green: 0, blue: 0, alpha: 0.05),
+                                           CGColor(red: 0, green: 0, blue: 0, alpha: 0.1),
                                            CGColor(red: 0, green: 0, blue: 0, alpha: 0.2),
                                            CGColor(red: 0, green: 0, blue: 0, alpha: 0.35),
                                            CGColor(red: 0, green: 0, blue: 0, alpha: 0.5),

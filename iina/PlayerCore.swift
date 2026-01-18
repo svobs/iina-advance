@@ -2445,7 +2445,7 @@ final class PlayerCore: NSObject {
       DispatchQueue.main.async { [self] in
         Utility.quickFontPickerWindow(selecting: subFont) { [self] result in
           Task { @MainActor in
-            setSubFont(result ?? "")
+            setSubFont(result)
           }
         }
       }

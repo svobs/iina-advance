@@ -105,7 +105,7 @@ class FontPickerWindowController: NSWindowController, NSTableViewDelegate, NSTab
       for (typefaceIndex, typeface) in typefaces.enumerated() {
         guard let faceName = typeface[0] as? String, faceName == selectedFace else { continue }
         enableSelectionChangeListener = false
-        
+
         familyTableView.selectRowIndexes(IndexSet(integer: familyIndex), byExtendingSelection: false)
         familyTableView.scrollRowToVisible(familyIndex)
 
@@ -120,7 +120,7 @@ class FontPickerWindowController: NSWindowController, NSTableViewDelegate, NSTab
     }
   }
 
-  // MARK: - NSTableView delegate and data source
+  // - MARK: NSTableView delegate and data source
 
   func numberOfRows(in tableView: NSTableView) -> Int {
     if tableView == familyTableView {
@@ -157,7 +157,7 @@ class FontPickerWindowController: NSWindowController, NSTableViewDelegate, NSTab
     updatePreview()
   }
 
-  // MARK: - NSTextField delegate
+  // - MARK: NSTextField delegate
 
   /// Type-to-filter updates
   func controlTextDidChange(_ notification: Notification) {
@@ -177,11 +177,12 @@ class FontPickerWindowController: NSWindowController, NSTableViewDelegate, NSTab
   }
 
   @IBAction func okBtnPressed(_ sender: AnyObject) {
-    if let block = finishedPicking {
+    if let finishedPicking {
       let otherString = otherField.stringValue
-      block(otherString)
+      let selectedFont = otherString.isEmpty ? Constants.String.mpvDefaultFont : otherString
+      finishedPicking(selectedFont)
       // remove the listener
-      finishedPicking = nil
+      self.finishedPicking = nil
     }
     self.close()
   }
@@ -191,7 +192,7 @@ class FontPickerWindowController: NSWindowController, NSTableViewDelegate, NSTab
   }
 
 
-  // MARK: - Utils
+  // - MARK: Utils
 
   private func updatePreview() {
     let chosenFont = NSFont(name: chosenFace, size: 24)

@@ -44,8 +44,9 @@ extension PlayerCore {
   ///   (if provided), which may be in the middle of the playlist.
   func _addAllToPlaylist(pathListIncludingCurrent pathList: [String], indexOfCurrentItem currentItemExplicitIndex: Int? = nil) {
     assert(DispatchQueue.isExecutingIn(mpv.queue))
-    // This checks for !isStopping, so we don't have to
-    guard _reloadPlaylistAndReturn() != nil else { return }
+
+    guard !isStopping else { return }
+    _reloadPlaylist(thenPostNotification: false, savePlayerState: false)
 
     if info.playlist.count != 1 {
       log.debug("[Playlist] Expected exactly 1 item in playlist before bulk-add, but found \(info.playlist.count). Some items may be out of order afterwards")

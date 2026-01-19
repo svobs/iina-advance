@@ -1702,8 +1702,12 @@ extension PlayerCore {
   @MainActor
   func saveSynchronously() {
     guard isSaveEnabled else { return }
-    log.debug("Saving player state synchronously")
     let pwc = pwc!
+    guard !pwc.sessionState.isRestoring else {
+      log.debug("Skipping synchronous save of player state: player did not finish restoring")
+      return
+    }
+    log.debug("Saving player state synchronously")
 
     // Retrieve appropriate geometry values, updating to latest window frame if needed:
     let geo: GeometrySet

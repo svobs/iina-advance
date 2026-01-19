@@ -24,6 +24,8 @@ fileprivate let windowGeometryPrefStringVersion = "2"
 fileprivate let musicModeGeoPrefStringVersion = "2"
 fileprivate let playlistVideosCSVVersion = "1"
 
+fileprivate let printJsonData: Bool = false
+
 fileprivate typealias PropName = PlayerSaveState.PropName
 
 /// Data structure for saving to prefs / restoring from prefs the UI state of a single player window
@@ -34,6 +36,7 @@ struct PlayerSaveState: CustomStringConvertible {
 
     case playlistPos = "playlistPos"    /// `MPVProperty.playlistPos`. Added in v1.4
     case playlistPaths = "playlistPaths"
+    case playlistBookmarks = "playlistBookmarks" /// Added in v1.5: better tracking of playlist paths, improves security
 
     case playlistVideos = "playlistVideos"
     case playlistSubtitles = "playlistSubs"
@@ -50,6 +53,7 @@ struct PlayerSaveState: CustomStringConvertible {
     case isOnTop = "onTop"
 
     case url = "url"
+    case bookmark = "bookmark"                   /// Added in v1.5
     case playPosition = "playPosition"  /// `MPVOption.PlaybackControl.start`
     case playDuration = "playDuration"  /// `MPVProperty.duration`
     case paused = "paused"              /// `MPVOption.PlaybackControl.pause`
@@ -262,6 +266,10 @@ struct PlayerSaveState: CustomStringConvertible {
         PropName.playlistSubtitles.rawValue,
         PropName.matchedSubtitles.rawValue:
         return false
+      case PropName.bookmark.rawValue,
+        PropName.playlistBookmarks.rawValue:
+        // Binary data (also contains PII)
+        return false
       default:
         return true
       }
@@ -269,14 +277,57 @@ struct PlayerSaveState: CustomStringConvertible {
 
     let propsJSON = json(from: filteredProps) ?? "<ERROR>"
 
-    return "PlayerSaveState{url=\(urlPath.pii.quoted) props=\(propsJSON))"
+    return "PlayerSaveState{'url': \(urlPath.pii.quoted), 'props': \(propsJSON)}"
   }
 
-  func json(from object:Any) -> String? {
-    guard let data = try? JSONSerialization.data(withJSONObject: object, options: []) else {
+  fileprivate func json(from object: Any) -> String? {
+    // Sanitize arbitrary Foundation structures into JSON-serializable equivalents
+    func sanitize(_ value: Any) -> Any {
+      switch value {
+      case let dict as [String: Any]:
+        var out: [String: Any] = [:]
+        for (k, v) in dict { out[k] = sanitize(v) }
+        return out
+      case let array as [Any]:
+        return array.map { sanitize($0) }
+      case let data as Data:
+        if printJsonData {
+          // Data is not JSON-serializable; convert to base64 so we don't crash
+          return ["_type": "Data", "base64": data.base64EncodedString()]
+        } else {
+          return "__data__"
+        }
+      case let url as URL:
+        return url.absoluteString
+      case let num as NSNumber:
+        return num
+      case let str as String:
+        return str
+      case let bool as Bool:
+        return bool
+      case let date as Date:
+        return ISO8601DateFormatter().string(from: date)
+      case is NSNull:
+        return NSNull()
+      default:
+        // Fallback: stringify unknown types to avoid exceptions during logging
+        return String(describing: value)
+      }
+    }
+
+    let sanitized = sanitize(object)
+    guard JSONSerialization.isValidJSONObject(sanitized) else {
+      log.error("Failed to serialize to JSON: object is not a valid JSON object")
       return nil
     }
-    return String(data: data, encoding: String.Encoding.utf8)
+
+    do {
+      let data = try JSONSerialization.data(withJSONObject: sanitized, options: [])
+      return String(data: data, encoding: .utf8)
+    } catch {
+      log.error("Failed to serialize to JSON: \(error)")
+      return nil
+    }
   }
 
   var url: URL? {

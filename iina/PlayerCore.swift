@@ -681,6 +681,13 @@ final class PlayerCore: NSObject {
               pendingResumeWhenShowingWindow = !Preference.bool(for: .pauseWhenOpen)
             }
 
+            let playlistPathList = priorState.getPlaylistPathList()
+            if !playlistPathList.isEmpty {
+              let playlistPos: Int? = priorState.int(for: .playlistPos)
+              log.debug("Restoring \(playlistPathList.count) items into playlist, indexOfCurrentItem=\(playlistPos?.description ?? "nil")")
+              _addAllToPlaylist(pathListIncludingCurrent: playlistPathList, indexOfCurrentItem: playlistPos)
+            }
+
             return
 
           } else if isInteractivePlayer {
@@ -2038,16 +2045,6 @@ final class PlayerCore: NSObject {
         let _ = data.withUnsafeBytes {
           setxattr(fileSystemPath, name, $0.baseAddress, data.count, 0, 0)
         }
-      }
-    }
-
-    // Cannot restore playlist until after fileStarted event & mpv has a position for current item
-    if let priorState = pwc.priorStateIfRestoring {
-      let playlistPathList = priorState.getPlaylistPathList()
-      if !playlistPathList.isEmpty {
-        let playlistPos: Int? = priorState.int(for: .playlistPos)
-        log.debug("Restoring \(playlistPathList.count) items into playlist, indexOfCurrentItem=\(playlistPos?.description ?? "nil")")
-        _addAllToPlaylist(pathListIncludingCurrent: playlistPathList, indexOfCurrentItem: playlistPos)
       }
     }
 

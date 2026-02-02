@@ -252,8 +252,7 @@ class PlayerWindowController: NSWindowController, NSWindowDelegate {
     if keyBinding.isIINACommand {
       // - IINA command
       if let iinaCommand = IINACommand(rawValue: keyBinding.rawAction) {
-        handleIINACommand(iinaCommand)
-        return true
+        return handleIINACommand(iinaCommand)
       } else {
         log("Unknown iina command \(keyBinding.rawAction)", level: .error)
         return false
@@ -687,19 +686,34 @@ class PlayerWindowController: NSWindowController, NSWindowDelegate {
     player.seek(percent: percentage, forceExact: !followGlobalSeekTypeWhenAdjustSlider)
   }
 
-  internal func handleIINACommand(_ cmd: IINACommand) {
+  internal func handleIINACommand(_ cmd: IINACommand) -> Bool {
     switch cmd {
     case .openFile:
       AppDelegate.shared.openFile(self)
     case .openURL:
       AppDelegate.shared.openURL(self)
+    case .showCurrentFileInFinder:
+      menuActionHandler.menuShowCurrentFileInFinder(.dummy)
     case .deleteCurrentFile:
       menuActionHandler.menuDeleteCurrentFile(.dummy)
     case .deleteCurrentFileHard:
       menuActionHandler.menuDeleteCurrentFileHard(.dummy)
+    case .saveCurrentPlaylist:
+      menuActionHandler.menuSavePlaylist(.dummy)
+    case .findOnlineSubs:
+      menuActionHandler.menuFindOnlineSub(.dummy)
+    case .saveDownloadedSub:
+      menuActionHandler.saveDownloadedSub(.dummy)
+    case .flip:
+      menuActionHandler.menuToggleFlip(.dummy)
+    case .mirror:
+      menuActionHandler.menuToggleMirror(.dummy)
+    case .toggleMusicMode:
+      menuActionHandler.player.switchToMiniPlayer()
     default:
-      break
+      return false
     }
+    return true
   }
 
   internal func isMouseEvent(_ event: NSEvent, inAnyOf views: [NSView?]) -> Bool {

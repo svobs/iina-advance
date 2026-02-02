@@ -38,7 +38,10 @@ extension MainWindowController {
     //  3: fit screen
     //  10: smaller size
     //  11: bigger size
-    let size = sender.tag
+    changeWindowSize(tag: sender.tag)
+  }
+
+  func changeWindowSize(tag size: Int) {
     guard let window = window, !fsState.isFullscreen else { return }
 
     let screenFrame = (window.screen ?? NSScreen.main!).visibleFrame

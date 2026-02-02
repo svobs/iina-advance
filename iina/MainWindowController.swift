@@ -892,12 +892,42 @@ class MainWindowController: PlayerWindowController {
 
   @discardableResult
   override func handleKeyBinding(_ keyBinding: KeyMapping) -> Bool {
+    if let iinaCommand = IINACommand(rawValue: keyBinding.rawAction) {
+      return handleIINACommand(iinaCommand)
+    }
     let success = super.handleKeyBinding(keyBinding)
     if success && keyBinding.action.first! == MPVCommand.screenshot.rawValue {
       player.sendOSD(.screenshot)
     }
     return success
   }
+
+  override func handleIINACommand(_ cmd: IINACommand) -> Bool {
+    switch cmd {
+    case .biggerWindow:
+      changeWindowSize(tag: 11)
+    case .smallerWindow:
+      changeWindowSize(tag: 10)
+    case .fitToScreen:
+      changeWindowSize(tag: 3)
+    case .togglePIP:
+      menuTogglePIP(.dummy)
+    case .videoPanel:
+      menuShowVideoQuickSettings(.dummy)
+    case .audioPanel:
+      menuShowAudioQuickSettings(.dummy)
+    case .subPanel:
+      menuShowSubQuickSettings(.dummy)
+    case .playlistPanel:
+      menuShowPlaylistPanel(.dummy)
+    case .chapterPanel:
+      menuShowChaptersPanel(.dummy)
+    default:  
+      return super.handleIINACommand(cmd)
+    }
+    return true
+  }
+
 
   override func pressureChange(with event: NSEvent) {
     if isCurrentPressInSecondStage == false && event.stage == 2 {

@@ -393,7 +393,8 @@
               ];
 
               buildPhase = ''
-                echo "🔧 Setting up build environment"
+                echo "[$(system)] 🔧 Setting up build environment"
+                start_time=$(date +%s) # Record start time ⏰
                 export HOME=$PWD/.home
                 export CFFIXED_USER_HOME="$HOME"
                 export __XPC_CFFIXED_USER_HOME="$HOME"
@@ -420,25 +421,37 @@
                 mkdir -p deps/include deps/lib deps/executable
 
                 cp -RL ${depsInc}/.               deps/include
+                echo "⏰ DEPS_Lib"
+                ls -l ${depsLib}
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
 
-                echo "✏️ Rewriting install names to use @rpath"
-                find deps/lib -type f \( -perm -111 -o -name "*.dylib" -o -name "*.so" \) | while read -r dep; do
-                  echo "✏️ Patching install names in $dep"
-                  chmod +w "$dep"
+                end_time=$(date +%s) # Record end time ⏰
+                elapsed=$((end_time - start_time)) # Calculate elapsed time
+                echo "⏰ Elapsed Time [Build Environment]: $elapsed seconds"
 
-                  # Change its ID to @rpath/<filename>
-                  install_name_tool -id "@rpath/$(basename "$dep")" "$dep" || true
+                # echo "✏️ Rewriting install names to use @rpath"
+                # start_time=$(date +%s) # Record start time ⏰
+                # find deps/lib -type f \( -perm -111 -o -name "*.dylib" -o -name "*.so" \) | while read -r dep; do
+                #   echo "✏️ Patching install names in $dep"
+                #   chmod +w "$dep"
 
-                  # Rewrite dependencies that still point to /nix/store
-                  otool -L "$dep" | awk '/\/nix\/store/ && $1 !~ /:$/ {print $1}' | while read -r nixdep; do
-                    base=$(basename "$nixdep")
-                    install_name_tool -change "$nixdep" "@rpath/$base" "$dep" || true
-                  done
-                done
+                #   # Change its ID to @rpath/<filename>
+                #   install_name_tool -id "@rpath/$(basename "$dep")" "$dep" || true
+
+                #   # Rewrite dependencies that still point to /nix/store
+                #   otool -L "$dep" | awk '/\/nix\/store/ && $1 !~ /:$/ {print $1}' | while read -r nixdep; do
+                #     base=$(basename "$nixdep")
+                #     install_name_tool -change "$nixdep" "@rpath/$base" "$dep" || true
+                #   done
+                # done
+
+                # end_time=$(date +%s) # Record end time ⏰
+                # elapsed=$((end_time - start_time)) # Calculate elapsed time
+                # echo "⏰ Elapsed Time [Rewrite install names to use @rpath]: $elapsed seconds"
 
                 echo "📦 Copying SPM deps"
+                start_time=$(date +%s) # Record start time ⏰
                 rsync -a ${spmDeps}/ ./
                 chmod -R u+rwx,g+rx,o+rx .
 
@@ -449,8 +462,13 @@
                   sed -i -E "s|$old_prefix|$PWD|g" .spm/workspace-state.json
                 fi
 
+                end_time=$(date +%s) # Record end time ⏰
+                elapsed=$((end_time - start_time)) # Calculate elapsed time
+                echo "⏰ Elapsed Time [Copy SPM deps]: $elapsed seconds"
+
                 # Build IINA
                 echo "🔨 Building IINA"
+                start_time=$(date +%s) # Record start time ⏰
                 xcodebuild \
                   -workspace iina.xcodeproj/project.xcworkspace \
                   -scheme iina \
@@ -468,6 +486,10 @@
                   ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
                   SWIFT_ENABLE_EXPLICIT_MODULES=NO \
                   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+              
+              end_time=$(date +%s) # Record end time ⏰
+              elapsed=$((end_time - start_time)) # Calculate elapsed time
+              echo "⏰ Elapsed Time [Build IINA]: $elapsed seconds"
               '';
 
               installPhase = ''
@@ -489,20 +511,35 @@
                 mkdir -p "$frameworks"
                 mkdir -p "$resources"
 
+                start_time=$(date +%s) # Record start time ⏰
                 echo "📦 Bundling ${depsResources} into IINA.app"
                 cp -RL ${depsResources}/. "$resources/"
 
                 echo "📦 Bundling ${depsIndirect} into IINA.app"
+                echo "⏰ DEPS_Indirect"
+                ls -l ${depsIndirect}
                 cp -RL ${depsIndirect}/. "$frameworks/"
 
                 echo "📦 Bundling ${depsExecutable} into IINA.app"
                 cp -RL ${depsExecutable}/. "$macos/"
 
+                end_time=$(date +%s) # Record end time ⏰
+                elapsed=$((end_time - start_time)) # Calculate elapsed time
+                echo "⏰ Elapsed Time [Bundle Resources]: $elapsed seconds"
+
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
+                start_time=$(date +%s) # Record start time ⏰
                 ${scripts.normalizer}/bin/iina-normalize-app "$app"
+                end_time=$(date +%s) # Record end time ⏰
+                elapsed=$((end_time - start_time)) # Calculate elapsed time
+                echo "⏰ Elapsed Time [Deep-bundle dynamic dependencies]: $elapsed seconds"
 
                 echo "✏️ Canonicalize Lib Groups"
+                start_time=$(date +%s) # Record start time ⏰
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
+                end_time=$(date +%s) # Record end time ⏰
+                elapsed=$((end_time - start_time)) # Calculate elapsed time
+                echo "⏰ Elapsed Time [Canonicalize Lib Groups]: $elapsed seconds"
 
                 echo "✏️ Setting up environment variables"
 
@@ -516,8 +553,12 @@
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE    string "@executable_path"'                                    "$plist" 2>/dev/null || true
                 /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:IINA_EXECUTABLE           "@executable_path"'                                    "$plist"
 
-                echo "🔏 Re-signing IINA.app..."
-                ${scripts.resign}/bin/iina-resign "$app"
+                # echo "🔏 Re-signing IINA.app..."
+                # start_time=$(date +%s) # Record start time ⏰
+                # ${scripts.resign}/bin/iina-resign "$app"
+                # end_time=$(date +%s) # Record end time ⏰
+                # elapsed=$((end_time - start_time)) # Calculate elapsed time
+                # echo "⏰ Elapsed Time [Re-signing App]: $elapsed seconds"
               '';
             };
 

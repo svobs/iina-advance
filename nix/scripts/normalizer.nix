@@ -30,6 +30,11 @@ pkgs.writeShellApplication {
     # ✏️ Helpers
     is_macho() {
       # true for thin/fat Mach-O; false for scripts/text
+      if [[ "$1" == *".strings" ]] || [[ "$1" == *".nib" ]]; then
+        # Heuristic: .strings and .nib files are not Mach-O binaries
+        return 1
+      fi
+      
       file -b "$1" 2>/dev/null | grep -Eq 'Mach-O (universal binary|64-bit|arm64|x86_64)'
     }
 
@@ -39,7 +44,7 @@ pkgs.writeShellApplication {
       local f="$1"
 
       if ! is_macho "$f"; then
-        echo "🧾 Non-Mach-O, skipping rpath: $f"
+        # echo "🧾 Non-Mach-O, skipping rpath: $f"
         return
       fi
 
@@ -56,7 +61,7 @@ pkgs.writeShellApplication {
       local bin="$1"
 
       if ! is_macho "$bin"; then
-        echo "🧾 Non-Mach-O, skipping dep rewrite: $bin"
+        # echo "🧾 Non-Mach-O, skipping dep rewrite: $bin"
         return
       fi
 

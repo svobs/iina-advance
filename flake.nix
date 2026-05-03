@@ -1,7 +1,7 @@
 {
   description = "IINA – The modern video player for macOS.";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
   outputs =
     { self, nixpkgs }:
@@ -29,7 +29,7 @@
           '';
 
           # Override ffmpeg to use our version of libs
-          ffmpeg = pkgs.ffmpeg_7.override {
+          ffmpeg = pkgs.ffmpeg.override {
             withSoxr = true;
             soxr = pkgs.soxr;
 
@@ -102,10 +102,10 @@
               name = "libavutil";
               path = "${pkgs.lib.getDev ffmpeg}/include/libavutil";
             }
-            {
-              name = "libpostproc";
-              path = "${pkgs.lib.getDev ffmpeg}/include/libpostproc";
-            }
+            # {
+            #   name = "libpostproc";
+            #   path = "${pkgs.lib.getDev ffmpeg}/include/libpostproc";
+            # }
             {
               name = "libswresample";
               path = "${pkgs.lib.getDev ffmpeg}/include/libswresample";
@@ -444,7 +444,7 @@
                   ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
                   SWIFT_ENABLE_EXPLICIT_MODULES=NO \
                   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
-              
+
               end_time=$(date +%s) # Record end time ⏰
               elapsed=$((end_time - start_time)) # Calculate elapsed time
               echo "⏰ Elapsed Time [Build IINA]: $elapsed seconds"
@@ -600,7 +600,7 @@
                   else
                     lipo -create -arch arm64 "$arm64" -arch x86_64 "$x86_64" -output "$tmp"
                   fi
-                  
+
                   # Preserve mode if possible (GNU coreutils); fall back to +x
                   ${pkgs.coreutils}/bin/chmod --reference="$dep" "$tmp" 2>/dev/null || chmod +x "$tmp"
 

@@ -12,13 +12,13 @@ pkgs.writeShellApplication {
   text = ''
     set -euo pipefail
 
-    if [[ $# -lt 1 ]]; then
-      echo "usage: iina-normalize-app /path/to/IINA.app" >&2
+    if [[ $# -lt 2 ]]; then
+      echo "usage: iina-normalize-app /path/to/IINA.app /path/to/IINA.app/ContentsFrameworks" >&2
       exit 2
     fi
 
     app="$1"
-    frameworks="$app/Contents/Frameworks"
+    frameworks="$2"
 
     echo "🔧 iina-normalize-app: normalizing $app"
     mkdir -p "$frameworks"
@@ -105,6 +105,11 @@ pkgs.writeShellApplication {
       local real_base
       real_base=$(basename "$dep_real")
       local dest="$frameworks/$request_base"
+
+      if [[ "$dep_real" == */Sparkle.framework/* ]]; then
+        echo "🚫 Skipping Sparkle executable: $dep_real"
+        return
+      fi
 
       if [[ "$dep_real" == /usr/lib/* ]] || [[ "$dep_real" == /System/* ]] || [[ "$real_base" == libffi-trampoline.dylib ]]; then
         echo "🚫 Skipping system/non-target dep: $dep_real"

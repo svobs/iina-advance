@@ -46,14 +46,13 @@
             libjxl = pkgs.libjxl;
           };
 
-          # Override mpv with vapoursynth support
+          # Override mpv with desired features support
           mpv = pkgs.mpv-unwrapped.override {
             ffmpeg = ffmpeg;
             lua = pkgs.luajit;
-            vapoursynth = pkgs.vapoursynth;
 
-            # enable features we want
-            vapoursynthSupport = true;
+            # Enable features we want
+            vapoursynthSupport = false;
             javascriptSupport = true;
             cmsSupport = true;
             rubberbandSupport = true;
@@ -63,7 +62,7 @@
             vulkanSupport = true;
             zimgSupport = true;
 
-            # disable linux-only bits
+            # Disable Linux-only bits
             alsaSupport = false;
             jackaudioSupport = false;
             pipewireSupport = false;
@@ -178,7 +177,6 @@
                   pkgs.snappy
                   pkgs.soxr
                   pkgs.speex
-                  pkgs.vapoursynth
                   pkgs.vid-stab
                   pkgs.vulkan-loader
                   pkgs.xorg.libX11
@@ -248,7 +246,6 @@
                   pkgs.sdl3
                   pkgs.srt
                   pkgs.svt-av1
-                  pkgs.vapoursynth
                   pkgs.x264
                   pkgs.x265
                   pkgs.zlib
@@ -279,8 +276,6 @@
                     mkdir -p $out/bin
                     cp -p ${mpv}/Applications/mpv.app/Contents/MacOS/mpv $out/bin/mpv
                   '')
-                  pkgs.vapoursynth
-                  pkgs.python3
                   pkgs.yt-dlp
                 ]
             )
@@ -349,23 +344,6 @@
               cp -R . $out/
             '';
           };
-
-          # Package Python resources (stdlib + VapourSynth) for reuse in builds and dev shells
-          depsResources = pkgs.runCommand "iina-deps-resources" { } ''
-            set -euo pipefail
-
-            mkdir -p "$out/Python/lib"
-            python_src=$(echo ${pkgs.python3}/lib/python* | awk '{print $1}')
-            python_basename="$(basename "$python_src")"
-            cp -rL --no-preserve=mode,ownership "$python_src" "$out/Python/lib/"
-
-            python_target="$out/Python/lib/$python_basename"
-            chmod -R u+w "$python_target"
-            mkdir -p "$python_target/site-packages"
-
-            vapoursynth_site=$(echo ${pkgs.vapoursynth}/lib/python*/site-packages | awk '{print $1}')
-            cp -rL --no-preserve=mode,ownership "$vapoursynth_site"/. "$python_target/site-packages/"
-          '';
         in
         rec {
           packages = rec {
@@ -430,26 +408,6 @@
                 elapsed=$((end_time - start_time)) # Calculate elapsed time
                 echo "⏰ Elapsed Time [Build Environment]: $elapsed seconds"
 
-                # echo "✏️ Rewriting install names to use @rpath"
-                # start_time=$(date +%s) # Record start time ⏰
-                # find deps/lib -type f \( -perm -111 -o -name "*.dylib" -o -name "*.so" \) | while read -r dep; do
-                #   echo "✏️ Patching install names in $dep"
-                #   chmod +w "$dep"
-
-                #   # Change its ID to @rpath/<filename>
-                #   install_name_tool -id "@rpath/$(basename "$dep")" "$dep" || true
-
-                #   # Rewrite dependencies that still point to /nix/store
-                #   otool -L "$dep" | awk '/\/nix\/store/ && $1 !~ /:$/ {print $1}' | while read -r nixdep; do
-                #     base=$(basename "$nixdep")
-                #     install_name_tool -change "$nixdep" "@rpath/$base" "$dep" || true
-                #   done
-                # done
-
-                # end_time=$(date +%s) # Record end time ⏰
-                # elapsed=$((end_time - start_time)) # Calculate elapsed time
-                # echo "⏰ Elapsed Time [Rewrite install names to use @rpath]: $elapsed seconds"
-
                 echo "📦 Copying SPM deps"
                 start_time=$(date +%s) # Record start time ⏰
                 rsync -a ${spmDeps}/ ./
@@ -512,8 +470,6 @@
                 mkdir -p "$resources"
 
                 start_time=$(date +%s) # Record start time ⏰
-                echo "📦 Bundling ${depsResources} into IINA.app"
-                cp -RL ${depsResources}/. "$resources/"
 
                 echo "📦 Bundling ${depsIndirect} into IINA.app"
                 echo "⏰ DEPS_Indirect"
@@ -529,7 +485,7 @@
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
                 start_time=$(date +%s) # Record start time ⏰
-                ${scripts.normalizer}/bin/iina-normalize-app "$app"
+                ${scripts.normalizer}/bin/iina-normalize-app "$frameworks" "$frameworks"
                 end_time=$(date +%s) # Record end time ⏰
                 elapsed=$((end_time - start_time)) # Calculate elapsed time
                 echo "⏰ Elapsed Time [Deep-bundle dynamic dependencies]: $elapsed seconds"
@@ -544,12 +500,6 @@
                 echo "✏️ Setting up environment variables"
 
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                                                             "$plist" 2>/dev/null || true
-                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PYTHONHOME          string "@executable_path/../Resources/Python"'                "$plist" 2>/dev/null || true
-                /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PYTHONHOME                 "@executable_path/../Resources/Python"'                "$plist"
-                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PYTHONNOUSERSITE    string "1"'                                                   "$plist" 2>/dev/null || true
-                /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PYTHONNOUSERSITE           "1"'                                                   "$plist"
-                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:VAPOURSYNTH_LIBRARY string "@executable_path/../Frameworks/libvapoursynth.dylib"' "$plist" 2>/dev/null || true
-                /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:VAPOURSYNTH_LIBRARY        "@executable_path/../Frameworks/libvapoursynth.dylib"' "$plist"
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE    string "@executable_path"'                                    "$plist" 2>/dev/null || true
                 /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:IINA_EXECUTABLE           "@executable_path"'                                    "$plist"
 
@@ -658,7 +608,7 @@
                 done
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${scripts.normalizer}/bin/iina-normalize-app "$app"
+                ${scripts.normalizer}/bin/iina-normalize-app "$frameworks" "$frameworks"
 
                 echo "✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
@@ -709,7 +659,6 @@
                 link_tree ${depsLib} "$deps_root/lib"
                 link_tree ${depsExecutable} "$deps_root/executable"
                 link_tree ${depsIndirect} "$deps_root/indirect"
-                link_tree ${depsResources} "$deps_root/resources"
 
                 echo "📦 Syncing SwiftPM deps"
                 rsync -a --chmod=Du+rwx,Fu+rw ${spmDeps}/ ./

@@ -260,7 +260,7 @@
 "THG-4o-U6A.title" = "Penundaan Terjemahan: ";
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
-"Td7-aD-5lo.title" = "Window";
+"Td7-aD-5lo.title" = "Jendela";
 
 /* Class = "NSMenuItem"; title = "Capitalize"; ObjectID = "Tue-O7-cei"; */
 "Tue-O7-cei.title" = "Kapitalkan";
@@ -305,10 +305,10 @@
 "aSc-P6-fiZ.title" = "Pengulangan Playlist";
 
 /* Class = "NSMenuItem"; title = "Window"; ObjectID = "aUF-d1-5bR"; */
-"aUF-d1-5bR.title" = "Window";
+"aUF-d1-5bR.title" = "Jendela";
 
 /* Class = "NSMenu"; title = "Playlist"; ObjectID = "aXa-aM-Jaq"; */
-"aXa-aM-Jaq.title" = "Playlist";
+"aXa-aM-Jaq.title" = "Daftar Putar";
 
 /* Class = "NSMenuItem"; title = "Rotation"; ObjectID = "ar5-3T-O9h"; */
 "ar5-3T-O9h.title" = "Rotasi";
@@ -324,6 +324,9 @@
 
 /* Class = "NSMenuItem"; title = "Inspector"; ObjectID = "bwz-r0-peR"; */
 "bwz-r0-peR.title" = "Inspektur";
+
+/* Class = "NSMenuItem"; title = "Log Viewer"; ObjectID = "0tJ-RQ-kuW"; */
+"0tJ-RQ-kuW.title" = "Penampil Catatan";
 
 /* Class = "NSMenuItem"; title = "Normal Size (Retina)"; ObjectID = "c1x-bx-69F"; */
 "c1x-bx-69F.title" = "Ukuran Normal (Retina)";
@@ -501,3 +504,12 @@
 
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "zpw-Ac-F3M"; */
 "zpw-Ac-F3M.title" = "Mulai Bicara";
+
+/* Class = "NSMenuItem"; title = "Plugin"; ObjectID = "Y6q-cI-vfM"; */
+"Y6q-cI-vfM.title" = "Plugin";
+
+/* Class = "NSMenuItem"; title = "Open URL…"; ObjectID = "Qwb-26-zjX"; */
+"Qwb-26-zjX.title" = "Buka Link…";
+
+/* Class = "NSMenuItem"; title = "Release Highlights"; ObjectID = "kOx-hc-aQG"; */
+"kOx-hc-aQG.title" = "Release Highlights";

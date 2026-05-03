@@ -15,6 +15,7 @@
 "general.cancel" = "Kanselleer";
 "general.username" = "Gebruikersnaam";
 "general.password" = "Wagwoord";
+"general.na" = "N/A";
 
 "input.value_is_empty" = "Waarde kan nie leeg wees nie.";
 "input.already_exists" = "Waarde bestaan reeds.";
@@ -169,7 +170,7 @@
 "preference.sub_override_level.strip" = "volledig";
 "preference.sub_override_level.yes" = "yes";
 
-"preference.sub_override_level.descriptive_text.no" = "Render subtitles as specified by the subtitle scripts, without overrides.";
+"preference.sub_override_level.descriptive_text.no" = "Verbeeld onderskrifte soos gespesifiseer deur die onderskrifskrip, sonder oorskrywing.";
 "preference.sub_override_level.descriptive_text.force" = "Pas alle onderskrifstyle toe.";
 "preference.sub_override_level.descriptive_text.scale" = "Pas die skaalinstellings toe saam met die stelinstellings in hierdie instellings.";
 "preference.sub_override_level.descriptive_text.strip" = "Radically strip all ASS tags and styles from the subtitle.";
@@ -247,6 +248,7 @@
 "alert.mpv_error" = "Interne fout: %@ (%@) by die instel van opsie %@.";
 
 "alert.unsupported_audio" = "Onondersteunde eksterne oudiolêer.";
+"alert.unsupported_video" = "Unsupported external video file.";
 "alert.unsupported_sub" = "Onondersteunde eksterne onderskrif.";
 "alert.unsupported_url" = "Onondersteunde bronadres.";
 "alert.wrong_url_format" = "Verkeerde bronadresformaat.";
@@ -358,10 +360,10 @@
 "playlist.total_length" = "%@ in totaal";
 "playlist.total_length_with_selected" = "%@ van %@ geselekteer";
 "playlist.sorting.header" = "Sorting";
-"playlist.sorting.filename_ascending" = "Filename Ascending";
-"playlist.sorting.filename_descending" = "Filename Descending";
-"playlist.sorting.path_ascending" = "File Path Ascending";
-"playlist.sorting.path_descending" = "File Path Descending";
+"playlist.sorting.filename_ascending" = "Lêernaam opgaande";
+"playlist.sorting.filename_descending" = "Lêernaam afgaande";
+"playlist.sorting.path_ascending" = "Lêerpad opgaande";
+"playlist.sorting.path_descending" = "Lêerpad afgaande";
 "pl_menu.title_multi" = "%d items";
 "pl_menu.play_next" = "Speel volgende af";
 "pl_menu.play_in_new_window" = "Speel af in nuwe venster";
@@ -392,6 +394,10 @@
 "hwdec.auto" = "Aktiveer apparatuurdekodering. Die meeste videofilters sal egter nie na behore werk nie.";
 "hwdec.auto-copy" = "Aktiveer apparatuurdekodering. Dit sal geheueverbruik verdubbel maar met videofilters werk.";
 
+"gaplessAudio.no" = "Playback of consecutive audio files may result in silence or disruption at the point of file change.";
+"gaplessAudio.weak" = "If the audio format the decoder output changes, the audio device is closed and reopened, disrupting gapless playback.";
+"gaplessAudio.yes" = "The audio device is opened using parameters chosen for the first file played and is then kept open for gapless playback. Following files may be resampled.";
+
 "subencoding.auto" = "Bespeur outomaties";
 
 "osc_toolbar.settings" = "Kitsinstellings";
@@ -412,7 +418,7 @@
 "mini_player.volume" = "Volume";
 "mini_player.close" = "Sluit musiekmodus";
 "mini_player.back" = "Keer terug na videomodus";
-"mini_player.sort" = "Sort the playlist";
+"mini_player.sort" = "Sorteer die afspeellys";
 
 // Touch bar
 

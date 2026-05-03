@@ -320,10 +320,13 @@
 "bfB-bn-KeM.title" = "Open URL in New Window…";
 
 /* Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu"; */
-"bib-Uj-vzu.title" = "File";
+"bib-Uj-vzu.title" = "Датотека";
 
 /* Class = "NSMenuItem"; title = "Inspector"; ObjectID = "bwz-r0-peR"; */
-"bwz-r0-peR.title" = "Inspector";
+"bwz-r0-peR.title" = "Инспектор";
+
+/* Class = "NSMenuItem"; title = "Log Viewer"; ObjectID = "0tJ-RQ-kuW"; */
+"0tJ-RQ-kuW.title" = "Log Viewer";
 
 /* Class = "NSMenuItem"; title = "Normal Size (Retina)"; ObjectID = "c1x-bx-69F"; */
 "c1x-bx-69F.title" = "Normal Size (Retina)";
@@ -344,7 +347,7 @@
 "dBM-BU-5xS.title" = "Transformations";
 
 /* Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ"; */
-"dMs-cI-mzQ.title" = "File";
+"dMs-cI-mzQ.title" = "Датотека";
 
 /* Class = "NSMenuItem"; title = "Stop and Clear Playlists"; ObjectID = "deS-xK-iBb"; */
 "deS-xK-iBb.title" = "Stop and Clear Playlists";
@@ -501,3 +504,12 @@
 
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "zpw-Ac-F3M"; */
 "zpw-Ac-F3M.title" = "Start Speaking";
+
+/* Class = "NSMenuItem"; title = "Plugin"; ObjectID = "Y6q-cI-vfM"; */
+"Y6q-cI-vfM.title" = "Plugin";
+
+/* Class = "NSMenuItem"; title = "Open URL…"; ObjectID = "Qwb-26-zjX"; */
+"Qwb-26-zjX.title" = "Open URL…";
+
+/* Class = "NSMenuItem"; title = "Release Highlights"; ObjectID = "kOx-hc-aQG"; */
+"kOx-hc-aQG.title" = "Release Highlights";

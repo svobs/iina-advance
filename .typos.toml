@@ -3,6 +3,7 @@ extend-exclude = [
     ".git/",
     "deps/",
     "iina.xcodeproj/",
+    "iina/Assets.xcassets/Symbols/**/*.svg",
     "**/*.strings",
 ]
 ignore-hidden = false
@@ -14,11 +15,14 @@ extend-ignore-re = [
     'apiKey = "[^"]+"',
     "V\\[alue\\]",
     "ba!",
+    # Ignore the token declaration in AssrtSubtitle.
+    "5IzWrb.*"
 ]
 
 [default.extend-words]
 "abitrate" = "abitrate"
 "splitted" = "splitted"
+"writeable" = "writeable"
 
 [default.extend-identifiers]
 "caf" = "caf"

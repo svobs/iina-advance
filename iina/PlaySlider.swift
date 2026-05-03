@@ -43,14 +43,13 @@ final class PlaySlider: NSSlider {
 
   required init?(coder: NSCoder) {
     super.init(coder: coder)
-    if #available(macOS 11, *) {
-      // Apple increased the height of sliders in Big Sur. Until we have time to restructure the
-      // on screen controller to accommodate a larger slider reduce the size of the slider from
-      // regular to small. This makes the slider match the behavior seen under Catalina. This MUST
-      // be set before creating the loop knobs as it changes the height of knobs which is referenced
-      // during loop knob initialization.
-      controlSize = .small
-    }
+    // Apple increased the height of sliders in Big Sur. Until we have time to restructure the
+    // on screen controller to accommodate a larger slider reduce the size of the slider from
+    // regular to small. This makes the slider match the behavior seen under Catalina. This MUST
+    // be set before creating the loop knobs as it changes the height of knobs which is referenced
+    // during loop knob initialization.
+    controlSize = .small
+
     abLoopAKnob = PlaySliderLoopKnob(slider: self, toolTip: "A-B loop A")
     abLoopBKnob = PlaySliderLoopKnob(slider: self, toolTip: "A-B loop B")
   }
@@ -94,6 +93,17 @@ final class PlaySlider: NSSlider {
   }
 
   // MARK: - Mouse / Trackpad events
+
+  /// Informs the receiver that the user has pressed the left mouse button.
+  ///
+  /// This is a workaround for IINA issue #5768 where starting with macOS Tahoe AppKit is miss-handling mouse events in certain
+  /// circumstances. Merely adding this function solved the problem. Maybe the presence of this function prevents the use of some sort
+  /// of faulty optimization?
+  /// - Important: _DO NOT REMOVE_ this function thinking it is not needed. Read issue #5768.
+  /// - Parameter event: An object encapsulating information about the mouse-down event.
+  override func mouseDown(with event: NSEvent) {
+    super.mouseDown(with: event)
+  }
 
   /// The user is scrolling while the cursor is within the slider.
   ///

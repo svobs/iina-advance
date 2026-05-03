@@ -68,7 +68,7 @@
 "MME-KZ-jrG.title" = "درایور:";
 
 /* Class = "NSTextFieldCell"; title = "Duration:"; ObjectID = "OCm-zb-deg"; */
-"OCm-zb-deg.title" = "زمان:";
+"OCm-zb-deg.title" = "مدت زمان:";
 
 /* Class = "NSTextFieldCell"; title = "Selected"; ObjectID = "P65-zr-dOH"; */
 "P65-zr-dOH.title" = "انتخاب شده";
@@ -165,6 +165,9 @@
 
 /* Class = "NSTextFieldCell"; title = "Colorspace:"; ObjectID = "mLo-Wc-BoO"; */
 "mLo-Wc-BoO.title" = "فضای رنگی:";
+
+/* Class = "NSTextFieldCell"; title = "Pixel Format:"; ObjectID = "UrR-u2-hFz"; */
+"UrR-u2-hFz.title" = "Pixel Format:";
 
 /* Class = "NSTableColumn"; headerCell.title = "Name"; ObjectID = "zDk-Ie-EPs"; */
 "zDk-Ie-EPs.headerCell.title" = "نام";

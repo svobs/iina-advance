@@ -236,7 +236,7 @@ fileprivate class WindowAPI: JavascriptAPI, CoreSubAPIExportable {
     case "ontop":
       return window.isOntop
     case "visible":
-      return window.window!.occlusionState == .visible
+      return window.window!.occlusionState.contains(.visible)
     case "sidebar":
       return window.sideBarStatus == .settings ? window.quickSettingView.currentTab.name : NSNull()
     case "screens":
@@ -320,8 +320,11 @@ fileprivate class StatusAPI: JavascriptAPI, CoreSubAPIExportable {
     case "idle":
       return player!.info.state == .idle
     case "position":
+      player!.syncPositionIfNeeded()
       return player!.info.videoPosition?.second ?? NSNull()
     case "duration":
+      // When streaming the duration changes. Syncing the position will also update the duration.
+      player!.syncPositionIfNeeded()
       return player!.info.videoDuration?.second ?? NSNull()
     case "speed":
       return player!.info.playSpeed

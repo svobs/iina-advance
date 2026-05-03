@@ -15,6 +15,7 @@
 "general.cancel" = "Cancel";
 "general.username" = "Username";
 "general.password" = "Password";
+"general.na" = "N/A";
 
 "input.value_is_empty" = "Value cannot be empty.";
 "input.already_exists" = "Value already exists.";
@@ -247,6 +248,7 @@
 "alert.mpv_error" = "Internal error %@ (%@) when setting option %@.";
 
 "alert.unsupported_audio" = "Unsupported external audio file.";
+"alert.unsupported_video" = "Unsupported external video file.";
 "alert.unsupported_sub" = "Unsupported external subtitle.";
 "alert.unsupported_url" = "Unsupported URL.";
 "alert.wrong_url_format" = "Wrong URL format.";
@@ -309,7 +311,7 @@
 "alert.choose_media_file.title" = "Choose Media Files";
 
 "alert.add_url.title" = "Add URL";
-"alert.add_url.message" = "Please enter the URL:";
+"alert.add_url.message" = "Please enter the URLhttps://iina. io/download/:";
 
 "alert.delete_history.title" = "Delete Playback History";
 "alert.delete_history.message" = "Are you sure to delete selected entries?";
@@ -348,7 +350,7 @@
 "alert.plugin_uninstall.message" = "The plugin will be deleted from your disk.";
 "alert.plugin_reinstall.title" = "Plugin %@ already exists";
 "alert.plugin_reinstall.message" = "Do you want to reinstall the plugin?";
-"alert.duplicated_plugin_id" = "Duplicated plugin identifiers detected. Two or more plugins have the same identifier \"%@\". This may cause abnormal behaviors. Please find them in Settings - Plugins and report to their authors. If a plugin is installed locally, you can also manually change its identifier in the plugin's Info.json file.";
+"alert.duplicated_plugin_id" = "Duplicated plugin identifiers detected. Two or more plugins have the same identifier \"%@\". This may cause abnormal behaviours. Please find them in Settings - Plugins and report to their authors. If a plugin is installed locally, you can also manually change its identifier in the plugin's Info.json file.";
 "alert.plugin_no_update" = "No update found.";
 "alert.plugin_update_found.title" = "Update found for %@";
 "alert.plugin_update_found.message" = "The latest version is %@. You have %@. Would you like to update?";
@@ -391,6 +393,10 @@
 "hwdec.no" = "Disable hardware decoding.";
 "hwdec.auto" = "Enable hardware decoding. However, most of the video filters won’t work properly.";
 "hwdec.auto-copy" = "Enable hardware decoding. It will consume double the memory but work with video filters.";
+
+"gaplessAudio.no" = "Playback of consecutive audio files may result in silence or disruption at the point of file change.";
+"gaplessAudio.weak" = "If the audio format of the decoder output changes, the audio device is closed and reopened, disrupting gapless playback.";
+"gaplessAudio.yes" = "The audio device is opened using parameters chosen for the first file played and is then kept open for gapless playback. Following files may be resampled.";
 
 "subencoding.auto" = "Auto detect";
 

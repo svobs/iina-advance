@@ -298,7 +298,8 @@ extension Array {
 
 extension NSMenu {
   @discardableResult
-  func addItem(withTitle string: String, action selector: Selector? = nil, target: AnyObject? = nil,
+  func addItem(withTitle string: String, image: [String]? = nil,
+               action selector: Selector? = nil, target: AnyObject? = nil,
                tag: Int? = nil, obj: Any? = nil, stateOn: Bool = false, enabled: Bool = true) -> NSMenuItem {
     let menuItem = NSMenuItem(title: string, action: selector, keyEquivalent: "")
     menuItem.tag = tag ?? -1
@@ -306,6 +307,11 @@ extension NSMenu {
     menuItem.target = target
     menuItem.state = stateOn ? .on : .off
     menuItem.isEnabled = enabled
+    
+    if let image = image {
+      menuItem.image = NSImage.findSFSymbol(image)
+    }
+    
     self.addItem(menuItem)
     return menuItem
   }
@@ -423,9 +429,17 @@ extension FloatingPoint {
 
 extension NSColor {
   var mpvColorString: String {
-    get {
-      return "\(self.redComponent)/\(self.greenComponent)/\(self.blueComponent)/\(self.alphaComponent)"
-    }
+    // Normalize to sRGB before extracting cmponents
+    let rgb = self.usingColorSpace(.sRGB) ?? self
+
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+
+    rgb.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+    
+    return "\(red)/\(green)/\(blue)/\(alpha)"
   }
 
   convenience init?(mpvColorString: String) {
@@ -687,10 +701,29 @@ extension NSImage {
         }
         return symbol
       }
+      for name in names {
+        if let symbol = NSImage(named: name) {
+          return symbol
+        }
+      }
     }
     fatalError("Could not find SF Symbol: \(names)")
   }
 
+  // A failable version of `findSFSymbol`, primarily used for settings pages.
+  static func findSFSymbol(_ names: [String]) -> NSImage? {
+    for name in names {
+      if let symbol = NSImage(systemSymbolName: name, accessibilityDescription: nil) {
+        return symbol
+      }
+    }
+    for name in names {
+      if let symbol = NSImage(named: name) {
+        return symbol
+      }
+    }
+    return nil
+  }
 }
 
 
@@ -748,20 +781,11 @@ extension NSAppearance {
 
   // Performs the given closure with this appearance by temporarily making this the current appearance.
   func applyAppearanceFor<T>(_ closure: ()  -> T) -> T {
-    if #available(macOS 11.0, *) {
-      var result: T?
-      self.performAsCurrentDrawingAppearance {
-        result = closure()
-      }
-      return result!
-    } else {
-      let previousAppearance = NSAppearance.current
-      NSAppearance.current = self
-      defer {
-        NSAppearance.current = previousAppearance
-      }
-      return closure()
+    var result: T?
+    self.performAsCurrentDrawingAppearance {
+      result = closure()
     }
+    return result!
   }
 }
 
@@ -787,10 +811,42 @@ extension NSScreen {
       Logger.log("\(label): nil", level: .warning, subsystem: subsystem)
       return
     }
-    // Unfortunately localizedName is not available until macOS Catalina.
+    var message = "\(label), \(screen.localizedName)"
+    if screen == NSScreen.main {
+      message += " (main screen)"
+    }
+    let screenNumberKey = NSDeviceDescriptionKey(rawValue: "NSScreenNumber")
+    if let displayId = screen.deviceDescription[screenNumberKey] as? CGDirectDisplayID {
+      message += ", on display \(displayId)"
+    }
+    message += ":"
+    message += "\n  Frame: \(screen.frame), visible \(screen.visibleFrame)"
+    message += "\n  \(formEDRMessage(screen))"
+    Logger.log(message, subsystem: subsystem)
+  }
+
+  /// Log EDR aspects of the given `NSScreen` object.
+  /// - parameter screen: The `NSScreen` object to log EDR aspects of.
+  static func logEDR(_ label: String, _ screen: NSScreen?, subsystem: Logger.Subsystem = .general) {
+    guard let screen = screen else {
+      Logger.log("\(label): nil", level: .warning, subsystem: subsystem)
+      return
+    }
+    var message = "\(label), \(screen.localizedName):"
+    message += "\n  \(formEDRMessage(screen))"
+    Logger.log(message, subsystem: subsystem)
+  }
+
+  /// Return a string describing EDR aspects of the given screen.
+  /// - Parameter screen: The `NSScreen` object to form EDR aspects of.
+  /// - Returns: A string with EDR related details of the given screen for use in a log message.
+  private static func formEDRMessage(_ screen: NSScreen) -> String {
     let maxPossibleEDR = screen.maximumPotentialExtendedDynamicRangeColorComponentValue
     let canEnableEDR = maxPossibleEDR > 1.0
-    Logger.log("\(label): \"\(screen.localizedName)\" visible frame \(screen.visibleFrame) EDR: {supports=\(canEnableEDR) maxPotential=\(maxPossibleEDR) maxCurrent=\(screen.maximumExtendedDynamicRangeColorComponentValue)}", subsystem: subsystem)
+    return """
+      EDR: \(canEnableEDR ? "Supported" : "Not supported"), max potential \(maxPossibleEDR), \
+      max current \(screen.maximumExtendedDynamicRangeColorComponentValue)
+      """
   }
 }
 
@@ -927,6 +983,36 @@ extension CGSize {
                              croppedSize.width,
                              croppedSize.height)
     return cropped
+  }
+}
+
+/// Creates a repeating scheduled on the main run loop in `.common` mode, so it continues to fire
+/// during UI tracking. Note that common mode is default + tracking, and `RunLoop.Mode.tracking` is
+/// a special run loop mode that the system switches into when the user is actively interacting with
+/// certain UI elements, including scrolling, dragging controls, holding on buttons, etc.
+extension Timer {
+  @discardableResult
+  static func scheduledTimerInCommonMode(
+    timeInterval ti: TimeInterval,
+    target: Any,
+    selector: Selector,
+    userInfo: Any? = nil,
+    repeats: Bool = true,
+  ) -> Timer {
+    let timer = Timer(timeInterval: ti, target: target, selector: selector, userInfo: userInfo, repeats: repeats)
+    RunLoop.main.add(timer, forMode: .common)
+    return timer
+  }
+
+  @discardableResult
+  static func scheduledTimerInCommonMode(
+    withTimeInterval interval: TimeInterval,
+    repeats: Bool = true,
+    block: @escaping (Timer) -> Void
+  ) -> Timer {
+    let timer = Timer(timeInterval: interval, repeats: repeats, block: block)
+    RunLoop.main.add(timer, forMode: .common)
+    return timer
   }
 }
 

@@ -110,10 +110,24 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
 
     updateInfo()
     watchTableView.scrollRowToVisible(0)
+
+    let info = PlayerCore.lastActive.info
+    log("""
+      Video tracks:
+      \(info.videoTracks.compactMap { String(describing: $0) }.joined(separator: "\n"))
+      """, level: .verbose)
+    log("""
+      Audio tracks:
+      \(info.audioTracks.compactMap { String(describing: $0) }.joined(separator: "\n"))
+      """, level: .verbose)
+    log("""
+      Subtitle tracks:
+      \(info.subTracks.compactMap { String(describing: $0) }.joined(separator: "\n"))
+      """, level: .verbose)
   }
 
   override func showWindow(_ sender: Any?) {
-    Logger.log("Showing Inspector window", level: .verbose)
+    log("Showing Inspector window", level: .verbose)
 
     guard let _ = self.window else { return }  // trigger lazy load if not loaded
 
@@ -126,10 +140,13 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
     observers.append(NotificationCenter.default.addObserver(forName: .iinaMainWindowChanged, object: nil, queue: .main, using: self.fileLoaded))
 
     super.showWindow(sender)
+
+    // Log additional information for developers when the inspector window is shown.
+    MemoryUsage.shared.logUsage("after showing inspector window")
   }
 
   func windowWillClose(_ notification: Notification) {
-    Logger.log("Closing Inspector window", level: .verbose)
+    log("Closing Inspector window", level: .verbose)
     // Remove timer & listeners to conserve resources
     removeTimerAndListeners()
   }
@@ -183,7 +200,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
         for (k, v) in strProperties {
           var value = controller.getString(k)
           if value == "" { value = nil }
-          v.stringValue = value ?? "N/A"
+          v.stringValue = value ?? NSLocalizedString("general.na", comment: "N/A")
           self.setLabelColor(v, by: value != nil)
         }
 
@@ -204,7 +221,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
         self.trackPopup.removeAllItems()
         var needSeparator = false
         for track in info.videoTracks {
-          self.trackPopup.menu?.addItem(withTitle: "Video" + track.readableTitle,
+          self.trackPopup.menu?.addItem(withTitle: NSLocalizedString("track.video", comment: "Video") + track.readableTitle,
                                    action: nil, tag: nil, obj: track, stateOn: false)
           needSeparator = true
         }
@@ -212,7 +229,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
           self.trackPopup.menu?.addItem(NSMenuItem.separator())
         }
         for track in info.audioTracks {
-          self.trackPopup.menu?.addItem(withTitle: "Audio" + track.readableTitle,
+          self.trackPopup.menu?.addItem(withTitle: NSLocalizedString("track.audio", comment: "Audio") + track.readableTitle,
                                    action: nil, tag: nil, obj: track, stateOn: false)
           needSeparator = true
         }
@@ -220,7 +237,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
           self.trackPopup.menu?.addItem(NSMenuItem.separator())
         }
         for track in info.subTracks {
-          self.trackPopup.menu?.addItem(withTitle: "Subtitle" + track.readableTitle,
+          self.trackPopup.menu?.addItem(withTitle: NSLocalizedString("track.sub", comment: "Subtitle") + track.readableTitle,
                                    action: nil, tag: nil, obj: track, stateOn: false)
         }
         self.trackPopup.selectItem(at: 0)
@@ -249,14 +266,14 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
 
       for (k, v) in dynamicStrProperties {
         let value = controller.getString(k)
-        v.stringValue = value ?? "N/A"
+        v.stringValue = value ?? NSLocalizedString("general.na", comment: "N/A")
         self.setLabelColor(v, by: value != nil)
       }
 
       let sigPeak = controller.getDouble(MPVProperty.videoParamsSigPeak);
       self.vprimariesField.stringValue = sigPeak > 0
         ? "\(controller.getString(MPVProperty.videoParamsPrimaries) ?? "?") / \(controller.getString(MPVProperty.videoParamsGamma) ?? "?") (\(sigPeak > 1 ? "H" : "S")DR)"
-        : "N/A";
+        : NSLocalizedString("general.na", comment: "N/A");
       self.setLabelColor(self.vprimariesField, by: sigPeak > 0)
 
       let player = PlayerCore.lastActive
@@ -279,7 +296,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
           self.vcolorspaceField.stringValue = "Unspecified (SDR)"
         }
       } else {
-        self.vcolorspaceField.stringValue = "N/A"
+        self.vcolorspaceField.stringValue = NSLocalizedString("general.na", comment: "N/A")
       }
       self.setLabelColor(self.vcolorspaceField, by: player.info.state.loaded)
 
@@ -289,7 +306,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
         } else if let swPf = controller.getString(MPVProperty.videoParamsPixelformat) {
           self.vPixelFormat.stringValue = "\(swPf) (SW)"
         } else {
-          self.vPixelFormat.stringValue = "N/A"
+          self.vPixelFormat.stringValue = NSLocalizedString("general.na", comment: "N/A")
         }
       }
       self.setLabelColor(self.vPixelFormat, by: player.info.state.loaded)
@@ -329,12 +346,12 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
     ]
 
     for (str, field) in strProperties {
-      field.stringValue = str ?? "N/A"
+      field.stringValue = str ?? NSLocalizedString("general.na", comment: "N/A")
       setLabelColor(field, by: str != nil)
     }
   }
 
-  // MARK: NSTableView
+  // MARK: - NSTableView
 
   func numberOfRows(in tableView: NSTableView) -> Int {
     return watchProperties.count
@@ -372,7 +389,7 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
       }
       return cell
     default:
-      Logger.log("Unrecognized column: '\(identifier.rawValue)'", level: .error)
+      log("Unrecognized column: '\(identifier.rawValue)'", level: .error)
       return nil
     }
   }
@@ -473,7 +490,11 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
   }
 
 
-  // MARK: Utils
+  // MARK: - Utils
+
+  private func log(_ message: @autoclosure () -> String, level: Logger.Level = .debug) {
+    Logger.log(message, level: level, subsystem: Logger.Sub.inspector)
+  }
 
   private func setLabelColor(_ label: NSTextField, by state: Bool) {
     label.textColor = state ? NSColor.labelColor : NSColor.disabledControlTextColor
@@ -493,4 +514,8 @@ class InspectorWindowController: NSWindowController, NSWindowDelegate, NSTableVi
       super.draw(withFrame: cellFrame, in: controlView)
     }
   }
+}
+
+extension Logger.Sub {
+  static let inspector = Logger.makeSubsystem("inspector", ["tablecells"])
 }

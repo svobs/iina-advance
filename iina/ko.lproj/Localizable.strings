@@ -15,6 +15,7 @@
 "general.cancel" = "취소";
 "general.username" = "사용자";
 "general.password" = "암호";
+"general.na" = "N/A";
 
 "input.value_is_empty" = "값을 비워둘 수 없습니다.";
 "input.already_exists" = "값이 이미 존재합니다.";
@@ -175,8 +176,8 @@
 "preference.sub_override_level.descriptive_text.strip" = "자막의 모든 ASS 태그와 스타일 완전히 제거.";
 "preference.sub_override_level.descriptive_text.yes" = "이 섹션의 모든 스타일 설정 적용.";
 
-"preference.ytdl_plugin_not_installed" = "Install the Online Media plugin from \"Plugins > Install from GitHub\" to enjoy advanced features such and video downloading and auto yt-dlp updates.";
-"preference.ytdl_plugin_installed" = "The built-in youtube-dl support is disabled since you have the Online media plugin installed.";
+"preference.ytdl_plugin_not_installed" = "\"플러그인 > GitHub에서 설치\"에서 온라인 미디어 플러그인을 설치하면 비디오 다운로드 및 자동 Yt-Dlp 업데이트와 같은 고급 기능을 사용할 수 있습니다.";
+"preference.ytdl_plugin_installed" = "온라인 미디어 플러그인이 설치되어 있어 내장된 youtube-dl 지원이 비활성화되어 있습니다.";
 
 "menu.volume" = "음량: %@";
 "menu.volume_muted" = "음량: %@ (음소거 됨)";
@@ -223,7 +224,7 @@
 "menu.manage_plugins" = "플러그인 관리…";
 "menu.developer_tool" = "개발자 툴";
 "menu.more_plugin" = "더보기…";
-"menu.conflicting_shortcuts" = "Conflicting key shortcuts…";
+"menu.conflicting_shortcuts" = "충돌하는 단축키…";
 "menu.reload_plugins" = "모든 플러그인 새로고침";
 "menu.show_plugins_panel" = "플러그인 패널 표시";
 "menu.hide_plugins_panel" = "플러그인 패널 숨기기";
@@ -247,6 +248,7 @@
 "alert.mpv_error" = "%@ (%@)오류가 사용자 지정 옵션 %@을 설정하는 도중 발생했습니다.";
 
 "alert.unsupported_audio" = "지원되지 않는 외부 오디오 파일입니다.";
+"alert.unsupported_video" = "지원되지 않는 외부 동영상 파일입니다.";
 "alert.unsupported_sub" = "지원되지 않는 자막 형식입니다.";
 "alert.unsupported_url" = "지원되지 않는 URL입니다.";
 "alert.wrong_url_format" = "잘못된 URL 형식입니다.";
@@ -391,6 +393,10 @@
 "hwdec.no" = "하드웨어 디코딩을 사용하지 않습니다.";
 "hwdec.auto" = "하드웨어 디코딩을 사용합니다.\n비디오 필터 대부분을 사용할 수 없게 됩니다.";
 "hwdec.auto-copy" = "하드웨어 디코딩을 사용합니다.\n두 배의 메모리를 사용하지만, 비디오 필터를 적용할 수 있습니다.";
+
+"gaplessAudio.no" = "오디오 파일을 연속 재생하면 파일이 바뀔 때 소리가 나지 않거나 끊길 수 있습니다.";
+"gaplessAudio.weak" = "디코더가 출력하는 오디오 형식이 바뀌면, 오디오 장치가 재시작되므로 끊김 없는 재생을 방해할 수 있습니다.";
+"gaplessAudio.yes" = "처음 재생한 파일의 형식으로 오디오 장치를 실행하고 끊김 없는 재생을 위해 계속 켜진 채로 유지합니다. 이후 파일은 리샘플링될 수 있습니다.";
 
 "subencoding.auto" = "자동 감지";
 

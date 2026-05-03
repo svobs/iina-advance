@@ -99,6 +99,8 @@ class JavascriptPlugin: NSObject {
     return "https://github.com/\(githubRepo)"
   }
 
+  var supportAutoUpdate: Bool { githubRepo == nil || githubVersion == nil }
+
   lazy var preferences: [String: Any] = {
     NSDictionary(contentsOfFile: preferencesFileURL.path) as? [String: Any] ?? [:]
   }()
@@ -428,6 +430,7 @@ class JavascriptPlugin: NSObject {
     if (enabled) {
       registerSubProviders()
     }
+    Logger.log("Loaded JS plugin: \(name) \(version)\(enabled ? "" : " (disabled)")")
   }
 
   func registerSubProviders() {
@@ -481,20 +484,26 @@ class JavascriptPlugin: NSObject {
     return pos
   }
 
-  func checkForUpdates(_ handler: @escaping (String?) -> Void) {
-    if let ghVersion = githubVersion, let ghRepo = githubRepo {
+  func checkNewVersion() async throws -> String? {
+    try await withCheckedThrowingContinuation { continuation in
+      guard let ghVersion = githubVersion, let ghRepo = githubRepo else {
+        continuation.resume(returning: nil)
+        return
+      }
       Just.get("https://raw.githubusercontent.com/\(ghRepo)/master/Info.json", asyncCompletionHandler:  { result in
-        if let json = result.json as? [String: Any],
+        if result.ok,
+           let json = result.json as? [String: Any],
            let newGHVersion = json["ghVersion"] as? Int,
-           let newVersion = json["version"] as? String,
-           newGHVersion > ghVersion {
-          handler(newVersion)
+           let newVersion = json["version"] as? String {
+          if newGHVersion > ghVersion {
+            continuation.resume(returning: newVersion)
+          } else {
+            continuation.resume(returning: nil)
+          }
         } else {
-          handler(nil)
+          continuation.resume(throwing: PluginError.cannotDownload(result.description, result.text ?? ""))
         }
       })
-    } else {
-      handler(nil)
     }
   }
 

@@ -15,6 +15,7 @@
 "general.cancel" = "إلغاء";
 "general.username" = "اسم المستخدم";
 "general.password" = "كلمة المرور";
+"general.na" = "N/A";
 
 "input.value_is_empty" = "لا يمكن أن تكون القيمة فارغة.";
 "input.already_exists" = "القيمة موجودة مسبقاً.";
@@ -247,6 +248,7 @@
 "alert.mpv_error" = "خطأ داخلي %@ (%@) عند خيار الإعداد %@.";
 
 "alert.unsupported_audio" = "ملف صوت خارجي غير مدعوم.";
+"alert.unsupported_video" = "ملف صوت خارجي غير مدعوم.";
 "alert.unsupported_sub" = "ملف ترجمه خارجي غير مدعوم.";
 "alert.unsupported_url" = "رابط غير مدعوم.";
 "alert.wrong_url_format" = "تنسيق عنوان URL خاطئ.";
@@ -359,9 +361,9 @@
 "playlist.total_length_with_selected" = "تم تحديد %@ من %@";
 "playlist.sorting.header" = "";
 "playlist.sorting.filename_ascending" = "";
-"playlist.sorting.filename_descending" = "Filename Descending";
-"playlist.sorting.path_ascending" = "File Path Ascending";
-"playlist.sorting.path_descending" = "File Path Descending";
+"playlist.sorting.filename_descending" = "اسم الملف تنازلي";
+"playlist.sorting.path_ascending" = "مسار الملف تصاعدي";
+"playlist.sorting.path_descending" = "مسار الملف تنازلي";
 "pl_menu.title_multi" = "%d عناصر";
 "pl_menu.play_next" = "تشغيل التالي";
 "pl_menu.play_in_new_window" = "تشغيل في نافذة جديدة";
@@ -392,6 +394,10 @@
 "hwdec.auto" = "تمكين فك ترميز الأجهزة. مع العلم، إن معظم عوامل تصفية الفيديو لن تعمل بشكل صحيح.";
 "hwdec.auto-copy" = "تمكين فك ترميز الأجهزة. سوف يستهلك ضعف الذاكرة ولكنه يعمل مع عوامل تصفية الفيديو.";
 
+"gaplessAudio.no" = "Playback of consecutive audio files may result in silence or disruption at the point of file change.";
+"gaplessAudio.weak" = "إذا تغير تنسيق الصوت وإخراج الترميز، يتم إغلاق الجهاز الصوتي وإعادة فتحه، مما يعطل التشغيل اللاصق.";
+"gaplessAudio.yes" = "يتم فتح الجهاز الصوتي باستخدام المعلمات المختارة للملف الأول الذي يتم تشغيله ثم يتم إبقائه مفتوحاً للتشغيل غير القابل للاشتغال. الملفات التالية قد يعاد تحديدها.";
+
 "subencoding.auto" = "اكتشاف تلقائي";
 
 "osc_toolbar.settings" = "الإعدادات السريعة";
@@ -412,7 +418,7 @@
 "mini_player.volume" = "مستوى الصوت";
 "mini_player.close" = "إغلاق وضع الموسيقى";
 "mini_player.back" = "العودة إلى وضع الفيديو";
-"mini_player.sort" = "Sort the playlist";
+"mini_player.sort" = "ترتيب قائمة التشغيل";
 
 // Touch bar
 

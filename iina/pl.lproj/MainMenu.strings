@@ -167,7 +167,7 @@
 "Hal-18-Tnf.title" = "Podwójny rozmiar";
 
 /* Class = "NSMenuItem"; title = "Speed Down to 0.5x"; ObjectID = "HsE-LN-Nd6"; */
-"HsE-LN-Nd6.title" = "Prędkość odtwarzania 0.5x";
+"HsE-LN-Nd6.title" = "Zwolnij do 0,5x";
 
 /* Class = "NSMenu"; title = "Video"; ObjectID = "HyV-fh-RgO"; */
 "HyV-fh-RgO.title" = "Obraz";
@@ -324,6 +324,9 @@
 
 /* Class = "NSMenuItem"; title = "Inspector"; ObjectID = "bwz-r0-peR"; */
 "bwz-r0-peR.title" = "Inspektor";
+
+/* Class = "NSMenuItem"; title = "Log Viewer"; ObjectID = "0tJ-RQ-kuW"; */
+"0tJ-RQ-kuW.title" = "Przeglądarka dziennika";
 
 /* Class = "NSMenuItem"; title = "Normal Size (Retina)"; ObjectID = "c1x-bx-69F"; */
 "c1x-bx-69F.title" = "Normalny rozmiar (Retina)";
@@ -488,7 +491,7 @@
 "xDJ-GA-Gjs.title" = "Napisy";
 
 /* Class = "NSMenu"; title = "Saved Video Filters"; ObjectID = "xhY-fF-oio"; */
-"xhY-fF-oio.title" = "Zapisane filtry video";
+"xhY-fF-oio.title" = "Zapisane filtry obrazu";
 
 /* Class = "NSMenuItem"; title = "Deinterlace"; ObjectID = "yHI-7D-OaI"; */
 "yHI-7D-OaI.title" = "Usuwanie przeplotu";
@@ -501,3 +504,12 @@
 
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "zpw-Ac-F3M"; */
 "zpw-Ac-F3M.title" = "Zacznij mówić";
+
+/* Class = "NSMenuItem"; title = "Plugin"; ObjectID = "Y6q-cI-vfM"; */
+"Y6q-cI-vfM.title" = "Wtyczka";
+
+/* Class = "NSMenuItem"; title = "Open URL…"; ObjectID = "Qwb-26-zjX"; */
+"Qwb-26-zjX.title" = "Otwórz URL…";
+
+/* Class = "NSMenuItem"; title = "Release Highlights"; ObjectID = "kOx-hc-aQG"; */
+"kOx-hc-aQG.title" = "Release Highlights";

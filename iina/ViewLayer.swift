@@ -310,7 +310,7 @@ class ViewLayer: CAOpenGLLayer {
   }
 
   private static func findPixelFormat(_ player: PlayerCore, software: Bool = false) -> (CGLPixelFormatObj?, GLint, CGLError) {
-    let subsystem = Logger.makeSubsystem("layer\(player.playerNumber)")
+    let subsystem = Logger.makeSubsystem("layer\(player.playerNumber)", ["square.2.layers.3d.bottom.filled"])
     var pix: CGLPixelFormatObj?
     var err: CGLError = CGLError(rawValue: 0)
     var npix: GLint = 0

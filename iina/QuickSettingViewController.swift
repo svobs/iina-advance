@@ -246,6 +246,17 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
       Utility.quickConstraints(["H:|[v]|", "V:|[v]|"], ["v": well])
     }
     
+    // Wire color wells to IBAction handlers
+    subTextColorWell.target = self
+    subTextColorWell.action = #selector(subTextColorAction(_:))
+
+    subTextBgColorWell.target = self
+    subTextBgColorWell.action = #selector(subTextBgColorAction(_:))
+
+    subTextBorderColorWell.target = self
+    subTextBorderColorWell.action = #selector(subTextBorderColorAction(_:))
+    
+    
     if #available(macOS 26, *) {
       subtitleSwitch.controlSize = .small
       secondarySubtitleSwitch.controlSize = .small
@@ -306,10 +317,7 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
     }
     observe(.iinaVIDChanged) { [unowned self] _ in self.videoTableView.reloadData() }
     observe(.iinaAIDChanged) { [unowned self] _ in self.audioTableView.reloadData() }
-    observe(.iinaSIDChanged) { [unowned self] _ in
-      self.subTableView.reloadData()
-      self.secSubTableView.reloadData()
-    }
+    observe(.iinaSIDChanged) { [unowned self] _ in self.reload() }
     observe(.iinaSecondSubVisibilityChanged) { [unowned self] _ in secHideSwitch.state = player.info.isSecondSubVisible ? .on : .off }
     observe(.iinaSubVisibilityChanged) { [unowned self] _ in hideSwitch.state = player.info.isSubVisible ? .on : .off }
   }
@@ -470,7 +478,6 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
     secHideSwitch.state = player.info.isSecondSubVisible ? .on : .off
 
     if let currSub = player.info.currentTrack(.sub) {
-      // FIXME: CollorWells cannot be disable?
       let enableTextSettings = !(currSub.isAssSub || currSub.isImageSub)
       [subTextColorWell, subTextSizePopUp, subTextBgColorWell, subTextBorderColorWell, subTextBorderWidthPopUp, subTextFontBtn].forEach { $0.isEnabled = enableTextSettings }
     }
@@ -1052,9 +1059,7 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
   }
 
   @IBAction func subFontAction(_ sender: AnyObject) {
-    Utility.quickFontPickerWindow() {
-      self.player.setSubFont($0 ?? "")
-    }
+    player.chooseSubFont()
   }
 
 }

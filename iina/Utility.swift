@@ -152,7 +152,7 @@ class Utility {
     panel.canChooseFiles = !chooseDir
     panel.canChooseDirectories = chooseDir
     panel.resolvesAliases = true
-    panel.allowedFileTypes = allowedFileTypes
+    panel.allowedContentTypes = allowedFileTypes?.compactMap { UTType(filenameExtension: $0) } ?? []
     panel.allowsMultipleSelection = false
     panel.level = .modalPanel
     if let dir = dir {
@@ -204,7 +204,7 @@ class Utility {
     let panel = NSSavePanel()
     panel.title = title
     panel.canCreateDirectories = true
-    panel.allowedFileTypes = types
+    panel.allowedContentTypes = types?.compactMap { UTType(filenameExtension: $0) } ?? []
     if filename != nil {
       panel.nameFieldStringValue = filename!
     }
@@ -248,9 +248,7 @@ class Utility {
     input.cell?.isScrollable = true
     input.isBezeled = true
     input.bezelStyle = .roundedBezel
-    if #available(macOS 11.0, *) {
-      input.controlSize = .large
-    }
+    input.controlSize = .large
     if let inputValue = inputValue {
       input.stringValue = inputValue
     }
@@ -375,12 +373,21 @@ class Utility {
   /**
    Pop up a font picker panel.
    - parameters:
+     - sheetWindow: The window to attach as a sheet
      - callback: A closure accepting the font name.
    */
-  static func quickFontPickerWindow(callback: @escaping (String?) -> Void) {
-    let appDelegate = AppDelegate.shared
-    appDelegate.fontPicker.finishedPicking = callback
-    appDelegate.fontPicker.showWindow(self)
+  static func quickFontPickerWindow(selecting initialSelection: String?, sheetWindow: NSWindow? = nil, callback: @escaping (String?) -> Void) {
+    let fontPicker = AppDelegate.shared.fontPicker
+    let _ = fontPicker.window  // load if not loaded
+    if let initialSelection {
+      fontPicker.select(initialSelection)
+    }
+    fontPicker.finishedPicking = callback
+    if let sheetWindow {
+      sheetWindow.beginSheet(fontPicker.window!)
+    } else {
+      fontPicker.showWindow(self)
+    }
   }
 
   // MARK: - App functions
@@ -553,14 +560,10 @@ class Utility {
   }
 
   static func icon(for url: URL) -> NSImage {
-    if #available(macOS 11.0, *) {
-      if let uttype = UTType.types(tag: url.pathExtension, tagClass: .filenameExtension, conformingTo: nil).first {
-        return NSWorkspace.shared.icon(for: uttype)
-      } else {
-        return NSWorkspace.shared.icon(for: .data)
-      }
+    if let uttype = UTType.types(tag: url.pathExtension, tagClass: .filenameExtension, conformingTo: nil).first {
+      return NSWorkspace.shared.icon(for: uttype)
     } else {
-      return NSWorkspace.shared.icon(forFileType: url.pathExtension)
+      return NSWorkspace.shared.icon(for: .data)
     }
   }
 

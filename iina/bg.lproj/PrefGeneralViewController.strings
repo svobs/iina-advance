@@ -5,7 +5,7 @@
 "2iM-j7-AzQ.title" = "Keep window open after playback finishes";
 
 /* Class = "NSButtonCell"; title = "Save to"; ObjectID = "2rJ-mg-OuU"; */
-"2rJ-mg-OuU.title" = "Save to";
+"2rJ-mg-OuU.title" = "Запазване в";
 
 /* Class = "NSMenuItem"; title = "PNG"; ObjectID = "3XO-ks-TDg"; */
 "3XO-ks-TDg.title" = "PNG";
@@ -14,7 +14,7 @@
 "3gs-3w-rg6.title" = "Copy to clipboard";
 
 /* Class = "NSTextFieldCell"; title = "Options:"; ObjectID = "4Qe-7S-8xK"; */
-"4Qe-7S-8xK.title" = "Options:";
+"4Qe-7S-8xK.title" = "Опции:";
 
 /* Class = "NSButtonCell"; title = "Enable \"Open Recent\" menu"; ObjectID = "55O-ik-ql6"; */
 "55O-ik-ql6.title" = "Enable \"Open Recent\" menu";
@@ -35,16 +35,16 @@
 "Ci8-j2-QS3.title" = "Track all played files in \"Open Recent\" menu";
 
 /* Class = "NSMenuItem"; title = "Daily"; ObjectID = "Ez8-qY-WAZ"; */
-"Ez8-qY-WAZ.title" = "Daily";
+"Ez8-qY-WAZ.title" = "Дневно";
 
 /* Class = "NSButtonCell"; title = "Pause"; ObjectID = "FbF-jJ-W5b"; */
-"FbF-jJ-W5b.title" = "Pause";
+"FbF-jJ-W5b.title" = "Пауза";
 
 /* Class = "NSTextFieldCell"; title = "When media is opened:"; ObjectID = "GNV-VA-NBW"; */
 "GNV-VA-NBW.title" = "When media is opened:";
 
 /* Class = "NSMenuItem"; title = "Weekly"; ObjectID = "Imf-6g-2Cd"; */
-"Imf-6g-2Cd.title" = "Weekly";
+"Imf-6g-2Cd.title" = "Седмично";
 
 /* Class = "NSButtonCell"; title = "Window becomes inactive/active"; ObjectID = "J8g-aS-W6e"; */
 "J8g-aS-W6e.title" = "Window becomes inactive/active";
@@ -64,7 +64,7 @@
 /* Class = "NSButtonCell"; title = "Play next item automatically"; ObjectID = "Lac-Ol-g6E"; */
 "Lac-Ol-g6E.title" = "Play next item automatically";
 
-/* Class = "NSButtonCell"; title = "Always open media in new window"; ObjectID = "M0z-bI-88d"; */
+/* Class = "NSButtonCell"; title = "Allow multiple player windows"; ObjectID = "M0z-bI-88d"; */
 "M0z-bI-88d.title" = "Always open media in new window";
 
 /* Class = "NSButtonCell"; title = "Enter fullscreen"; ObjectID = "MlG-hl-goB"; */
@@ -128,7 +128,7 @@
 "lvA-Rc-Sh6.title" = "Include subtitles";
 
 /* Class = "NSTextFieldCell"; title = "Format:"; ObjectID = "oJY-Iz-3sO"; */
-"oJY-Iz-3sO.title" = "Format:";
+"oJY-Iz-3sO.title" = "Формат:";
 
 /* Class = "NSTextFieldCell"; title = "Screenshots:"; ObjectID = "pdx-zt-kf2"; */
 "pdx-zt-kf2.title" = "Screenshots:";
@@ -143,7 +143,7 @@
 "tmy-ty-8uK.title" = "JPEG (.jpg)";
 
 /* Class = "NSTextFieldCell"; title = "Behavior:"; ObjectID = "uQR-Fx-oEm"; */
-"uQR-Fx-oEm.title" = "Behavior:";
+"uQR-Fx-oEm.title" = "Поведение:";
 
 /* Class = "NSButtonCell"; title = "Show previews after taking screenshots"; ObjectID = "xE7-Uu-19f"; */
 "xE7-Uu-19f.title" = "Show previews after taking screenshots";
@@ -165,3 +165,9 @@
 
 /* Class = "NSMenuItem"; title = "Loop single file"; ObjectID = "A1p-L4-jtC"; */
 "A1p-L4-jtC.title" = "Loop single file";
+
+/* Class = "NSButtonCell"; title = "Group media in playlist when opening multiple files at once"; ObjectID = "WZE-pS-9ne"; */
+"WZE-pS-9ne.title" = "Group media in playlist when opening multiple files at once";
+
+/* Class = "NSButtonCell"; title = "Allow opening the same file in multiple windows"; ObjectID = "Z7U-cf-ezr"; */
+"Z7U-cf-ezr.title" = "Allow opening the same file in multiple windows";

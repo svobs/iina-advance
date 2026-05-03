@@ -11,10 +11,8 @@ import Mustache
 import WebKit
 
 fileprivate let isMacOS11: Bool = {
-  if #available(macOS 11.0, *) {
-    if #unavailable(macOS 12.0) {
-        return true
-    }
+  if #unavailable(macOS 12.0) {
+      return true
   }
   return false
 }()
@@ -22,15 +20,12 @@ fileprivate let isMacOS11: Bool = {
 fileprivate let TitleBarHeightNormal: CGFloat = {
   if #available(macOS 26, *) {
     return 32
-  } else if #available(macOS 10.16, *) {
-    return 28
-  } else {
-    return 22
   }
+  return 28
 }()
 fileprivate let TitleBarHeightWithOSC: CGFloat = TitleBarHeightNormal + 24 + 10
 fileprivate let TitleBarHeightWithOSCInFullScreen: CGFloat = 24 + 10
-fileprivate let OSCTopMainViewMarginTop: CGFloat = 26
+fileprivate let OSCTopMainViewMarginTop: CGFloat = TitleBarHeightNormal + 4
 fileprivate let OSCTopMainViewMarginTopInFullScreen: CGFloat = 6
 
 fileprivate let SettingsWidth: CGFloat = 360
@@ -260,7 +255,7 @@ class MainWindowController: PlayerWindowController {
       case .animating(let toFullScreen, let legacy, let frame):
         if toFullScreen {
           self = .fullscreen(legacy: legacy, priorWindowedFrame: frame)
-        } else{
+        } else {
           self = .windowed
         }
       }
@@ -385,7 +380,7 @@ class MainWindowController: PlayerWindowController {
     case PK.arrowButtonAction.rawValue:
       if let newValue = change[.newKey] as? Int {
         arrowBtnFunction = Preference.ArrowButtonAction(rawValue: newValue)!
-        updateArrowButtonImage()
+        updateArrowButtons()
       }
     case PK.pinchAction.rawValue:
       if let newValue = change[.newKey] as? Int {
@@ -531,6 +526,7 @@ class MainWindowController: PlayerWindowController {
 
   override func windowDidLoad() {
     super.windowDidLoad()
+    MemoryUsage.shared.logUsage("after window loaded")
 
     guard let window = window else { return }
 
@@ -571,7 +567,7 @@ class MainWindowController: PlayerWindowController {
     let buttons = (Preference.array(for: .controlBarToolbarButtons) as? [Int] ?? []).compactMap(Preference.ToolBarButton.init(rawValue:))
     setupOSCToolbarButtons(buttons)
 
-    updateArrowButtonImage()
+    updateArrowButtons()
 
     // fade-able views
     fadeableViews.append(contentsOf: standardWindowButtons as [NSView])
@@ -653,6 +649,7 @@ class MainWindowController: PlayerWindowController {
       // Update the cached value
       cachedScreenCount = screenCount
       videoView.updateDisplayLink()
+      DisplayController.shared.addNewDisplays()
       // In normal full screen mode AppKit will automatically adjust the window frame if the window
       // is moved to a new screen such as when the window is on an external display and that display
       // is disconnected. In legacy full screen mode IINA is responsible for adjusting the window's
@@ -694,9 +691,10 @@ class MainWindowController: PlayerWindowController {
 
     // As there have been issues in this area, log details about the screen selection process.
     NSScreen.log("window.screen", window.screen)
-    NSScreen.log("NSScreen.main", NSScreen.main)
     NSScreen.screens.enumerated().forEach { screen in
-      NSScreen.log("NSScreen.screens[\(screen.offset)]" , screen.element)
+      if screen.element != window.screen {
+        NSScreen.log("NSScreen.screens[\(screen.offset)]" , screen.element)
+      }
     }
 
     // If a video is not actively playing then the initial drawing of the view needs to be forced.
@@ -916,7 +914,7 @@ class MainWindowController: PlayerWindowController {
   /// This erroneous behavior has been reported to Apple as: "Regression in NSCursor.setHiddenUntilMouseMoves"
   /// Feedback number FB11963121
   private func workaroundCursorDefect() {
-    guard #available(macOS 11, *), animationState == .hidden else { return }
+    guard animationState == .hidden else { return }
     NSCursor.setHiddenUntilMouseMoves(true)
   }
 
@@ -928,7 +926,7 @@ class MainWindowController: PlayerWindowController {
   }
 
   override func mouseDown(with event: NSEvent) {
-    if Logger.enabled && Logger.Level.preferred >= .verbose {
+    if Logger.isEmitting(.verbose) {
       log("MainWindow mouseDown @ \(event.locationInWindow)", level: .verbose)
     }
     workaroundCursorDefect()
@@ -975,7 +973,7 @@ class MainWindowController: PlayerWindowController {
           if mousePosRelatedToWindow.distance(to: event.locationInWindow) <= minimumInitialDragDistance {
             return
           }
-          if Logger.enabled && Logger.Level.preferred >= .verbose {
+          if Logger.isEmitting(.verbose) {
             log("MainWindow mouseDrag: minimum dragging distance was met", level: .verbose)
           }
           isDragging = true
@@ -987,7 +985,7 @@ class MainWindowController: PlayerWindowController {
   }
 
   override func mouseUp(with event: NSEvent) {
-    if Logger.enabled && Logger.Level.preferred >= .verbose {
+    if Logger.isEmitting(.verbose) {
       log("MainWindow mouseUp @ \(event.locationInWindow), isDragging: \(isDragging), isResizingSidebar: \(isResizingSidebar), clickCount: \(event.clickCount)",
                  level: .verbose)
     }
@@ -1336,7 +1334,20 @@ class MainWindowController: PlayerWindowController {
     NSMenu.setMenuBarVisible(true)
   }
 
+  /// The window is about to enter full screen mode.
+  ///
+  /// The `NSWindowDelegate` method
+  /// [windowWillEnterFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowwillenterfullscreen(_:))
+  /// is called after the AppKit
+  /// [toggleFullScreen](https://developer.apple.com/documentation/appkit/nswindow/togglefullscreen(_:))
+  /// method has been called when the window is not in full screen mode. Prepare the window to start transitioning to full screen mode.
+  /// - Attention: After altering this method you _must_ update the
+  ///     [windowDidFailToEnterFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowdidfailtoenterfullscreen(_:))
+  ///     method which is responsible for reverting changes made by this method should the transition to full screen mode fail.
+  /// - Parameter notification: A notification named
+  ///     [willEnterFullScreenNotification](https://developer.apple.com/documentation/appkit/nswindow/willenterfullscreennotification).
   func windowWillEnterFullScreen(_ notification: Notification) {
+    log("Entering full screen mode")
     // When playback is paused the display link is stopped in order to avoid wasting energy on
     // needless processing. It must be running while transitioning to full screen mode.
     videoView.displayActive()
@@ -1371,7 +1382,15 @@ class MainWindowController: PlayerWindowController {
     fsState.startAnimatingToFullScreen(legacy: isLegacyFullScreen, priorWindowedFrame: window!.frame)
   }
 
+  /// The window has entered full screen mode.
+  ///
+  /// The `NSWindowDelegate` method
+  /// [windowDidEnterFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowdidenterfullscreen(_:))
+  /// is called after the transition into full screen mode has finished. Finish configuring the window for full screen mode.
+  /// - Parameter notification: A notification named
+  ///     [didEnterFullScreenNotification](https://developer.apple.com/documentation/appkit/nswindow/didenterfullscreennotification).
   func windowDidEnterFullScreen(_ notification: Notification) {
+    log("Entered full screen mode")
     fsState.finishAnimating()
 
     titleTextField?.alphaValue = 1
@@ -1414,7 +1433,60 @@ class MainWindowController: PlayerWindowController {
     player.events.emit(.windowFullscreenChanged, data: true)
   }
 
+  /// Called if the window failed to enter full screen mode.
+  ///
+  /// The AppKit [toggleFullScreen](https://developer.apple.com/documentation/appkit/nswindow/togglefullscreen(_:))
+  /// method can fail. If that happens while transitioning into full screen mode the `NWWindowDelegate` method
+  /// [windowDidFailToEnterFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowdidfailtoenterfullscreen(_:))
+  /// is called. When this happens the changes made by `windowWillEnterFullScreen` must be reverted.
+  /// - Parameter window: The window that failed to enter to full screen mode.
+  func windowDidFailToEnterFullScreen(_ window: NSWindow) {
+    log("AppKit failed to enter full screen mode! Restoring previous windowed state", level: .warning)
+    guard case .animating(let toFullscreen, let legacy, let priorWindowedFrame) = fsState,
+            toFullscreen, !legacy else {
+      // Must not occur! Represents an error in IINA or AppKit.
+      log("Unable to restore windowed state: \(fsState)", level: .error)
+      return
+    }
+
+    // Reset the full screen state to indicate exiting full screen mode so that finishAnimating
+    // will correctly set the state to windowed.
+    fsState = .animating(toFullscreen: false, legacy: legacy, priorWindowedFrame: priorWindowedFrame)
+    fsState.finishAnimating()
+
+    if oscPosition == .top {
+      oscTopMainViewTopConstraint.constant = OSCTopMainViewMarginTop
+      titleBarHeightConstraint.constant = TitleBarHeightWithOSC
+    } else {
+      addBackTitlebarViewToFadeableViews()
+    }
+    addBackStandardButtonsToFadeableViews()
+    titleBarView.isHidden = false
+    titleTextField?.alphaValue = 1
+    window.addTitlebarAccessoryViewController(titlebarAccessoryViewController)
+
+    if player.info.state == .playing {
+      setWindowFloatingOnTop(isOntop, updateOnTopStatus: false)
+    }
+
+    videoView.needsLayout = true
+    videoView.layoutSubtreeIfNeeded()
+    forceDraw("failed to enter full screen mode")
+  }
+
+  /// The window is about to exit full screen mode.
+  ///
+  /// The `NSWindowDelegate` method [windowWillExitFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowwillexitfullscreen(_:))
+  /// is called after the AppKit
+  /// [toggleFullScreen](https://developer.apple.com/documentation/appkit/nswindow/togglefullscreen(_:))
+  /// method has been called when the window is in full screen mode. Prepare the window to start transitioning to windowed mode.
+  /// - Attention: After altering this method you _must_ update the
+  ///     [windowDidFailToExitFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowdidfailtoexitfullscreen(_:))
+  ///     method which is responsible for reverting changes made by this method should the transition to wndowed mode fail.
+  /// - Parameter notification: A notification named
+  ///     [willExitFullScreenNotification](https://developer.apple.com/documentation/appkit/nswindow/willexitfullscreennotification).
   func windowWillExitFullScreen(_ notification: Notification) {
+    log("Exiting full screen mode")
     // When playback is paused the display link is stopped in order to avoid wasting energy on
     // needless processing. It must be running while transitioning from full screen mode.
     videoView.displayActive()
@@ -1440,7 +1512,36 @@ class MainWindowController: PlayerWindowController {
     fsState.startAnimatingToWindow()
   }
 
+  /// The window has left full screen mode.
+  ///
+  /// The `NSWindowDelegate` method
+  /// [windowDidExitFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowdidexitfullscreen(_:))
+  /// is called after the transition to windowed mode initiated by calling
+  /// [toggleFullScreen](https://developer.apple.com/documentation/appkit/nswindow/togglefullscreen(_:))
+  /// completes. Finish configuring IINA for windowed mode.
+  /// - Important: The following unexpected sequence of calls from AppKit has been encountered:
+  ///     - windowWillExitFullScreen
+  ///     - windowDidFailToExitFullScreen
+  ///     - windowDidExitFullScreen
+  ///
+  ///     As this AppKit behavior is very hard to trigger it is not entirely clear why is happening. The working assumption is that this
+  ///     occurs when the app starts to terminate after failing to exit full screen mode. See issue
+  ///     [#5368](https://github.com/iina/iina/issues/5368) for more details.
+  /// - Parameter notification: A notification named
+  ///     [didExitFullScreenNotification](https://developer.apple.com/documentation/appkit/nswindow/didexitfullscreennotification).
   func windowDidExitFullScreen(_ notification: Notification) {
+    log("Exited full screen mode")
+
+    if fsState.isFullscreen {
+      // IINA should not be in full screen mode at this point. The fsState should indicate IINA is
+      // animating to the windowed state. This happens when AppKit calls windowDidExitFullScreen
+      // after having called windowDidFailToExitFullScreen. As we think this is triggered when the
+      // app starts terminating we only change fsState to indicate IINA was animating to windowed
+      // mode. If this is not done the call to finishAnimating below will trigger a fatal error.
+      log("AppKit exited full screen mode without informing IINA", level: .warning)
+      fsState.startAnimatingToWindow()
+    }
+
     if Preference.bool(for: PK.disableAnimations) {
       // When animation is not used exiting full screen does not restore the previous size of the
       // window. Restore it now.
@@ -1496,6 +1597,42 @@ class MainWindowController: PlayerWindowController {
     player.events.emit(.windowFullscreenChanged, data: false)
   }
 
+  /// Called if the window failed to exit full screen mode.
+  ///
+  /// The AppKit [toggleFullScreen](https://developer.apple.com/documentation/appkit/nswindow/togglefullscreen(_:))
+  /// method can fail. If that happens while transitioning out of full screen mode the `NWWindowDelegate` method
+  /// [windowDidFailToExitFullScreen](https://developer.apple.com/documentation/appkit/nswindowdelegate/windowdidfailtoexitfullscreen(_:))
+  /// is called. When this happens the changes made by `windowWillExitFullScreen` must be reverted.
+  /// - Parameter window: The window that failed to exit to full screen mode.
+  func windowDidFailToExitFullScreen(_ window: NSWindow) {
+    log("AppKit failed to exit full screen mode! Restoring full screen state", level: .error)
+    guard case .animating(let toFullscreen, let legacy, let priorWindowedFrame) = fsState,
+            !toFullscreen, !legacy else {
+      // Must not occur! Represents an error in IINA or AppKit.
+      log("Unable to restore full screen state: \(fsState)", level: .error)
+      return
+    }
+
+    // Reset the full screen state to indicate entering full screen mode so that finishAnimating
+    // will correctly set the state to  full screen mode.
+    fsState = .animating(toFullscreen: true, legacy: legacy, priorWindowedFrame: priorWindowedFrame)
+    fsState.finishAnimating()
+
+    if oscPosition == .top {
+      oscTopMainViewTopConstraint.constant = OSCTopMainViewMarginTopInFullScreen
+      titleBarHeightConstraint.constant = TitleBarHeightWithOSCInFullScreen
+    }
+
+    if Preference.bool(for: .displayTimeAndBatteryInFullScreen) {
+      fadeableViews.append(additionalInfoView)
+    }
+    updateAdditionalInfo()
+
+    videoView.needsLayout = true
+    videoView.layoutSubtreeIfNeeded()
+    forceDraw("failed to exit full screen mode")
+  }
+
   func toggleWindowFullScreen() {
     guard let window = self.window else { fatalError("make sure the window exists before animating") }
 
@@ -1503,22 +1640,32 @@ class MainWindowController: PlayerWindowController {
     case .windowed:
       guard !player.isInMiniPlayer else { return }
       if Preference.bool(for: .useLegacyFullScreen) {
+        log("Will enter legacy full screen mode")
         self.legacyAnimateToFullscreen()
       } else {
+        log("Requesting AppKit enter full screen mode")
         window.toggleFullScreen(self)
       }
     case let .fullscreen(legacy, oldFrame):
       if legacy {
+        log("Will exit legacy full screen mode")
         self.legacyAnimateToWindowed(framePriorToBeingInFullscreen: oldFrame)
       } else {
+        log("Requesting AppKit exit full screen mode")
         window.toggleFullScreen(self)
       }
-    default:
-      return
+    case let .animating(toFullscreen, legacy, _):
+      let legacyAppKit = legacy ? "IINA" : "AppKit"
+      let enteringExiting = toFullscreen ? "entering" : "exiting"
+      log("""
+        \(legacyAppKit) is currently \(enteringExiting) full screen mode, \
+        ignoring request to toggle full screen mode
+        """)
     }
   }
 
   private func restoreDockSettings() {
+    log("Restoring dock settings")
     NSApp.presentationOptions.remove(.autoHideMenuBar)
     NSApp.presentationOptions.remove(.autoHideDock)
   }
@@ -1531,14 +1678,11 @@ class MainWindowController: PlayerWindowController {
     // stylemask
     window.styleMask.remove(.borderless)
     window.styleMask.insert(.resizable)
-    if #available(macOS 10.16, *) {
-      window.styleMask.insert(.titled)
-      (window as! MainWindow).forceKeyAndMain = false
-      window.level = .normal
-    } else {
-      window.styleMask.remove(.fullScreen)
-    }
- 
+    window.styleMask.insert(.titled)
+    window.hasShadow = true
+    (window as! MainWindow).forceKeyAndMain = false
+    window.level = .normal
+
     restoreDockSettings()
     // restore window frame and aspect ratio
     let videoSize = player.videoSizeForDisplay
@@ -1586,13 +1730,11 @@ class MainWindowController: PlayerWindowController {
     // stylemask
     window.styleMask.insert(.borderless)
     window.styleMask.remove(.resizable)
-    if #available(macOS 10.16, *) {
-      window.styleMask.remove(.titled)
-      (window as! MainWindow).forceKeyAndMain = true
-      window.level = .floating
-    } else {
-      window.styleMask.insert(.fullScreen)
-    }
+    window.styleMask.remove(.titled)
+    window.hasShadow = false
+    (window as! MainWindow).forceKeyAndMain = true
+    window.level = .floating
+
     // cancel aspect ratio
     window.resizeIncrements = NSSize(width: 1, height: 1)
     // auto hide menubar and dock
@@ -1627,8 +1769,10 @@ class MainWindowController: PlayerWindowController {
   func windowDidResize(_ notification: Notification) {
     guard let window = window else { return }
     
-    if case .animating(_, _, _) = fsState, player.info.state == .paused {
-      forceDraw("Window entered full screen animation while paused")
+    if case .animating(_, _, _) = fsState {
+      forceDraw("window resized during animated enter or exit full screen")
+    } else if !videoView.videoLayer.inLiveResize {
+      forceDraw("window resized")
     }
 
     // interactive mode
@@ -1826,7 +1970,7 @@ class MainWindowController: PlayerWindowController {
       v.isHidden = false
     }
     NSAnimationContext.runAnimationGroup({ (context) in
-      context.duration = UIAnimationDuration
+      context.duration = AccessibilityPreferences.adjustedDuration(UIAnimationDuration)
       fadeableViews.forEach { (v) in
         v.animator().alphaValue = 0
       }
@@ -1859,7 +2003,7 @@ class MainWindowController: PlayerWindowController {
     player.refreshSyncUITimer()
     standardWindowButtons.forEach { $0.isEnabled = true }
     NSAnimationContext.runAnimationGroup({ (context) in
-      context.duration = UIAnimationDuration
+      context.duration = AccessibilityPreferences.adjustedDuration(UIAnimationDuration)
       fadeableViews.forEach { (v) in
         v.animator().alphaValue = 1
       }
@@ -1922,7 +2066,7 @@ class MainWindowController: PlayerWindowController {
       // This problem has been reported to Apple as:
       // "setTitleWithRepresentedFilename throws NSInvalidArgumentException: NSNextStepFrame _displayName"
       // Feedback number FB9789129
-      if Preference.bool(for: .useLegacyFullScreen), #available(macOS 11, *) {
+      if Preference.bool(for: .useLegacyFullScreen) {
         window?.title = player.info.currentURL?.lastPathComponent ?? ""
       } else {
         window?.setTitleWithRepresentedFilename(player.info.currentURL?.path ?? "")
@@ -2426,11 +2570,12 @@ class MainWindowController: PlayerWindowController {
         let (videoWidth, videoHeight) = player.videoSizeForDisplay
         let displayAspectRatio = CGFloat(videoWidth) / CGFloat(videoHeight)
 
-        let height = round(120 / displayAspectRatio)
+        let width = CGFloat(UserDefaults.standard.integer(forKey: "thumbnailWidth"))
+        let height = round(width / displayAspectRatio)
         let timePreviewFrameInWindow = timePreviewWhenSeek.superview!.convert(timePreviewWhenSeek.frame.origin, to: nil)
         let showAbove = canShowThumbnailAbove(timePreviewYPos: timePreviewFrameInWindow.y, thumbnailHeight: height)
         let yPos = showAbove ? timePreviewFrameInWindow.y + timePreviewWhenSeek.frame.height : sliderFrameInWindow.y - height
-        thumbnailPeekView.frame.size = NSSize(width: 120, height: height)
+        thumbnailPeekView.frame.size = NSSize(width: width, height: height)
         thumbnailPeekView.frame.origin = NSPoint(x: round(posInWindow.x - thumbnailPeekView.frame.width / 2), y: yPos)
       } else {
         thumbnailPeekView.isHidden = true
@@ -2729,6 +2874,7 @@ class MainWindowController: PlayerWindowController {
       newFrame = window.frame.centeredResize(to: finalSize.satisfyMinSizeWithSameAspectRatio(minSize)).constrain(in: screenFrame)
     }
     window.setFrame(newFrame, display: true, animate: true)
+    MemoryUsage.shared.logUsage("after window scale changed (\(newFrame.width)x\(newFrame.height))")
   }
 
   // MARK: - UI: Others
@@ -2832,13 +2978,27 @@ class MainWindowController: PlayerWindowController {
     bufferIndicatorView.isHidden = false
   }
 
-  func updateArrowButtonImage() {
+  /// Configure the OSC arrow buttons based on IINA's `Use left/right button for` setting.
+  ///
+  /// For most settings the button is configured to be a
+  /// [momentaryPushIn](https://developer.apple.com/documentation/appkit/nsbutton/buttontype/momentarypushin)
+  /// button. However if the button is set to control playback speed the button is configured to be a
+  /// [multiLevelAccelerator](https://developer.apple.com/documentation/appkit/nsbutton/buttontype/multilevelaccelerator)
+  /// button. This allows the user to control the speed using pressure when using devices that support pressure sensitivity.
+  func updateArrowButtons() {
     if arrowBtnFunction == .playlist {
       leftArrowButton.image = #imageLiteral(resourceName: "nextl")
       rightArrowButton.image = #imageLiteral(resourceName: "nextr")
     } else {
       leftArrowButton.image = #imageLiteral(resourceName: "speedl")
       rightArrowButton.image = #imageLiteral(resourceName: "speed")
+    }
+    if arrowBtnFunction == .speed {
+      leftArrowButton.setButtonType(.multiLevelAccelerator)
+      rightArrowButton.setButtonType(.multiLevelAccelerator)
+    } else {
+      leftArrowButton.setButtonType(.momentaryPushIn)
+      rightArrowButton.setButtonType(.momentaryPushIn)
     }
   }
 
@@ -2869,8 +3029,20 @@ class MainWindowController: PlayerWindowController {
     player.sendOSD(player.info.isMuted ? .mute : .unMute)
   }
 
+  /// User has triggered the left button in the OSC.
+  ///
+  /// The behavior of the button depends upon the `Use left/right button for` setting found in the
+  /// `On Screen Controller` section on the `UI` tab of IINA's settings. For most settings the button is configured to be a
+  /// [momentaryPushIn](https://developer.apple.com/documentation/appkit/nsbutton/buttontype/momentarypushin)
+  /// button. However if the button is set to control playback speed the button is configured to be a
+  /// [multiLevelAccelerator](https://developer.apple.com/documentation/appkit/nsbutton/buttontype/multilevelaccelerator)
+  /// button. This allows the user to control the speed using pressure when using devices that support pressure sensitivity.
+  /// - Parameter sender: The button invoking this action.
   @IBAction func leftButtonAction(_ sender: NSButton) {
-    if arrowBtnFunction == .speed {
+    switch arrowBtnFunction {
+    case .playlist, .seek:
+      arrowButtonAction(left: true)
+    case .speed:
       let speeds = AppData.availableSpeedValues.count
       // If fast forwarding change speed to 1x
       if speedValueIndex > speeds / 2 {
@@ -2897,16 +3069,23 @@ class MainWindowController: PlayerWindowController {
         maxPressure = max(maxPressure, sender.intValue)
       }
       arrowButtonAction(left: true)
-    } else {
-      // trigger action only when released button
-      if sender.intValue == 0 {
-        arrowButtonAction(left: true)
-      }
     }
   }
 
+  /// User has triggered the right button in the OSC.
+  ///
+  /// The behavior of the button depends upon the `Use left/right button for` setting found in the
+  /// `On Screen Controller` section on the `UI` tab of IINA's settings. For most settings the button is configured to be a
+  /// [momentaryPushIn](https://developer.apple.com/documentation/appkit/nsbutton/buttontype/momentarypushin)
+  /// button. However if the button is set to control playback speed the button is configured to be a
+  /// [multiLevelAccelerator](https://developer.apple.com/documentation/appkit/nsbutton/buttontype/multilevelaccelerator)
+  /// button. This allows the user to control the speed using pressure when using devices that support pressure sensitivity.
+  /// - Parameter sender: The button invoking this action.
   @IBAction func rightButtonAction(_ sender: NSButton) {
-    if arrowBtnFunction == .speed {
+    switch arrowBtnFunction {
+    case .playlist, .seek:
+      arrowButtonAction(left: false)
+    case .speed:
       let speeds = AppData.availableSpeedValues.count
       // If rewinding change speed to 1x
       if speedValueIndex < speeds / 2 {
@@ -2933,11 +3112,6 @@ class MainWindowController: PlayerWindowController {
         maxPressure = max(maxPressure, sender.intValue)
       }
       arrowButtonAction(left: false)
-    } else {
-      // trigger action only when released button
-      if sender.intValue == 0 {
-        arrowButtonAction(left: false)
-      }
     }
   }
 

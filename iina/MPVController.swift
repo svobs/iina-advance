@@ -13,17 +13,26 @@ import VideoToolbox
 fileprivate let yes_str = "yes"
 fileprivate let no_str = "no"
 
-/** Change this variable to adjust mpv log level */
-/*
- "no"    - disable absolutely all messages
- "fatal" - critical/aborting errors
- "error" - simple errors
- "warn"  - possible problems
- "info"  - informational message
- "v"     - noisy informational message
- "debug" - very noisy technical information
- "trace" - extremely noisy
- */
+/// Change this variable to adjust mpv log level.
+///
+/// Available levels:
+/// |  Level  | Output  |
+/// | --- | --- |
+/// | no  | complete silence |
+/// | fatal | fatal messages only |
+/// | error | error messages |
+/// | warn  | warning messages |
+/// | info | informational message |
+/// | status | status messages (default) |
+/// | v | verbose messages |
+/// | debug | debug messages |
+/// | trace | very noisy debug messages |
+/// - Important: The mpv event system uses an event queue of limited size. If events are not read quickly enough the queue can
+///     overflow resulting in events being dropped. Loss of events can trigger severe malfunctions. IINA's ability to include mpv log
+///     messages in the IINA log file relies up the mpv `MPV_EVENT_LOG_MESSAGE` event. There is a danger that mpv will emit log
+///     messages at a rate that exceeds IINA's ability to empty the event queue before it overflows. For this reason IINA intentionally
+///     limits the mpv log level to `warn`. If you change the level to debug a problem be aware that the event queue could overflow
+///     and drop events resulting in odd behavior.
 fileprivate let MPVLogLevel = "warn"
 fileprivate let logLevelMap: [String: Logger.Level] = ["fatal": .error,
                                                        "error": .error,
@@ -88,10 +97,16 @@ class MPVController: NSObject {
 
   /// [DispatchQueue](https://developer.apple.com/documentation/dispatch/dispatchqueue) for reading `mpv`
   /// events.
-  ///
+  /// - Important: The mpv event system uses an event queue of limited size. If events are not read quickly enough with
+  ///     `mpv_wait_event` the queue can overflow resulting in events being dropped. IINA can recover from the loss of some
+  ///     types of mpv events, but certain mpv events are critical. If a critical event is discarded IINA will experience severe
+  ///     malfunctions. For this reason this queue _must only_ be used for reading events. This also means processing of events
+  ///     _must not be performed_ using this queue unless the work required can _always_ be accomplished _quickly_. Otherwise
+  ///     processing _must be_ queued to another dispatch queue.
   /// - Important: To avoid using locking to prevent data races the convention is that processing involving data used by the UI is
   ///     never performed while running on this queue's thread and instead is queued for processing by the main thread .
-  lazy var queue = DispatchQueue(label: "com.colliderli.iina.controller", qos: .userInitiated)
+  private lazy var queue = DispatchQueue(label: "com.colliderli.iina.controller",
+                                         qos: .userInitiated)
 
   unowned let player: PlayerCore
 
@@ -106,6 +121,7 @@ class MPVController: NSObject {
     MPVProperty.trackList: MPV_FORMAT_NONE,
     MPVProperty.vf: MPV_FORMAT_NONE,
     MPVProperty.af: MPV_FORMAT_NONE,
+    MPVProperty.audioDeviceList: MPV_FORMAT_NONE,
     MPVOption.TrackSelection.vid: MPV_FORMAT_INT64,
     MPVOption.TrackSelection.aid: MPV_FORMAT_INT64,
     MPVOption.TrackSelection.sid: MPV_FORMAT_INT64,
@@ -164,7 +180,7 @@ class MPVController: NSObject {
   ///   - playerCore: The player this `MPVController` will be associated with.
   init(playerCore: PlayerCore) {
     self.player = playerCore
-    subsystem = Logger.makeSubsystem("mpv\(player.playerNumber)")
+    subsystem = Logger.makeSubsystem("mpv\(player.playerNumber)", ["building.columns"])
     super.init()
   }
 
@@ -239,10 +255,6 @@ class MPVController: NSObject {
   /// Determine if this Mac has an Apple Silicon chip.
   /// - Returns: `true` if running on a Mac with an Apple Silicon chip, `false` otherwise.
   private func runningOnAppleSilicon() -> Bool {
-    // Old versions of macOS do not support Apple Silicon.
-    if #unavailable(macOS 11.0) {
-      return false
-    }
     var sysinfo = utsname()
     let result = uname(&sysinfo)
     guard result == EXIT_SUCCESS else {
@@ -349,15 +361,14 @@ class MPVController: NSObject {
 
     setUserOption(PK.screenshotFormat, type: .other, forName: MPVOption.Screenshot.screenshotFormat,
                   verboseIfDefault: true) { key in
-      let v = Preference.integer(for: key)
-      let format = Preference.ScreenshotFormat(rawValue: v)
+      let format: Preference.ScreenshotFormat = Preference.enum(for: key)
       // Workaround for mpv issue  #15107, HDR screenshots are unimplemented (gpu/gpu-next).
       // If the screenshot format is set to JPEG XL then set the screenshot-sw option to yes. This
       // causes the screenshot to be rendered by software instead of the VO. If a HDR video is being
       // displayed in HDR then the resulting screenshot will be HDR.
       self.chkErr(self.setOptionFlag(MPVOption.Screenshot.screenshotSw, format == .jxl,
                                      verboseIfDefault: true))
-      return format?.string
+      return String(describing: format)
     }
 
     setUserOption(PK.screenshotTemplate, type: .string,
@@ -399,8 +410,7 @@ class MPVController: NSObject {
 
     setUserOption(PK.hardwareDecoder, type: .other, forName: MPVOption.Video.hwdec,
                   verboseIfDefault: true) { key in
-      let value = Preference.integer(for: key)
-      return Preference.HardwareDecoderOption(rawValue: value)?.mpvString ?? "auto"
+      return String(describing: Preference.enum(for: key) as Preference.HardwareDecoderOption)
     }
 
     setUserOption(PK.audioLanguage, type: .string, forName: MPVOption.TrackSelection.alang,
@@ -419,8 +429,7 @@ class MPVController: NSObject {
 
     setUserOption(PK.replayGain, type: .other, forName: MPVOption.Audio.replaygain,
                   verboseIfDefault: true) { key in
-      let value = Preference.integer(for: key)
-      return Preference.ReplayGainOption(rawValue: value)?.mpvString ?? "no"
+      return String(describing: Preference.enum(for: key) as Preference.ReplayGainOption)
     }
     setUserOption(PK.replayGainPreamp, type: .float, forName: MPVOption.Audio.replaygainPreamp,
                   verboseIfDefault: true)
@@ -428,6 +437,11 @@ class MPVController: NSObject {
                   verboseIfDefault: true)
     setUserOption(PK.replayGainFallback, type: .float, forName: MPVOption.Audio.replaygainFallback,
                   verboseIfDefault: true)
+
+    setUserOption(PK.gaplessAudio, type: .other, forName: MPVOption.Audio.gaplessAudio,
+                  verboseIfDefault: true) { key in
+      return String(describing: Preference.enum(for: key) as Preference.GaplessAudioOption)
+    }
 
     // - Sub
 
@@ -437,7 +451,7 @@ class MPVController: NSObject {
     player.info.subEncoding = Preference.string(for: .defaultEncoding)
 
     let subOverrideHandler: OptionObserverInfo.Transformer = { key in
-      (Preference.enum(for: key) as Preference.SubOverrideLevel).string
+      String(describing: Preference.enum(for: key) as Preference.SubOverrideLevel)
     }
     setUserOption(PK.subOverrideLevel, type: .other, forName: MPVOption.Subtitles.subAssOverride,
                   verboseIfDefault: true, transformer: subOverrideHandler)
@@ -477,14 +491,12 @@ class MPVController: NSObject {
 
     setUserOption(PK.subAlignX, type: .other, forName: MPVOption.Subtitles.subAlignX,
                   verboseIfDefault: true) { key in
-      let v = Preference.integer(for: key)
-      return Preference.SubAlign(rawValue: v)?.stringForX
+      return String(describing: Preference.enum(for: key) as Preference.SubAlignX)
     }
 
     setUserOption(PK.subAlignY, type: .other, forName: MPVOption.Subtitles.subAlignY,
                   verboseIfDefault: true) { key in
-      let v = Preference.integer(for: key)
-      return Preference.SubAlign(rawValue: v)?.stringForY
+      return String(describing: Preference.enum(for: key) as Preference.SubAlignY)
     }
 
     setUserOption(PK.subMarginX, type: .int, forName: MPVOption.Subtitles.subMarginX,
@@ -525,8 +537,8 @@ class MPVController: NSObject {
 
     setUserOption(PK.transportRTSPThrough, type: .other, forName: MPVOption.Network.rtspTransport,
                   verboseIfDefault: true) { key in
-      let v: Preference.RTSPTransportation = Preference.enum(for: .transportRTSPThrough)
-      return v.string
+      return String(describing: Preference.enum(for: .transportRTSPThrough) as
+                    Preference.RTSPTransportation)
     }
 
     setUserOption(PK.ytdlEnabled, type: .other, forName: MPVOption.ProgramBehavior.ytdl,
@@ -823,7 +835,7 @@ class MPVController: NSObject {
   // Set property
   func setFlag(_ name: String, _ flag: Bool, level: Logger.Level = .debug) {
     log("Set property: \(name)=\(flag)", level: level)
-    var data: Int = flag ? 1 : 0
+    var data: Int32 = flag ? 1 : 0
     mpv_set_property(mpv, name, MPV_FORMAT_FLAG, &data)
   }
 
@@ -865,7 +877,7 @@ class MPVController: NSObject {
   }
 
   func getFlag(_ name: String) -> Bool {
-    var data = Int64()
+    var data = Int32()
     mpv_get_property(mpv, name, MPV_FORMAT_FLAG, &data)
     return data > 0
   }
@@ -1025,6 +1037,18 @@ class MPVController: NSObject {
     MPVNode.free(node)
   }
 
+  /// Returns the given node map value as an `Int`.
+  ///
+  /// This method is intended to be used when extracting values from a `MPV_FORMAT_NODE_MAP` `mpv_node` that contains
+  /// mixed types.
+  /// - Note: Zero is returned for `nil` values to match the behavior of `getInt`.
+  /// - Parameter value:Value from a mpv node map.
+  /// - Returns: The given value converted to an `Int`.
+  static func nodeValueAsInt(_ value: Any?) -> Int {
+    guard let asInt64 = value as? Int64 else { return 0 }
+    return Int(asInt64)
+  }
+
   // MARK: - Hooks
 
   func addHook(_ name: MPVHook, priority: Int32 = 0, hook: MPVHookValue) {
@@ -1084,7 +1108,13 @@ class MPVController: NSObject {
       let userData = event.pointee.reply_userdata
       let hookEvent = event.pointee.data.bindMemory(to: mpv_event_hook.self, capacity: 1).pointee
       let hookID = hookEvent.id
-      guard let hook = $hooks.withLock({ $0[userData] }) else { break }
+      guard let hook = $hooks.withLock({ $0[userData] }) else {
+        // Hook not found, probably because it's from an unloaded plugin.
+        // Still need to call hook_continue otherwise it will stuck.
+        log("Hook \(hookID) not found", level: .warning)
+        mpv_hook_continue(self.mpv, hookID)
+        break
+      }
       hook.call {
         mpv_hook_continue(self.mpv, hookID)
       }
@@ -1162,6 +1192,9 @@ class MPVController: NSObject {
       // not leave this to the PlayerCore function and handle this now before calling fileEnded.
       if !dueToStopCommand, Preference.bool(for: .pauseWhenOpen) {
         setFlag(MPVOption.PlaybackControl.pause, true, level: .verbose)
+        // Normally a log message is emitted before calling mpv, but in this case, due to the race
+        // condition, playback must be paused as soon as possible, so logging is done afterward.
+        log("Pausing playback because \"pause when media is opened\" is enabled")
       }
       DispatchQueue.main.async { self.player.fileEnded(dueToStopCommand) }
 
@@ -1183,6 +1216,18 @@ class MPVController: NSObject {
         DispatchQueue.main.async { self.player.screenshotCallback() }
       }
 
+    case MPV_EVENT_QUEUE_OVERFLOW:
+      // The mpv event system uses an event queue of limited size. If events are not read quickly
+      // enough the queue can overflow resulting in events being dropped. This event indicates the
+      // ringbuffer overflowed and at least one event was dropped. IINA can recover from the loss of
+      // some types of mpv events, but certain mpv events are critical. If a critical event is
+      // discarded IINA will experience severe malfunctions. For this reason most of the work of
+      // processing an event is dispatched to other queues so that MPVController can move on to
+      // reading the next event. This event indicates something went wrong and IINA failed to read
+      // events fast enough. As IINA has been ignoring this event we don't know if this has been
+      // occurring. For now log this as an error. May want to switch to an alert in the future.
+      log("Critical failure, mpv events lost, queue overflowed", level: .error)
+
     default: break
       // let eventName = String(cString: mpv_event_name(eventId))
       // Utility.log("mpv event (unhandled): \(eventName)")
@@ -1202,6 +1247,9 @@ class MPVController: NSObject {
   private func handlePropertyChange(_ name: String, _ property: mpv_event_property) {
 
     switch name {
+
+    case MPVProperty.audioDeviceList:
+      DispatchQueue.main.async { self.player.audioDeviceListChanged() }
 
     case MPVProperty.videoParams:
       DispatchQueue.main.async { self.player.needReloadQuickSettingsView() }

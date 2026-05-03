@@ -10,7 +10,6 @@
 		1326717E20852D0D000FA7E2 /* SubChooseViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1326718020852D0D000FA7E2 /* SubChooseViewController.xib */; };
 		3412DB8E2C2FC64C00BBC142 /* Equalizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412DB8D2C2FC64800BBC142 /* Equalizations.swift */; };
 		348F71962DE2A819006C587D /* MPVCommandWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F71952DE2A814006C587D /* MPVCommandWrappers.swift */; };
-		34ACA04B29DBB0090030C09C /* LogWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34ACA04D29DBB0090030C09C /* LogWindowController.xib */; };
 		34ACAB722C142A0500F871A0 /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34ACAB2D2C142A0300F871A0 /* libintl.8.dylib */; };
 		34ACAB732C142A0500F871A0 /* libgraphite2.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34ACAB2E2C142A0300F871A0 /* libgraphite2.3.dylib */; };
 		34ACAB742C142A0500F871A0 /* liblcms2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34ACAB2F2C142A0300F871A0 /* liblcms2.2.dylib */; };
@@ -154,7 +153,7 @@
 		49542978216C34950058F680 /* SafariExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49542977216C34950058F680 /* SafariExtensionHandler.swift */; };
 		49542980216C34950058F680 /* open-in-iina.js in Resources */ = {isa = PBXBuildFile; fileRef = 4954297F216C34950058F680 /* open-in-iina.js */; };
 		49542982216C34950058F680 /* ToolbarItemIcon.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 49542981216C34950058F680 /* ToolbarItemIcon.pdf */; };
-		49542986216C34950058F680 /* OpenInIINA.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 49542973216C34950058F680 /* OpenInIINA.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		49542986216C34950058F680 /* OpenInIINA.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 49542973216C34950058F680 /* OpenInIINA.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		496B19921E2968530035AF10 /* PIP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 496B19911E2968530035AF10 /* PIP.framework */; };
 		51096C0B2CD88BEC00702C31 /* MPVOptionDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51096C0A2CD88BEC00702C31 /* MPVOptionDefaults.swift */; };
 		5111B18B2C8BCEAC00DEC0AC /* TouchBarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5111B18A2C8BCEAC00DEC0AC /* TouchBarSettings.swift */; };
@@ -163,10 +162,13 @@
 		51165FC02E1D91940060B817 /* ReadWriteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51165FBF2E1D91940060B817 /* ReadWriteLock.swift */; };
 		511BF43C2E12FF8800E9721E /* VolumeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511BF43B2E12FF8800E9721E /* VolumeSlider.swift */; };
 		511BF43E2E1305C800E9721E /* MiniPlaySlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511BF43D2E1305C800E9721E /* MiniPlaySlider.swift */; };
+		5125117D2E89B2ED00CDAE9F /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5125117C2E89B2ED00CDAE9F /* Display.swift */; };
 		512B8FDD2BC2376E00AF41BF /* OutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512B8FDC2BC2376E00AF41BF /* OutlineView.swift */; };
 		513A4FFA29B53F8100A8EA7D /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513A4FF929B53F8100A8EA7D /* Atomic.swift */; };
 		515B5E5A2A579903001FCD49 /* iina-plugin in Copy Executables */ = {isa = PBXBuildFile; fileRef = E38558872A484A2D0083772D /* iina-plugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		516B264D2EDA579700E3CB69 /* MemoryUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516B264C2EDA579600E3CB69 /* MemoryUsage.swift */; };
 		51854CDA2A1C489300C40B78 /* FFmpegLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51854CD92A1C489300C40B78 /* FFmpegLogger.swift */; };
+		518DB7022FA6A2120024F0B0 /* write_info_plist_header.sh in Resources */ = {isa = PBXBuildFile; fileRef = 518DB7012FA6A2120024F0B0 /* write_info_plist_header.sh */; };
 		5196819A29EC963F00B05D55 /* CoreDisplay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5196819929EC963F00B05D55 /* CoreDisplay.framework */; };
 		519872FF26879B9B00F84BCC /* AccessibilityPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519872FE26879B9B00F84BCC /* AccessibilityPreferences.swift */; };
 		519CCABD2BFFAEF10079DCAF /* HardwareDecodeCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519CCABC2BFFAEF10079DCAF /* HardwareDecodeCapabilities.swift */; };
@@ -178,6 +180,7 @@
 		51DE55C92A6646710050AD06 /* Sysctl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE55C82A6646710050AD06 /* Sysctl.swift */; };
 		51E63DFB29CFB031008AFC20 /* PlaySlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E63DFA29CFB031008AFC20 /* PlaySlider.swift */; };
 		51E63DFD29CFB04C008AFC20 /* PlaySliderLoopKnob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E63DFC29CFB04B008AFC20 /* PlaySliderLoopKnob.swift */; };
+		51EDB4722E85EE10007E5018 /* DisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EDB4712E85EE10007E5018 /* DisplayController.swift */; };
 		51F7974728C7E00200812D0D /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F7974628C7E00200812D0D /* Lock.swift */; };
 		6100FF2B1EDF9806002CF0FB /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 6100FF2A1EDF9806002CF0FB /* dsa_pub.pem */; };
 		8400D5C41E17C6D2006785F5 /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8400D5C21E17C6D2006785F5 /* AboutWindowController.swift */; };
@@ -325,6 +328,10 @@
 		E32712B224F2B8CA00359DAB /* ScreenshootOSDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E32712B424F2B8CA00359DAB /* ScreenshootOSDView.xib */; };
 		E32B157D21BC27B100CDBCEA /* JavascriptAPIMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32B157C21BC27B100CDBCEA /* JavascriptAPIMenu.swift */; };
 		E32B157F21BE219700CDBCEA /* JavascriptPluginMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32B157E21BE219700CDBCEA /* JavascriptPluginMenuItem.swift */; };
+		E33517522DFD206E00BBE169 /* SettingsPageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33517512DFD206800BBE169 /* SettingsPageUI.swift */; };
+		E33517542DFD25E100BBE169 /* SettingsLocalizationKeysUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33517532DFD25E100BBE169 /* SettingsLocalizationKeysUI.swift */; };
+		E33517592DFFC6DB00BBE169 /* SettingsPageVideoAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33517582DFFC6DB00BBE169 /* SettingsPageVideoAudio.swift */; };
+		E33517602DFFC93100BBE169 /* SettingsLocalizationKeysVideoAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = E335175F2DFFC93100BBE169 /* SettingsLocalizationKeysVideoAudio.swift */; };
 		E3366AFA224A039500EF3C32 /* JavascriptAPIPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3366AF9224A039500EF3C32 /* JavascriptAPIPreferences.swift */; };
 		E337D5E22411B64A00B5729A /* JavascriptPolyfill.swift in Sources */ = {isa = PBXBuildFile; fileRef = E337D5E12411B64900B5729A /* JavascriptPolyfill.swift */; };
 		E337D5E4241C12BE00B5729A /* PrefPluginPermissionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E337D5E3241C12BE00B5729A /* PrefPluginPermissionListView.swift */; };
@@ -337,6 +344,12 @@
 		E33FEEB52229A44F00B59711 /* JavascriptAPIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33FEEB42229A44F00B59711 /* JavascriptAPIUtils.swift */; };
 		E342832F20B7149800139865 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E342832E20B7149800139865 /* Logger.swift */; };
 		E34A0E012053F93A00B50097 /* PrefOSCToolbarSettingsSheetController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E34A0E032053F93A00B50097 /* PrefOSCToolbarSettingsSheetController.xib */; };
+		E34BC28B2C27731700A94680 /* SettingsPageGeneral.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34BC28A2C27731700A94680 /* SettingsPageGeneral.swift */; };
+		E34BC28D2C27733200A94680 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34BC28C2C27733200A94680 /* SettingsPage.swift */; };
+		E34BC28F2C27A68100A94680 /* SettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34BC28E2C27A68100A94680 /* SettingsItem.swift */; };
+		E34BC2A82C27C01800A94680 /* SettingsLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34BC2A72C27C01800A94680 /* SettingsLocalization.swift */; };
+		E34BC2AA2C27C95800A94680 /* SettingsLocalizationKeysGeneral.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34BC2A92C27C95800A94680 /* SettingsLocalizationKeysGeneral.swift */; };
+		E34BC2AC2C27DAE900A94680 /* SettingsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34BC2AB2C27DAE900A94680 /* SettingsHelper.swift */; };
 		E34E909A24F821280073BF04 /* GuideWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E34E909C24F821280073BF04 /* GuideWindowController.xib */; };
 		E34EAA83251A36CE00057F27 /* JavascriptAPIFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34EAA82251A36CE00057F27 /* JavascriptAPIFile.swift */; };
 		E3513AF820EF79C500F8C347 /* PreferenceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3513AF620EF79C500F8C347 /* PreferenceWindowController.swift */; };
@@ -349,6 +362,9 @@
 		E3530700214908DD008FE492 /* JavascriptAPIHttp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35306FF214908DC008FE492 /* JavascriptAPIHttp.swift */; };
 		E3530702214935DE008FE492 /* JavascriptAPIConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3530701214935DE008FE492 /* JavascriptAPIConsole.swift */; };
 		E353070521496CE4008FE492 /* PrefPluginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E353070321496CE4008FE492 /* PrefPluginViewController.swift */; };
+		E360A5CD2C23C1BC006EA412 /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E360A5CC2C23C1BC006EA412 /* SettingsWindow.swift */; };
+		E36825512E01169F004E1E5F /* SettingsPageSubtitles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36825502E01169F004E1E5F /* SettingsPageSubtitles.swift */; };
+		E36825532E022B10004E1E5F /* SettingsLocalizationKeysSubtitles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36825522E022B10004E1E5F /* SettingsLocalizationKeysSubtitles.swift */; };
 		E36E8D7C24F6052F00B8C097 /* GuideWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36E8D7A24F6052F00B8C097 /* GuideWindowController.swift */; };
 		E374160C20F138A900B4F7F9 /* CollapseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E374160B20F138A900B4F7F9 /* CollapseView.swift */; };
 		E374160F20F3AF7E00B4F7F9 /* PrefUtilsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E374160D20F3AF7E00B4F7F9 /* PrefUtilsViewController.swift */; };
@@ -366,6 +382,24 @@
 		E38BA1C0253E54F2000B551D /* JavascriptAPIGlobal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38BA1BF253E54F2000B551D /* JavascriptAPIGlobal.swift */; };
 		E38BA1C4254110BE000B551D /* JavascriptMessageHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38BA1C3254110BD000B551D /* JavascriptMessageHub.swift */; };
 		E38BD4AF20054BD9007635FC /* MainWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38BD4AE20054BD9007635FC /* MainWindow.swift */; };
+		E38EA5902F2EE41600FB51CE /* SettingsPageNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA58F2F2EE40E00FB51CE /* SettingsPageNetwork.swift */; };
+		E38EA5952F2EE4E300FB51CE /* SettingsControlLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E38EA5912F2EE4E300FB51CE /* SettingsControlLocalizable.strings */; };
+		E38EA5962F2EE4E300FB51CE /* SettingsNetworkLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E38EA5942F2EE4E300FB51CE /* SettingsNetworkLocalizable.strings */; };
+		E38EA5972F2EE4E300FB51CE /* SettingsLocalizationKeysControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5922F2EE4E300FB51CE /* SettingsLocalizationKeysControl.swift */; };
+		E38EA5982F2EE4E300FB51CE /* SettingsLocalizationKeysNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5932F2EE4E300FB51CE /* SettingsLocalizationKeysNetwork.swift */; };
+		E38EA59A2F2F35FB00FB51CE /* SettingsPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5992F2F35F500FB51CE /* SettingsPageControl.swift */; };
+		E38EA59C2F30011C00FB51CE /* SettingsPageKeyBindings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA59B2F30011000FB51CE /* SettingsPageKeyBindings.swift */; };
+		E38EA59F2F3009EF00FB51CE /* SettingsKeyBindingLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E38EA59D2F3009EF00FB51CE /* SettingsKeyBindingLocalizable.strings */; };
+		E38EA5A02F3009EF00FB51CE /* SettingsLocalizationKeysKeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA59E2F3009EF00FB51CE /* SettingsLocalizationKeysKeyBinding.swift */; };
+		E38EA5A22F30750500FB51CE /* SettingsPageAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5A12F30750000FB51CE /* SettingsPageAdvanced.swift */; };
+		E38EA5A52F30762300FB51CE /* SettingsLocalizationKeysAdvanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5A42F30762300FB51CE /* SettingsLocalizationKeysAdvanced.swift */; };
+		E38EA5A62F30762300FB51CE /* SettingsAdvancedLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E38EA5A32F30762300FB51CE /* SettingsAdvancedLocalizable.strings */; };
+		E38EA5A82F3087A600FB51CE /* SettingsPageUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5A72F30879E00FB51CE /* SettingsPageUtilities.swift */; };
+		E38EA5AB2F3088F300FB51CE /* SettingsUtilsLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E38EA5AA2F3088F300FB51CE /* SettingsUtilsLocalizable.strings */; };
+		E38EA5AC2F3088F300FB51CE /* SettingsLocalizationKeysUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5A92F3088F300FB51CE /* SettingsLocalizationKeysUtils.swift */; };
+		E38EA5AE2F31429F00FB51CE /* SettingsPagePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5AD2F31429900FB51CE /* SettingsPagePlugin.swift */; };
+		E38EA5B12F3142C700FB51CE /* SettingsPluginLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E38EA5B02F3142C700FB51CE /* SettingsPluginLocalizable.strings */; };
+		E38EA5B22F3142C700FB51CE /* SettingsLocalizationKeysPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38EA5AF2F3142C700FB51CE /* SettingsLocalizationKeysPlugin.swift */; };
 		E3958565253133E80096811F /* SidebarTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3958563253133E80096811F /* SidebarTabView.swift */; };
 		E3958566253133E80096811F /* SidebarTabView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E3958564253133E80096811F /* SidebarTabView.xib */; };
 		E3958586253309C90096811F /* PluginSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3958585253309C90096811F /* PluginSidebarView.swift */; };
@@ -388,6 +422,14 @@
 		E3DC53982A28F0DC002A5A48 /* JavascriptAPIInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DC53972A28F0DC002A5A48 /* JavascriptAPIInput.swift */; };
 		E3DE8DCD1FD8166A0021921C /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3DE8DCC1FD8166A0021921C /* main.swift */; };
 		E3DE8DD31FD848BA0021921C /* iina-cli in Copy Executables */ = {isa = PBXBuildFile; fileRef = E3DE8DCA1FD8166A0021921C /* iina-cli */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E3EC8C412F92E6BA00FBB51E /* PluginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EC8C402F92E69C00FBB51E /* PluginManager.swift */; };
+		E3EC8C432F94330400FBB51E /* Dialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EC8C422F9432FD00FBB51E /* Dialog.swift */; };
+		E3EC8C462F9475C600FBB51E /* PluginStorePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EC8C452F9475BC00FBB51E /* PluginStorePanel.swift */; };
+		E3EC8C482F95AD9600FBB51E /* SettingsGeneralLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E3EC8C472F95AD9600FBB51E /* SettingsGeneralLocalizable.strings */; };
+		E3EC8C4A2F95AD9900FBB51E /* SettingsUILocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E3EC8C492F95AD9900FBB51E /* SettingsUILocalizable.strings */; };
+		E3EC8C4C2F95AD9D00FBB51E /* SettingsVideoAudioLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E3EC8C4B2F95AD9D00FBB51E /* SettingsVideoAudioLocalizable.strings */; };
+		E3EC8C4E2F95ADA000FBB51E /* SettingsSubtitesLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E3EC8C4D2F95ADA000FBB51E /* SettingsSubtitesLocalizable.strings */; };
+		E3EC8C502F95B0A700FBB51E /* ConstraintsSugar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EC8C4F2F95B09D00FBB51E /* ConstraintsSugar.swift */; };
 		E3ECC89E1FE9A6D900BED8C7 /* GeometryDef.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3ECC89D1FE9A6D900BED8C7 /* GeometryDef.swift */; };
 		E3F698872120D878005792C9 /* ExtendedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F698862120D878005792C9 /* ExtendedColors.swift */; };
 		E3FC31461FE1501E00B9B86F /* PowerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FC31451FE1501E00B9B86F /* PowerSource.swift */; };
@@ -420,15 +462,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4954298A216C34960058F680 /* Embed App Extensions */ = {
+		4954298A216C34960058F680 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				49542986216C34950058F680 /* OpenInIINA.appex in Embed App Extensions */,
+				49542986216C34950058F680 /* OpenInIINA.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8461BA631E423423008BB852 /* Copy Executables */ = {
@@ -580,7 +622,6 @@
 		0507C2672B5617660043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/InitialWindowController.strings; sourceTree = "<group>"; };
 		0507C2682B5617660043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/MiniPlayerWindowController.strings; sourceTree = "<group>"; };
 		0507C2692B5617660043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/GuideWindowController.strings; sourceTree = "<group>"; };
-		0507C26A2B5617670043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/LogWindowController.strings; sourceTree = "<group>"; };
 		0507C26B2B5617670043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/CropSettingsViewController.strings; sourceTree = "<group>"; };
 		0507C26C2B5617670043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/FreeSelectingViewController.strings; sourceTree = "<group>"; };
 		0507C26D2B5617670043AD05 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/FontPickerWindowController.strings; sourceTree = "<group>"; };
@@ -885,35 +926,6 @@
 		348F71952DE2A814006C587D /* MPVCommandWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVCommandWrappers.swift; sourceTree = "<group>"; };
 		3494B3F42C00254500F57FC2 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3494B3F52C00254800F57FC2 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		34ACA04C29DBB0090030C09C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LogWindowController.xib; sourceTree = "<group>"; };
-		34ACA04F29DBB0180030C09C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA05129DBB0190030C09C /* af */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = af; path = af.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA05329DBB01A0030C09C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA05529DBB01B0030C09C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LogWindowController.strings"; sourceTree = "<group>"; };
-		34ACA05729DBB01B0030C09C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LogWindowController.strings"; sourceTree = "<group>"; };
-		34ACA05929DBB01C0030C09C /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA05B29DBB01C0030C09C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA05D29DBB01E0030C09C /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA05F29DBB01F0030C09C /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/LogWindowController.strings"; sourceTree = "<group>"; };
-		34ACA06129DBB01F0030C09C /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06329DBB01F0030C09C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06529DBB0200030C09C /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06729DBB0200030C09C /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06929DBB0200030C09C /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06B29DBB0210030C09C /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06D29DBB0210030C09C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA06F29DBB0210030C09C /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA07129DBB0220030C09C /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA07329DBB0220030C09C /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA07529DBB0230030C09C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/LogWindowController.strings"; sourceTree = "<group>"; };
-		34ACA07729DBB0230030C09C /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA07929DBB0230030C09C /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA07B29DBB0230030C09C /* sr-Latn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sr-Latn"; path = "sr-Latn.lproj/LogWindowController.strings"; sourceTree = "<group>"; };
-		34ACA07D29DBB0240030C09C /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA07F29DBB0240030C09C /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA08129DBB0250030C09C /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA08329DBB0260030C09C /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/LogWindowController.strings; sourceTree = "<group>"; };
-		34ACA08529DBB0260030C09C /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LogWindowController.strings; sourceTree = "<group>"; };
 		34ACAB2D2C142A0300F871A0 /* libintl.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.8.dylib; path = deps/lib/libintl.8.dylib; sourceTree = "<group>"; };
 		34ACAB2E2C142A0300F871A0 /* libgraphite2.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgraphite2.3.dylib; path = deps/lib/libgraphite2.3.dylib; sourceTree = "<group>"; };
 		34ACAB2F2C142A0300F871A0 /* liblcms2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblcms2.2.dylib; path = deps/lib/liblcms2.2.dylib; sourceTree = "<group>"; };
@@ -1034,7 +1046,6 @@
 		34ACAD692C16917000F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/InitialWindowController.strings; sourceTree = "<group>"; };
 		34ACAD6A2C16917000F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/MiniPlayerWindowController.strings; sourceTree = "<group>"; };
 		34ACAD6B2C16917000F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/GuideWindowController.strings; sourceTree = "<group>"; };
-		34ACAD6C2C16917000F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/LogWindowController.strings; sourceTree = "<group>"; };
 		34ACAD6D2C16917100F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/CropSettingsViewController.strings; sourceTree = "<group>"; };
 		34ACAD6E2C16917100F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/FreeSelectingViewController.strings; sourceTree = "<group>"; };
 		34ACAD6F2C16917100F871A0 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/FontPickerWindowController.strings; sourceTree = "<group>"; };
@@ -1098,7 +1109,6 @@
 		34F294522C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InitialWindowController.strings; sourceTree = "<group>"; };
 		34F294532C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/MiniPlayerWindowController.strings; sourceTree = "<group>"; };
 		34F294542C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/GuideWindowController.strings; sourceTree = "<group>"; };
-		34F294552C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/LogWindowController.strings; sourceTree = "<group>"; };
 		34F294562C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/CropSettingsViewController.strings; sourceTree = "<group>"; };
 		34F294572C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/FreeSelectingViewController.strings; sourceTree = "<group>"; };
 		34F294582C0A1BDF00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/FontPickerWindowController.strings; sourceTree = "<group>"; };
@@ -1190,11 +1200,14 @@
 		51165FBF2E1D91940060B817 /* ReadWriteLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadWriteLock.swift; sourceTree = "<group>"; };
 		511BF43B2E12FF8800E9721E /* VolumeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeSlider.swift; sourceTree = "<group>"; };
 		511BF43D2E1305C800E9721E /* MiniPlaySlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlaySlider.swift; sourceTree = "<group>"; };
+		5125117C2E89B2ED00CDAE9F /* Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Display.swift; sourceTree = "<group>"; };
 		512B8FDC2BC2376E00AF41BF /* OutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineView.swift; sourceTree = "<group>"; };
 		513A4FF929B53F8100A8EA7D /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		51537C7229FA26DD00F9A472 /* Nightly.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Nightly.xcconfig; sourceTree = "<group>"; };
 		515B5E592A579782001FCD49 /* iina-plugin.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "iina-plugin.xcconfig"; sourceTree = "<group>"; };
+		516B264C2EDA579600E3CB69 /* MemoryUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryUsage.swift; sourceTree = "<group>"; };
 		51854CD92A1C489300C40B78 /* FFmpegLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFmpegLogger.swift; sourceTree = "<group>"; };
+		518DB7012FA6A2120024F0B0 /* write_info_plist_header.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = write_info_plist_header.sh; sourceTree = "<group>"; };
 		5196819929EC963F00B05D55 /* CoreDisplay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreDisplay.framework; path = /System/Library/Frameworks/CoreDisplay.framework; sourceTree = "<group>"; };
 		519872FE26879B9B00F84BCC /* AccessibilityPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPreferences.swift; sourceTree = "<group>"; };
 		519CCABC2BFFAEF10079DCAF /* HardwareDecodeCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareDecodeCapabilities.swift; sourceTree = "<group>"; };
@@ -1208,6 +1221,7 @@
 		51DE55C82A6646710050AD06 /* Sysctl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sysctl.swift; sourceTree = "<group>"; };
 		51E63DFA29CFB031008AFC20 /* PlaySlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaySlider.swift; sourceTree = "<group>"; };
 		51E63DFC29CFB04B008AFC20 /* PlaySliderLoopKnob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaySliderLoopKnob.swift; sourceTree = "<group>"; };
+		51EDB4712E85EE10007E5018 /* DisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayController.swift; sourceTree = "<group>"; };
 		51F7974628C7E00200812D0D /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
 		5879479521A87DD700757A6F /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/MiniPlayerWindowController.strings; sourceTree = "<group>"; };
 		5879479621A87E6100757A6F /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/PreferenceWindowController.strings; sourceTree = "<group>"; };
@@ -1837,6 +1851,10 @@
 		E32712B624F2B8D200359DAB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ScreenshootOSDView.strings; sourceTree = "<group>"; };
 		E32B157C21BC27B100CDBCEA /* JavascriptAPIMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptAPIMenu.swift; sourceTree = "<group>"; };
 		E32B157E21BE219700CDBCEA /* JavascriptPluginMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptPluginMenuItem.swift; sourceTree = "<group>"; };
+		E33517512DFD206800BBE169 /* SettingsPageUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageUI.swift; sourceTree = "<group>"; };
+		E33517532DFD25E100BBE169 /* SettingsLocalizationKeysUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysUI.swift; sourceTree = "<group>"; };
+		E33517582DFFC6DB00BBE169 /* SettingsPageVideoAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageVideoAudio.swift; sourceTree = "<group>"; };
+		E335175F2DFFC93100BBE169 /* SettingsLocalizationKeysVideoAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysVideoAudio.swift; sourceTree = "<group>"; };
 		E3366AF9224A039500EF3C32 /* JavascriptAPIPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptAPIPreferences.swift; sourceTree = "<group>"; };
 		E337D5E12411B64900B5729A /* JavascriptPolyfill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptPolyfill.swift; sourceTree = "<group>"; };
 		E337D5E3241C12BE00B5729A /* PrefPluginPermissionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefPluginPermissionListView.swift; sourceTree = "<group>"; };
@@ -1854,6 +1872,12 @@
 		E342832E20B7149800139865 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		E34A0E022053F93A00B50097 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefOSCToolbarSettingsSheetController.xib; sourceTree = "<group>"; };
 		E34A0E052053F93E00B50097 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PrefOSCToolbarSettingsSheetController.strings"; sourceTree = "<group>"; };
+		E34BC28A2C27731700A94680 /* SettingsPageGeneral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageGeneral.swift; sourceTree = "<group>"; };
+		E34BC28C2C27733200A94680 /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		E34BC28E2C27A68100A94680 /* SettingsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsItem.swift; sourceTree = "<group>"; };
+		E34BC2A72C27C01800A94680 /* SettingsLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalization.swift; sourceTree = "<group>"; };
+		E34BC2A92C27C95800A94680 /* SettingsLocalizationKeysGeneral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysGeneral.swift; sourceTree = "<group>"; };
+		E34BC2AB2C27DAE900A94680 /* SettingsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHelper.swift; sourceTree = "<group>"; };
 		E34E0ADF2007E23600BDC8BA /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/FreeSelectingViewController.strings"; sourceTree = "<group>"; };
 		E34E909B24F821280073BF04 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/GuideWindowController.xib; sourceTree = "<group>"; };
 		E34E909E24F821300073BF04 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/GuideWindowController.strings; sourceTree = "<group>"; };
@@ -1888,6 +1912,9 @@
 		E35306FF214908DC008FE492 /* JavascriptAPIHttp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptAPIHttp.swift; sourceTree = "<group>"; };
 		E3530701214935DE008FE492 /* JavascriptAPIConsole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptAPIConsole.swift; sourceTree = "<group>"; };
 		E353070321496CE4008FE492 /* PrefPluginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefPluginViewController.swift; sourceTree = "<group>"; };
+		E360A5CC2C23C1BC006EA412 /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
+		E36825502E01169F004E1E5F /* SettingsPageSubtitles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageSubtitles.swift; sourceTree = "<group>"; };
+		E36825522E022B10004E1E5F /* SettingsLocalizationKeysSubtitles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysSubtitles.swift; sourceTree = "<group>"; };
 		E36E8D7A24F6052F00B8C097 /* GuideWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideWindowController.swift; sourceTree = "<group>"; };
 		E374160B20F138A900B4F7F9 /* CollapseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapseView.swift; sourceTree = "<group>"; };
 		E374160D20F3AF7E00B4F7F9 /* PrefUtilsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefUtilsViewController.swift; sourceTree = "<group>"; };
@@ -1906,6 +1933,24 @@
 		E38BA1BF253E54F2000B551D /* JavascriptAPIGlobal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptAPIGlobal.swift; sourceTree = "<group>"; };
 		E38BA1C3254110BD000B551D /* JavascriptMessageHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptMessageHub.swift; sourceTree = "<group>"; };
 		E38BD4AE20054BD9007635FC /* MainWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindow.swift; sourceTree = "<group>"; };
+		E38EA58F2F2EE40E00FB51CE /* SettingsPageNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageNetwork.swift; sourceTree = "<group>"; };
+		E38EA5912F2EE4E300FB51CE /* SettingsControlLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsControlLocalizable.strings; sourceTree = "<group>"; };
+		E38EA5922F2EE4E300FB51CE /* SettingsLocalizationKeysControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysControl.swift; sourceTree = "<group>"; };
+		E38EA5932F2EE4E300FB51CE /* SettingsLocalizationKeysNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysNetwork.swift; sourceTree = "<group>"; };
+		E38EA5942F2EE4E300FB51CE /* SettingsNetworkLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsNetworkLocalizable.strings; sourceTree = "<group>"; };
+		E38EA5992F2F35F500FB51CE /* SettingsPageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageControl.swift; sourceTree = "<group>"; };
+		E38EA59B2F30011000FB51CE /* SettingsPageKeyBindings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageKeyBindings.swift; sourceTree = "<group>"; };
+		E38EA59D2F3009EF00FB51CE /* SettingsKeyBindingLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsKeyBindingLocalizable.strings; sourceTree = "<group>"; };
+		E38EA59E2F3009EF00FB51CE /* SettingsLocalizationKeysKeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysKeyBinding.swift; sourceTree = "<group>"; };
+		E38EA5A12F30750000FB51CE /* SettingsPageAdvanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageAdvanced.swift; sourceTree = "<group>"; };
+		E38EA5A32F30762300FB51CE /* SettingsAdvancedLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsAdvancedLocalizable.strings; sourceTree = "<group>"; };
+		E38EA5A42F30762300FB51CE /* SettingsLocalizationKeysAdvanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysAdvanced.swift; sourceTree = "<group>"; };
+		E38EA5A72F30879E00FB51CE /* SettingsPageUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageUtilities.swift; sourceTree = "<group>"; };
+		E38EA5A92F3088F300FB51CE /* SettingsLocalizationKeysUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysUtils.swift; sourceTree = "<group>"; };
+		E38EA5AA2F3088F300FB51CE /* SettingsUtilsLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsUtilsLocalizable.strings; sourceTree = "<group>"; };
+		E38EA5AD2F31429900FB51CE /* SettingsPagePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPagePlugin.swift; sourceTree = "<group>"; };
+		E38EA5AF2F3142C700FB51CE /* SettingsLocalizationKeysPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLocalizationKeysPlugin.swift; sourceTree = "<group>"; };
+		E38EA5B02F3142C700FB51CE /* SettingsPluginLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsPluginLocalizable.strings; sourceTree = "<group>"; };
 		E393669923BDD1850070D626 /* IINA.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IINA.entitlements; sourceTree = "<group>"; };
 		E3958563253133E80096811F /* SidebarTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarTabView.swift; sourceTree = "<group>"; };
 		E3958564253133E80096811F /* SidebarTabView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SidebarTabView.xib; sourceTree = "<group>"; };
@@ -1929,6 +1974,14 @@
 		E3DC53972A28F0DC002A5A48 /* JavascriptAPIInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavascriptAPIInput.swift; sourceTree = "<group>"; };
 		E3DE8DCA1FD8166A0021921C /* iina-cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "iina-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3DE8DCC1FD8166A0021921C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		E3EC8C402F92E69C00FBB51E /* PluginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginManager.swift; sourceTree = "<group>"; };
+		E3EC8C422F9432FD00FBB51E /* Dialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dialog.swift; sourceTree = "<group>"; };
+		E3EC8C452F9475BC00FBB51E /* PluginStorePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginStorePanel.swift; sourceTree = "<group>"; };
+		E3EC8C472F95AD9600FBB51E /* SettingsGeneralLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsGeneralLocalizable.strings; sourceTree = "<group>"; };
+		E3EC8C492F95AD9900FBB51E /* SettingsUILocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsUILocalizable.strings; sourceTree = "<group>"; };
+		E3EC8C4B2F95AD9D00FBB51E /* SettingsVideoAudioLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsVideoAudioLocalizable.strings; sourceTree = "<group>"; };
+		E3EC8C4D2F95ADA000FBB51E /* SettingsSubtitesLocalizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsSubtitesLocalizable.strings; sourceTree = "<group>"; };
+		E3EC8C4F2F95B09D00FBB51E /* ConstraintsSugar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstraintsSugar.swift; sourceTree = "<group>"; };
 		E3ECC89D1FE9A6D900BED8C7 /* GeometryDef.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryDef.swift; sourceTree = "<group>"; };
 		E3F698862120D878005792C9 /* ExtendedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedColors.swift; sourceTree = "<group>"; };
 		E3FC31451FE1501E00B9B86F /* PowerSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerSource.swift; sourceTree = "<group>"; };
@@ -2178,6 +2231,14 @@
 			name = Generated;
 			sourceTree = "<group>";
 		};
+		518DB7002FA6A1480024F0B0 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				518DB7012FA6A2120024F0B0 /* write_info_plist_header.sh */,
+			);
+			name = Scripts;
+			sourceTree = "<group>";
+		};
 		8452DD7F1D3A1F2A008A543A /* Preference */ = {
 			isa = PBXGroup;
 			children = (
@@ -2241,6 +2302,7 @@
 				84EC12881F504D2500137C1E /* FilterPresets.strings */,
 				E3CB75BC1FDACB82004DB10A /* SavedFilter.swift */,
 				84C6D3631EB276E9009BF721 /* PlaybackHistory.swift */,
+				5125117C2E89B2ED00CDAE9F /* Display.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -2397,7 +2459,6 @@
 				E36E8D7A24F6052F00B8C097 /* GuideWindowController.swift */,
 				E34E909C24F821280073BF04 /* GuideWindowController.xib */,
 				34FD798D291C76A600963EDE /* LogWindowController.swift */,
-				34ACA04D29DBB0090030C09C /* LogWindowController.xib */,
 				84D0FB7B1F5E510C00C6A6A7 /* Interactive Mode */,
 				84D377691D74163B007F7396 /* Video */,
 				84D377681D7413D8007F7396 /* Accessories */,
@@ -2410,9 +2471,11 @@
 			children = (
 				84A886E21E24F2D3008755BB /* Sub */,
 				8497A4831D2FF573005F504F /* iina-Bridging-Header.h */,
+				E3EC8C4F2F95B09D00FBB51E /* ConstraintsSugar.swift */,
 				513A4FF929B53F8100A8EA7D /* Atomic.swift */,
 				51165FBF2E1D91940060B817 /* ReadWriteLock.swift */,
 				51854CD92A1C489300C40B78 /* FFmpegLogger.swift */,
+				E3EC8C422F9432FD00FBB51E /* Dialog.swift */,
 				84EB1F061D2F5E76004FA5A1 /* Utility.swift */,
 				8461C52F1D462488006E91FF /* VideoTime.swift */,
 				8434BAA61D5DF2DA003BECF2 /* Extensions.swift */,
@@ -2445,6 +2508,7 @@
 				51DE55C82A6646710050AD06 /* Sysctl.swift */,
 				519CCABC2BFFAEF10079DCAF /* HardwareDecodeCapabilities.swift */,
 				51165FBB2E1D91290060B817 /* ReadWriteAtomic.swift */,
+				516B264C2EDA579600E3CB69 /* MemoryUsage.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -2462,6 +2526,7 @@
 				842904E11F0EC01600478376 /* AutoFileMatcher.swift */,
 				846121BC1F35FCA500ABB39C /* DraggingDetect.swift */,
 				5114FA932DC704CE00D02435 /* NowPlayingInfoManager.swift */,
+				51EDB4712E85EE10007E5018 /* DisplayController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -2672,9 +2737,11 @@
 				845ABEAD1D4D19CF00BFB15B /* Models */,
 				847557121F405F2B0006B0FF /* Menu */,
 				84A0BAA31D2FAEA000BC8DA1 /* Views */,
+				E360A5CB2C23C181006EA412 /* Settings */,
 				8452DD7F1D3A1F2A008A543A /* Preference */,
 				E3CAD4AD2146DB23000B373A /* Javascript */,
 				84A0BAA61D2FAF8400BC8DA1 /* Utils */,
+				518DB7002FA6A1480024F0B0 /* Scripts */,
 			);
 			indentWidth = 2;
 			path = iina;
@@ -2712,6 +2779,34 @@
 			path = mpv;
 			sourceTree = "<group>";
 		};
+		E34BC2902C27BB4000A94680 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				E3EC8C472F95AD9600FBB51E /* SettingsGeneralLocalizable.strings */,
+				E3EC8C492F95AD9900FBB51E /* SettingsUILocalizable.strings */,
+				E3EC8C4B2F95AD9D00FBB51E /* SettingsVideoAudioLocalizable.strings */,
+				E3EC8C4D2F95ADA000FBB51E /* SettingsSubtitesLocalizable.strings */,
+				E38EA5942F2EE4E300FB51CE /* SettingsNetworkLocalizable.strings */,
+				E38EA5912F2EE4E300FB51CE /* SettingsControlLocalizable.strings */,
+				E38EA59D2F3009EF00FB51CE /* SettingsKeyBindingLocalizable.strings */,
+				E38EA5A32F30762300FB51CE /* SettingsAdvancedLocalizable.strings */,
+				E38EA5B02F3142C700FB51CE /* SettingsPluginLocalizable.strings */,
+				E38EA5AA2F3088F300FB51CE /* SettingsUtilsLocalizable.strings */,
+				E34BC2A72C27C01800A94680 /* SettingsLocalization.swift */,
+				E34BC2A92C27C95800A94680 /* SettingsLocalizationKeysGeneral.swift */,
+				E33517532DFD25E100BBE169 /* SettingsLocalizationKeysUI.swift */,
+				E335175F2DFFC93100BBE169 /* SettingsLocalizationKeysVideoAudio.swift */,
+				E36825522E022B10004E1E5F /* SettingsLocalizationKeysSubtitles.swift */,
+				E38EA5932F2EE4E300FB51CE /* SettingsLocalizationKeysNetwork.swift */,
+				E38EA5922F2EE4E300FB51CE /* SettingsLocalizationKeysControl.swift */,
+				E38EA59E2F3009EF00FB51CE /* SettingsLocalizationKeysKeyBinding.swift */,
+				E38EA5A42F30762300FB51CE /* SettingsLocalizationKeysAdvanced.swift */,
+				E38EA5AF2F3142C700FB51CE /* SettingsLocalizationKeysPlugin.swift */,
+				E38EA5A92F3088F300FB51CE /* SettingsLocalizationKeysUtils.swift */,
+			);
+			name = Localization;
+			sourceTree = "<group>";
+		};
 		E35306F22147F770008FE492 /* API */ = {
 			isa = PBXGroup;
 			children = (
@@ -2735,6 +2830,38 @@
 				E3785B062A83039600787CB7 /* JavascriptAPIWebSocket.swift */,
 			);
 			name = API;
+			sourceTree = "<group>";
+		};
+		E360A5CB2C23C181006EA412 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				E368254D2E01166B004E1E5F /* Pages */,
+				E34BC2902C27BB4000A94680 /* Localization */,
+				E360A5CC2C23C1BC006EA412 /* SettingsWindow.swift */,
+				E34BC28C2C27733200A94680 /* SettingsPage.swift */,
+				E34BC28E2C27A68100A94680 /* SettingsItem.swift */,
+				E34BC2AB2C27DAE900A94680 /* SettingsHelper.swift */,
+				E3EC8C402F92E69C00FBB51E /* PluginManager.swift */,
+				E3EC8C452F9475BC00FBB51E /* PluginStorePanel.swift */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		E368254D2E01166B004E1E5F /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				E34BC28A2C27731700A94680 /* SettingsPageGeneral.swift */,
+				E33517512DFD206800BBE169 /* SettingsPageUI.swift */,
+				E33517582DFFC6DB00BBE169 /* SettingsPageVideoAudio.swift */,
+				E36825502E01169F004E1E5F /* SettingsPageSubtitles.swift */,
+				E38EA58F2F2EE40E00FB51CE /* SettingsPageNetwork.swift */,
+				E38EA5992F2F35F500FB51CE /* SettingsPageControl.swift */,
+				E38EA59B2F30011000FB51CE /* SettingsPageKeyBindings.swift */,
+				E38EA5A12F30750000FB51CE /* SettingsPageAdvanced.swift */,
+				E38EA5AD2F31429900FB51CE /* SettingsPagePlugin.swift */,
+				E38EA5A72F30879E00FB51CE /* SettingsPageUtilities.swift */,
+			);
+			path = Pages;
 			sourceTree = "<group>";
 		};
 		E38558882A484A2D0083772D /* iina-plugin */ = {
@@ -2807,7 +2934,7 @@
 				84E745DA1DFDE9C600588DED /* Copy Configs */,
 				8461BA631E423423008BB852 /* Copy Executables */,
 				E3E720A12CD7073D003470BF /* Copy Default Plugins */,
-				4954298A216C34960058F680 /* Embed App Extensions */,
+				4954298A216C34960058F680 /* Embed Foundation Extensions */,
 				51728768291B6F30009E6EC1 /* Write Info.h */,
 			);
 			buildRules = (
@@ -2873,8 +3000,9 @@
 		84EB1ECE1D2F51D3004FA5A1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 2650;
 				ORGANIZATIONNAME = lhc;
 				TargetAttributes = {
 					49542972216C34950058F680 = {
@@ -2979,7 +3107,9 @@
 				84EC12861F504D2500137C1E /* FilterPresets.strings in Resources */,
 				E38B3214214FB9EA000F6D27 /* PrefPluginPermissionView.xib in Resources */,
 				8400D5F01E1AB344006785F5 /* PrefCodecViewController.xib in Resources */,
+				E38EA5B12F3142C700FB51CE /* SettingsPluginLocalizable.strings in Resources */,
 				1326717E20852D0D000FA7E2 /* SubChooseViewController.xib in Resources */,
+				E38EA59F2F3009EF00FB51CE /* SettingsKeyBindingLocalizable.strings in Resources */,
 				84C3AB8B1E7BF22300FEFB7A /* MPVCommandFormat.strings in Resources */,
 				8400D5C91E1AB2F9006785F5 /* QuickSettingViewController.xib in Resources */,
 				84EB1EDC1D2F51D3004FA5A1 /* Assets.xcassets in Resources */,
@@ -2991,9 +3121,9 @@
 				8400D5D81E1AB31B006785F5 /* AboutWindowController.xib in Resources */,
 				8400D5F31E1AB348006785F5 /* PrefSubViewController.xib in Resources */,
 				84D0FB821F5E6A3800C6A6A7 /* FreeSelectingViewController.xib in Resources */,
+				E3EC8C4A2F95AD9900FBB51E /* SettingsUILocalizable.strings in Resources */,
 				8400D5E11E1AB32F006785F5 /* PrefUIViewController.xib in Resources */,
 				E338368A202651CF00ABC812 /* PrefOSCToolbarDraggingItemViewController.xib in Resources */,
-				34ACA04B29DBB0090030C09C /* LogWindowController.xib in Resources */,
 				8483FB001EDFF325000F55D6 /* Credits.rtf in Resources */,
 				34F8B6F62C6C7B0100AE4B16 /* PrefPluginViewController.xib in Resources */,
 				84F5D49A1E44E9A50060A838 /* KeyBinding.strings in Resources */,
@@ -3004,6 +3134,9 @@
 				E3958566253133E80096811F /* SidebarTabView.xib in Resources */,
 				8400D5D21E1AB312006785F5 /* InspectorWindowController.xib in Resources */,
 				8400D5CC1E1AB2FF006785F5 /* PlaylistViewController.xib in Resources */,
+				E38EA5A62F30762300FB51CE /* SettingsAdvancedLocalizable.strings in Resources */,
+				E38EA5AB2F3088F300FB51CE /* SettingsUtilsLocalizable.strings in Resources */,
+				E3EC8C4E2F95ADA000FBB51E /* SettingsSubtitesLocalizable.strings in Resources */,
 				8400D5ED1E1AB33F006785F5 /* PrefAdvancedViewController.xib in Resources */,
 				8400D5CF1E1AB306006785F5 /* CropSettingsViewController.xib in Resources */,
 				6100FF2B1EDF9806002CF0FB /* dsa_pub.pem in Resources */,
@@ -3013,7 +3146,12 @@
 				8400D5D51E1AB317006785F5 /* FilterWindowController.xib in Resources */,
 				E3B3DD5720FDB8A600325184 /* PreferenceWindowController.xib in Resources */,
 				84996F901EC11CE6009A8A39 /* HistoryWindowController.xib in Resources */,
+				E38EA5952F2EE4E300FB51CE /* SettingsControlLocalizable.strings in Resources */,
+				E38EA5962F2EE4E300FB51CE /* SettingsNetworkLocalizable.strings in Resources */,
 				8418A2F5213F5791003166AC /* OpenURLWindowController.xib in Resources */,
+				E3EC8C482F95AD9600FBB51E /* SettingsGeneralLocalizable.strings in Resources */,
+				518DB7022FA6A2120024F0B0 /* write_info_plist_header.sh in Resources */,
+				E3EC8C4C2F95AD9D00FBB51E /* SettingsVideoAudioLocalizable.strings in Resources */,
 				8400D5DE1E1AB32A006785F5 /* PrefGeneralViewController.xib in Resources */,
 				8400D5C61E1AB2F1006785F5 /* MainWindowController.xib in Resources */,
 			);
@@ -3031,6 +3169,7 @@
 			);
 			inputPaths = (
 				"$(CONFIGURATION_BUILD_DIR)/$(EXECUTABLE_FOLDER_PATH)/$(EXECUTABLE_NAME)",
+				"$(SRCROOT)/iina/write_info_plist_header.sh",
 			);
 			name = "Write Info.h";
 			outputFileListPaths = (
@@ -3092,20 +3231,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3EC8C432F94330400FBB51E /* Dialog.swift in Sources */,
 				E35306FA214808AB008FE492 /* JavascriptAPIEvent.swift in Sources */,
 				849581F11F02728700D3B359 /* InitialWindowController.swift in Sources */,
 				8461C52E1D45FFF6006E91FF /* PlaySliderCell.swift in Sources */,
+				E33517602DFFC93100BBE169 /* SettingsLocalizationKeysVideoAudio.swift in Sources */,
 				84F5D4A21E4796F50060A838 /* KeyBindingTranslator.swift in Sources */,
 				E3DBD23E218EF4F100B3AFBF /* AboutWindowContributorAvatarItem.swift in Sources */,
+				E38EA5A02F3009EF00FB51CE /* SettingsLocalizationKeysKeyBinding.swift in Sources */,
+				E33517522DFD206E00BBE169 /* SettingsPageUI.swift in Sources */,
 				8452DD851D3B956D008A543A /* Preference.swift in Sources */,
 				8488D6E31E1183D300D5B952 /* PrefSubViewController.swift in Sources */,
 				846352581EEEE11A0043F0CC /* ThumbnailPeekView.swift in Sources */,
 				84E745D61DFDD4FD00588DED /* KeyCodeHelper.swift in Sources */,
+				E36825512E01169F004E1E5F /* SettingsPageSubtitles.swift in Sources */,
 				840D479B1DFEF649000D9A64 /* KeyRecordViewController.swift in Sources */,
 				D1A4D98A2B1495270009AB4E /* LegacyMigration.swift in Sources */,
 				E3965E1A2487C99900607EB4 /* JavascriptPluginSubtitle.swift in Sources */,
 				84F5D4951E44D5230060A838 /* KeyBindingCriterion.swift in Sources */,
+				E34BC2A82C27C01800A94680 /* SettingsLocalization.swift in Sources */,
 				846121BD1F35FCA500ABB39C /* DraggingDetect.swift in Sources */,
+				E38EA5A22F30750500FB51CE /* SettingsPageAdvanced.swift in Sources */,
 				84A886EC1E2573A5008755BB /* JustExtension.swift in Sources */,
 				51854CDA2A1C489300C40B78 /* FFmpegLogger.swift in Sources */,
 				84D0FB811F5E5A4000C6A6A7 /* CropBoxViewController.swift in Sources */,
@@ -3116,29 +3262,40 @@
 				8400D5C41E17C6D2006785F5 /* AboutWindowController.swift in Sources */,
 				84A886E41E24F37D008755BB /* ShooterSubtitle.swift in Sources */,
 				E3CB258B2222885E00A62C47 /* JavascriptAPIOverlay.swift in Sources */,
+				E38EA59C2F30011C00FB51CE /* SettingsPageKeyBindings.swift in Sources */,
 				E337D5E6241EF60400B5729A /* JavascriptAPISubtitle.swift in Sources */,
 				84A09A0E1F2DF596000FF343 /* MiniPlayerWindowController.swift in Sources */,
 				84BEEC421DFEE46200F945CA /* StreamReader.swift in Sources */,
 				E3CAD4AF2146DB47000B373A /* JavascriptAPI.swift in Sources */,
 				84C644601E92BA2700B1410B /* TimeLabelOverflowedView.swift in Sources */,
 				5114FA942DC704CE00D02435 /* NowPlayingInfoManager.swift in Sources */,
+				E3EC8C412F92E6BA00FBB51E /* PluginManager.swift in Sources */,
 				E3958565253133E80096811F /* SidebarTabView.swift in Sources */,
 				E3C12F6B201F281F00297964 /* FirstRunManager.swift in Sources */,
+				E34BC2AA2C27C95800A94680 /* SettingsLocalizationKeysGeneral.swift in Sources */,
+				E33517542DFD25E100BBE169 /* SettingsLocalizationKeysUI.swift in Sources */,
 				84EB1F071D2F5E76004FA5A1 /* Utility.swift in Sources */,
 				84D0FB7E1F5E519300C6A6A7 /* FreeSelectingViewController.swift in Sources */,
+				E34BC28D2C27733200A94680 /* SettingsPage.swift in Sources */,
 				E3530702214935DE008FE492 /* JavascriptAPIConsole.swift in Sources */,
 				840D47A01DFEFC49000D9A64 /* KeyRecordView.swift in Sources */,
 				84791C8B1D405E9D0069E28A /* PlaybackInfo.swift in Sources */,
 				E322A4F820A8442E00C67D32 /* PlaylistPlaybackProgressView.swift in Sources */,
+				E36825532E022B10004E1E5F /* SettingsLocalizationKeysSubtitles.swift in Sources */,
 				84D123B41ECAA405004E0D53 /* TouchBarSupport.swift in Sources */,
 				E36E8D7C24F6052F00B8C097 /* GuideWindowController.swift in Sources */,
+				E38EA5A52F30762300FB51CE /* SettingsLocalizationKeysAdvanced.swift in Sources */,
 				84817C981DBDCE4300CC2279 /* RoundedColorWell.swift in Sources */,
 				E38372922443634500F57718 /* LanguageTokenField.swift in Sources */,
+				E360A5CD2C23C1BC006EA412 /* SettingsWindow.swift in Sources */,
 				8461C5301D462488006E91FF /* VideoTime.swift in Sources */,
 				E3839C5724FFF201007D0AB4 /* PluginStandaloneWindow.swift in Sources */,
 				8492C2881E7721A600CE5825 /* ISO639Helper.swift in Sources */,
 				84F5D4991E44E8AC0060A838 /* KeyBindingDataLoader.swift in Sources */,
 				84EC12831F4F939000137C1E /* FilterPresets.swift in Sources */,
+				E38EA5972F2EE4E300FB51CE /* SettingsLocalizationKeysControl.swift in Sources */,
+				E38EA5982F2EE4E300FB51CE /* SettingsLocalizationKeysNetwork.swift in Sources */,
+				E34BC28B2C27731700A94680 /* SettingsPageGeneral.swift in Sources */,
 				E374160F20F3AF7E00B4F7F9 /* PrefUtilsViewController.swift in Sources */,
 				E3FC31461FE1501E00B9B86F /* PowerSource.swift in Sources */,
 				8476440A1D48CC3D004F6DF5 /* MPVCommand.swift in Sources */,
@@ -3146,6 +3303,8 @@
 				E3383689202651CF00ABC812 /* PrefOSCToolbarDraggingItemViewController.swift in Sources */,
 				519872FF26879B9B00F84BCC /* AccessibilityPreferences.swift in Sources */,
 				511BF43E2E1305C800E9721E /* MiniPlaySlider.swift in Sources */,
+				E34BC2AC2C27DAE900A94680 /* SettingsHelper.swift in Sources */,
+				E38EA5AC2F3088F300FB51CE /* SettingsLocalizationKeysUtils.swift in Sources */,
 				842904E21F0EC01600478376 /* AutoFileMatcher.swift in Sources */,
 				8466BE181D5CDD0300039D03 /* QuickSettingViewController.swift in Sources */,
 				84A0BA9E1D2FAD4000BC8DA1 /* MainWindowController.swift in Sources */,
@@ -3163,6 +3322,7 @@
 				5111B18B2C8BCEAC00DEC0AC /* TouchBarSettings.swift in Sources */,
 				E3785B072A83039600787CB7 /* JavascriptAPIWebSocket.swift in Sources */,
 				E342832F20B7149800139865 /* Logger.swift in Sources */,
+				516B264D2EDA579700E3CB69 /* MemoryUsage.swift in Sources */,
 				84F725561D4783EE000DEF1B /* VolumeSliderCell.swift in Sources */,
 				845040401E0ACADD0079C194 /* MPVNode.swift in Sources */,
 				84795C3A1E083EE30059A648 /* PrefControlViewController.swift in Sources */,
@@ -3174,6 +3334,7 @@
 				845ABEAC1D4D19C000BFB15B /* MPVTrack.swift in Sources */,
 				513A4FFA29B53F8100A8EA7D /* Atomic.swift in Sources */,
 				84AABE981DBFB62F00D138FD /* FixedFontManager.m in Sources */,
+				E38EA5AE2F31429F00FB51CE /* SettingsPagePlugin.swift in Sources */,
 				84EB1EDA1D2F51D3004FA5A1 /* AppDelegate.swift in Sources */,
 				84CFC92623F8DDE000381E5B /* PlayerWindowController.swift in Sources */,
 				E353070521496CE4008FE492 /* PrefPluginViewController.swift in Sources */,
@@ -3192,12 +3353,15 @@
 				519CCABD2BFFAEF10079DCAF /* HardwareDecodeCapabilities.swift in Sources */,
 				E38BA1C0253E54F2000B551D /* JavascriptAPIGlobal.swift in Sources */,
 				E39A11FD240F176E00A67F9F /* StringEncodingName.swift in Sources */,
+				5125117D2E89B2ED00CDAE9F /* Display.swift in Sources */,
 				E33FEEB52229A44F00B59711 /* JavascriptAPIUtils.swift in Sources */,
 				84C6D3671EB2A427009BF721 /* HistoryWindowController.swift in Sources */,
+				E38EA5A82F3087A600FB51CE /* SettingsPageUtilities.swift in Sources */,
 				9E47DAC01E3CFA6D00457420 /* DurationDisplayTextField.swift in Sources */,
 				E35306F62147F7AF008FE492 /* JavascriptAPIMpv.swift in Sources */,
 				840AF5821E732C8F00F4AF92 /* JustXMLRPC.swift in Sources */,
 				E3513AF820EF79C500F8C347 /* PreferenceWindowController.swift in Sources */,
+				51EDB4722E85EE10007E5018 /* DisplayController.swift in Sources */,
 				841A599D1E1FF5800079E177 /* SleepPreventer.swift in Sources */,
 				51165FBC2E1D91290060B817 /* ReadWriteAtomic.swift in Sources */,
 				84ED99FF1E009C8100A5159B /* PrefAdvancedViewController.swift in Sources */,
@@ -3209,6 +3373,7 @@
 				8488D6E71E11ABE900D5B952 /* PrefNetworkViewController.swift in Sources */,
 				84AABE941DBFAF1A00D138FD /* FontPickerWindowController.swift in Sources */,
 				844C59E71F7C143D008D1B00 /* CacheManager.swift in Sources */,
+				E3EC8C502F95B0A700FBB51E /* ConstraintsSugar.swift in Sources */,
 				E34EAA83251A36CE00057F27 /* JavascriptAPIFile.swift in Sources */,
 				E32712B024EAA14500359DAB /* ScreenshootOSDView.swift in Sources */,
 				E3BA79EE2131443A00529D99 /* OpenURLWindowController.swift in Sources */,
@@ -3224,10 +3389,13 @@
 				8407D1401E3A684C0043895D /* ViewLayer.swift in Sources */,
 				51165FC02E1D91940060B817 /* ReadWriteLock.swift in Sources */,
 				84EB1F051D2F5C5B004FA5A1 /* AppData.swift in Sources */,
+				E33517592DFFC6DB00BBE169 /* SettingsPageVideoAudio.swift in Sources */,
 				51F7974728C7E00200812D0D /* Lock.swift in Sources */,
 				84C8D58F1D794CE600D98A0E /* MPVFilter.swift in Sources */,
+				E38EA5902F2EE41600FB51CE /* SettingsPageNetwork.swift in Sources */,
 				84A0BAA11D2FAE7600BC8DA1 /* VideoView.swift in Sources */,
 				E395858A253314400096811F /* JavascriptAPISidebarView.swift in Sources */,
+				E3EC8C462F9475C600FBB51E /* PluginStorePanel.swift in Sources */,
 				E33BA5C4204315740069A0F6 /* AssrtSubtitle.swift in Sources */,
 				E32693F924BA138000BF7ADC /* JavascriptPluginSubtitleItem.swift in Sources */,
 				34FD798E291C76A600963EDE /* LogWindowController.swift in Sources */,
@@ -3240,6 +3408,7 @@
 				E301EFDA21312AB300BC8588 /* KeychainAccess.swift in Sources */,
 				8434BAA71D5DF2DA003BECF2 /* Extensions.swift in Sources */,
 				E35306F42147F78D008FE492 /* JavascriptAPICore.swift in Sources */,
+				E38EA59A2F2F35FB00FB51CE /* SettingsPageControl.swift in Sources */,
 				847557141F405F8C0006B0FF /* MainWindowMenuActions.swift in Sources */,
 				E3DC53982A28F0DC002A5A48 /* JavascriptAPIInput.swift in Sources */,
 				841B14281E941DFF00744AB8 /* TimeLabelOverflowedStackView.swift in Sources */,
@@ -3255,6 +3424,7 @@
 				84A0BA971D2FA1CE00BC8DA1 /* PlayerCore.swift in Sources */,
 				84D377671D737F58007F7396 /* MPVChapter.swift in Sources */,
 				3412DB8E2C2FC64C00BBC142 /* Equalizations.swift in Sources */,
+				E34BC28F2C27A68100A94680 /* SettingsItem.swift in Sources */,
 				84A886E61E24F3BD008755BB /* OnlineSubtitle.swift in Sources */,
 				847C62CA1DC13CDA00E1EF16 /* PrefGeneralViewController.swift in Sources */,
 				E3530700214908DD008FE492 /* JavascriptAPIHttp.swift in Sources */,
@@ -3267,6 +3437,7 @@
 				51E63DFB29CFB031008AFC20 /* PlaySlider.swift in Sources */,
 				84F5D4A01E44F9DB0060A838 /* KeyBindingItem.swift in Sources */,
 				84E5221323FF3D080006FDA1 /* JavascriptAPIPlaylist.swift in Sources */,
+				E38EA5B22F3142C700FB51CE /* SettingsLocalizationKeysPlugin.swift in Sources */,
 				84A0BA991D2FAAA700BC8DA1 /* MPVController.swift in Sources */,
 				847557161F406D360006B0FF /* MiniPlayerWindowMenuActions.swift in Sources */,
 				842F55A51EA17E7E0081D475 /* IINACommand.swift in Sources */,
@@ -3350,45 +3521,6 @@
 				34ACAD7D2C16917100F871A0 /* hr */,
 			);
 			name = SubChooseViewController.xib;
-			sourceTree = "<group>";
-		};
-		34ACA04D29DBB0090030C09C /* LogWindowController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				34ACA04C29DBB0090030C09C /* Base */,
-				34ACA04F29DBB0180030C09C /* en */,
-				34ACA05129DBB0190030C09C /* af */,
-				34ACA05329DBB01A0030C09C /* ca */,
-				34ACA05529DBB01B0030C09C /* zh-Hans */,
-				34ACA05729DBB01B0030C09C /* zh-Hant */,
-				34ACA05929DBB01C0030C09C /* cs */,
-				34ACA05B29DBB01C0030C09C /* da */,
-				34ACA05D29DBB01E0030C09C /* nl */,
-				34ACA05F29DBB01F0030C09C /* en-GB */,
-				34ACA06129DBB01F0030C09C /* fi */,
-				34ACA06329DBB01F0030C09C /* fr */,
-				34ACA06529DBB0200030C09C /* de */,
-				34ACA06729DBB0200030C09C /* hi */,
-				34ACA06929DBB0200030C09C /* hu */,
-				34ACA06B29DBB0210030C09C /* it */,
-				34ACA06D29DBB0210030C09C /* ja */,
-				34ACA06F29DBB0210030C09C /* ko */,
-				34ACA07129DBB0220030C09C /* pl */,
-				34ACA07329DBB0220030C09C /* pt */,
-				34ACA07529DBB0230030C09C /* pt-BR */,
-				34ACA07729DBB0230030C09C /* ro */,
-				34ACA07929DBB0230030C09C /* ru */,
-				34ACA07B29DBB0230030C09C /* sr-Latn */,
-				34ACA07D29DBB0240030C09C /* sk */,
-				34ACA07F29DBB0240030C09C /* es */,
-				34ACA08129DBB0250030C09C /* sv */,
-				34ACA08329DBB0260030C09C /* uk */,
-				34ACA08529DBB0260030C09C /* tr */,
-				0507C26A2B5617670043AD05 /* he */,
-				34F294552C0A1BDF00F14962 /* id */,
-				34ACAD6C2C16917000F871A0 /* hr */,
-			);
-			name = LogWindowController.xib;
 			sourceTree = "<group>";
 		};
 		34F8B6F52C6C7B0100AE4B16 /* PrefPluginViewController.xib */ = {
@@ -4685,6 +4817,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988E2919E47900CD61A5 /* OpenInIINA.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Debug;
 		};
@@ -4692,6 +4825,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988E2919E47900CD61A5 /* OpenInIINA.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Release;
 		};
@@ -4699,7 +4833,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51537C7229FA26DD00F9A472 /* Nightly.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				DEAD_CODE_STRIPPING = YES;
 				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 			};
 			name = Nightly;
 		};
@@ -4707,9 +4845,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "GL_SILENCE_DEPRECATION=1";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nCollider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -4724,6 +4864,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988B2919E47900CD61A5 /* iina-cli.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Nightly;
 		};
@@ -4731,6 +4872,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988E2919E47900CD61A5 /* OpenInIINA.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Nightly;
 		};
@@ -4738,7 +4880,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51A0F0F629FA2C8E000130CF /* Beta.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				DEAD_CODE_STRIPPING = YES;
 				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 			};
 			name = Beta;
 		};
@@ -4746,9 +4892,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "GL_SILENCE_DEPRECATION=1";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nCollider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -4763,6 +4911,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988B2919E47900CD61A5 /* iina-cli.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Beta;
 		};
@@ -4770,6 +4919,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988E2919E47900CD61A5 /* OpenInIINA.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Beta;
 		};
@@ -4777,7 +4927,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988C2919E47900CD61A5 /* Debug.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				DEAD_CODE_STRIPPING = YES;
 				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 			};
 			name = Debug;
 		};
@@ -4785,7 +4939,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988D2919E47900CD61A5 /* Release.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				DEAD_CODE_STRIPPING = YES;
 				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 			};
 			name = Release;
 		};
@@ -4793,12 +4951,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"GL_SILENCE_DEPRECATION=1",
 					"$(inherited)",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nCollider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -4813,9 +4973,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "GL_SILENCE_DEPRECATION=1";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nCollider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LIBRARY_SEARCH_PATHS = (
@@ -4861,6 +5023,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -4878,7 +5041,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -4925,6 +5088,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4936,7 +5100,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4982,6 +5146,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4993,7 +5158,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5039,6 +5204,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5050,7 +5216,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5065,6 +5231,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988B2919E47900CD61A5 /* iina-cli.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Debug;
 		};
@@ -5072,6 +5239,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988B2919E47900CD61A5 /* iina-cli.xcconfig */;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Release;
 		};

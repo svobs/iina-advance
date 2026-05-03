@@ -15,6 +15,7 @@
 "general.cancel" = "Cancel";
 "general.username" = "Username";
 "general.password" = "Password";
+"general.na" = "N/A";
 
 "input.value_is_empty" = "Value cannot be empty.";
 "input.already_exists" = "Value already exists.";
@@ -136,6 +137,9 @@
 "osd.canceled" = "Canceled";
 "osd.cannot_connect" = "Cannot connect";
 "osd.timed_out" = "Timed Out";
+"osd.sub_quota_exceeded" = "Subtitle download limit reached";
+"osd.sub_quota_exceeded.detail" = "Try again after %@";
+"osd.sub_quota_exceeded.detail_unknown" = "Try again later";
 "osd.filter_added" = "Added Filter: %@";
 "osd.filter_removed" = "Removed Filter";
 "osd.file_loop" = "Loop Single File";
@@ -144,8 +148,8 @@
 
 "preference.title" = "Settings";
 "preference.general" = "General";
-"preference.ui" = "UI";
-"preference.video_audio" = "Video/Audio";
+"preference.ui" = "Interface";
+"preference.video_audio" = "Video & Audio";
 "preference.subtitle" = "Subtitle";
 "preference.network" = "Network";
 "preference.control" = "Control";
@@ -247,6 +251,7 @@
 "alert.mpv_error" = "Internal error %@ (%@) when setting option %@.";
 
 "alert.unsupported_audio" = "Unsupported external audio file.";
+"alert.unsupported_video" = "Unsupported external video file.";
 "alert.unsupported_sub" = "Unsupported external subtitle.";
 "alert.unsupported_url" = "Unsupported URL.";
 "alert.wrong_url_format" = "Wrong URL format.";
@@ -275,10 +280,13 @@
 "alert.add_filter.message" = "Please enter a filter string in format of mpv's vf or af command.";
 
 "alert.keybinding_config.error" = "Error parsing keybinding configuration file \"%@\"! Fallback to IINA Default keybinding setting. Please check your configuration.";
+"alert.delete_keybindingset.title" = "Delete Key Binding Set";
+"alert.delete_keybindingset.message" = "Are you sure to delete this key binding set?";
+
 
 "alert.extra_option.cannot_read" = "Cannot read user defined extra mpv options.";
 "alert.extra_option.empty" = "Key or value cannot be empty!";
-"alert.extra_option.error" = "Error setting option --%@=%@ with return value %d. Please check your extra option settings in Preference > Advanced.";
+"alert.extra_option.error" = "Error setting option --%@=%@ with return value %d. Please check your extra option settings in Settings > Advanced.";
 "alert.extra_option.config_folder" = "Error setting config directory \"%@\".";
 
 "alert.playlist.error_deleting" = "Error deleting: %@";
@@ -330,6 +338,10 @@
 
 "alert.restore_alerts.title" = "Restore Suppressed Alerts";
 "alert.restore_alerts.message" = "Are you sure you want to restore suppressed alerts?";
+
+"alert.cleared" = "Cleared.";
+"alert.restored" = "Restored.";
+"alert.custom" = "%@";
 
 "alert.nothing_to_open" = "Nothing to open.";
 
@@ -391,6 +403,10 @@
 "hwdec.no" = "Disable hardware decoding.";
 "hwdec.auto" = "Enable hardware decoding. However, most of the video filters won't work properly.";
 "hwdec.auto-copy" = "Enable hardware decoding. It will consume double the memory but work with video filters.";
+
+"gaplessAudio.no" = "Playback of consecutive audio files may result in silence or disruption at the point of file change.";
+"gaplessAudio.weak" = "If the audio format the decoder output changes, the audio device is closed and reopened, disrupting gapless playback.";
+"gaplessAudio.yes" = "The audio device is opened using parameters chosen for the first file played and is then kept open for gapless playback. Following files may be resampled.";
 
 "subencoding.auto" = "Auto detect";
 
@@ -459,3 +475,19 @@
 "plugin.install_error.cannot_load" = "IINA cannot load this plugin. It might be in the wrong format.";
 "plugin.check_for_updates" = "Check for Updates";
 "plugin.updating" = "Downloading update…";
+
+// Log window
+"logwindow.all_subsystems" = "All subsystems";
+"logwindow.title" = "Log Viewer";
+"logwindow.time" = "Time";
+"logwindow.subsystem" = "Subsystem";
+"logwindow.message" = "Message";
+"logwindow.now" = "Now";
+"logwindow.now.desc" = "Follow latest logs";
+"logwindow.log_level" = "Log level";
+"logwindow.save" = "Save";
+"logwindow.save_filtered" = "Save filtered logs…";
+"logwindow.filter" = "Filter";
+"logwindow.clear_subsystem_selections" = "Clear Selections";
+"logwindow.copy" = "Copy";
+"logwindow.logs" = "logs";

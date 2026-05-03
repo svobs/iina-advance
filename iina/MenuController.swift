@@ -201,6 +201,8 @@ class MenuController: NSObject, NSMenuDelegate {
   @IBOutlet weak var inspector: NSMenuItem!
   @IBOutlet weak var miniPlayer: NSMenuItem!
 
+  @IBOutlet weak var debugDump: NSMenuItem!
+
   /// If `true` then all menu items are disabled.
   private var isDisabled = false
 
@@ -408,6 +410,7 @@ class MenuController: NSObject, NSMenuDelegate {
 
     if IINA_ENABLE_PLUGIN_SYSTEM {
       pluginMenu.delegate = self
+      pluginMenu.autoenablesItems = false
     } else {
       pluginMenuItem.isHidden = true
     }
@@ -418,6 +421,11 @@ class MenuController: NSObject, NSMenuDelegate {
 
     inspector.action = #selector(MainMenuActionHandler.menuShowInspector(_:))
     miniPlayer.action = #selector(MainWindowController.menuSwitchToMiniPlayer(_:))
+
+    // Debug
+
+    debugDump.isAlternate = true
+    debugDump.keyEquivalentModifierMask = .option
   }
 
   // MARK: - Update Menus
@@ -441,7 +449,8 @@ class MenuController: NSObject, NSMenuDelegate {
 
   private func updateChapterList() {
     chapterMenu.removeAllItems()
-    let info = PlayerCore.active.info
+    let player = PlayerCore.active
+    let info = player.info
     let chapters = info.chapters
     let padder = { (time: String) -> String in
       let standard = (chapters.last?.time.stringRepresentation ?? "").reversed()
@@ -449,6 +458,7 @@ class MenuController: NSObject, NSMenuDelegate {
         $0 == ":" ? ":" : "0"
       }).reversed())
     }
+    player.syncPositionIfNeeded()
     for (index, chapter) in chapters.enumerated() {
       let menuTitle = "\(padder(chapter.time.stringRepresentation)) – \(chapter.title)"
       let nextChapterTime = chapters[at: index+1]?.time ?? Constants.Time.infinite
@@ -805,6 +815,7 @@ class MenuController: NSObject, NSMenuDelegate {
     case savedAudioFiltersMenu:
       updateSavedFiltersMenu(type: MPVProperty.af)
     case pluginMenu:
+      PlayerCore.active.events.emit(.menuUpdate)
       updatePluginMenu()
     default: break
     }

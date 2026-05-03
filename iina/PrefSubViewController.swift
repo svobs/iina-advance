@@ -87,9 +87,9 @@ class PrefSubViewController: PreferenceViewController, PreferenceWindowEmbeddabl
   }
 
   @IBAction func chooseSubFontAction(_ sender: AnyObject) {
-    Utility.quickFontPickerWindow { font in
-      Preference.set(font ?? "sans-serif", for: .subTextFont)
-      UserDefaults.standard.synchronize()
+    let subFont = Preference.string(for: .subTextFont)
+    Utility.quickFontPickerWindow(selecting: subFont) { font in
+      Preference.set(font, for: .subTextFont)
     }
   }
 
@@ -202,7 +202,7 @@ class ASSOverrideLevelTransformer: ValueTransformer {
   override func transformedValue(_ value: Any?) -> Any? {
     guard let num = value as? NSNumber,
           let level = Preference.SubOverrideLevel(rawValue: num.intValue) else { return nil }
-    return level.string
+    return String(describing: level)
   }
 }
 

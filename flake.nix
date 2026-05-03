@@ -1,4 +1,6 @@
 {
+  # Suggestion: to ease debugging of dev builds:
+  # nix build --keep-failed --print-build-logs --verbose
   description = "IINA – The modern video player for macOS.";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -284,7 +286,7 @@
           # Collect SwiftPM deps as separate derivation for them to be cached
           spmDeps = pkgs.stdenv.mkDerivation {
             pname = "iina-spm-deps";
-            version = if self ? rev then builtins.substring 0 8 self.rev else "dev";
+            version = "${self.shortRev or self.dirtyShortRev}";
 
             # Only include SwiftPM-related files as input
             src = pkgs.lib.cleanSourceWith {
@@ -349,7 +351,7 @@
           packages = rec {
             iina = pkgs.stdenv.mkDerivation {
               pname = "iina";
-              version = if self ? rev then builtins.substring 0 8 self.rev else "dev";
+              version = "${self.shortRev or self.dirtyShortRev}";
 
               src = pkgs.nix-gitignore.gitignoreSource [ "flake.nix" "flake.lock" ] ./.;
 
@@ -372,7 +374,9 @@
 
               buildPhase = ''
                 echo "[$(system)] 🔧 Setting up build environment"
-                start_time=$(date +%s) # Record start time ⏰
+                git_rev="${self.rev or self.dirtyRev}"
+                git_branch="???"  # FIXME: Find way to get the actual git branch
+                echo "Git revision: $git_rev"
                 export HOME=$PWD/.home
                 export CFFIXED_USER_HOME="$HOME"
                 export __XPC_CFFIXED_USER_HOME="$HOME"
@@ -404,12 +408,7 @@
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
 
-                end_time=$(date +%s) # Record end time ⏰
-                elapsed=$((end_time - start_time)) # Calculate elapsed time
-                echo "⏰ Elapsed Time [Build Environment]: $elapsed seconds"
-
                 echo "📦 Copying SPM deps"
-                start_time=$(date +%s) # Record start time ⏰
                 rsync -a ${spmDeps}/ ./
                 chmod -R u+rwx,g+rx,o+rx .
 
@@ -420,13 +419,8 @@
                   sed -i -E "s|$old_prefix|$PWD|g" .spm/workspace-state.json
                 fi
 
-                end_time=$(date +%s) # Record end time ⏰
-                elapsed=$((end_time - start_time)) # Calculate elapsed time
-                echo "⏰ Elapsed Time [Copy SPM deps]: $elapsed seconds"
-
                 # Build IINA
                 echo "🔨 Building IINA"
-                start_time=$(date +%s) # Record start time ⏰
                 xcodebuild \
                   -workspace iina.xcodeproj/project.xcworkspace \
                   -scheme iina \
@@ -444,10 +438,6 @@
                   ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
                   SWIFT_ENABLE_EXPLICIT_MODULES=NO \
                   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
-
-              end_time=$(date +%s) # Record end time ⏰
-              elapsed=$((end_time - start_time)) # Calculate elapsed time
-              echo "⏰ Elapsed Time [Build IINA]: $elapsed seconds"
               '';
 
               installPhase = ''
@@ -469,8 +459,6 @@
                 mkdir -p "$frameworks"
                 mkdir -p "$resources"
 
-                start_time=$(date +%s) # Record start time ⏰
-
                 echo "📦 Bundling ${depsIndirect} into IINA.app"
                 echo "⏰ DEPS_Indirect"
                 ls -l ${depsIndirect}
@@ -479,42 +467,28 @@
                 echo "📦 Bundling ${depsExecutable} into IINA.app"
                 cp -RL ${depsExecutable}/. "$macos/"
 
-                end_time=$(date +%s) # Record end time ⏰
-                elapsed=$((end_time - start_time)) # Calculate elapsed time
-                echo "⏰ Elapsed Time [Bundle Resources]: $elapsed seconds"
-
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                start_time=$(date +%s) # Record start time ⏰
                 ${scripts.normalizer}/bin/iina-normalize-app "$frameworks" "$frameworks"
-                end_time=$(date +%s) # Record end time ⏰
-                elapsed=$((end_time - start_time)) # Calculate elapsed time
-                echo "⏰ Elapsed Time [Deep-bundle dynamic dependencies]: $elapsed seconds"
 
                 echo "✏️ Canonicalize Lib Groups"
-                start_time=$(date +%s) # Record start time ⏰
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
-                end_time=$(date +%s) # Record end time ⏰
-                elapsed=$((end_time - start_time)) # Calculate elapsed time
-                echo "⏰ Elapsed Time [Canonicalize Lib Groups]: $elapsed seconds"
 
                 echo "✏️ Setting up environment variables"
 
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                                                             "$plist" 2>/dev/null || true
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE    string "@executable_path"'                                    "$plist" 2>/dev/null || true
                 /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:IINA_EXECUTABLE           "@executable_path"'                                    "$plist"
+                /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.commit           $git_rev"                                    "$plist"
+                /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.branch           $git_branch"                                    "$plist"
 
                 # echo "🔏 Re-signing IINA.app..."
-                # start_time=$(date +%s) # Record start time ⏰
                 # ${scripts.resign}/bin/iina-resign "$app"
-                # end_time=$(date +%s) # Record end time ⏰
-                # elapsed=$((end_time - start_time)) # Calculate elapsed time
-                # echo "⏰ Elapsed Time [Re-signing App]: $elapsed seconds"
               '';
             };
 
             iina-universal = pkgs.stdenv.mkDerivation {
               pname = "iina-universal";
-              version = if self ? rev then builtins.substring 0 8 self.rev else "dev";
+              version = "${self.shortRev or self.dirtyShortRev}";
 
               nativeBuildInputs = [
                 pkgs.rsync

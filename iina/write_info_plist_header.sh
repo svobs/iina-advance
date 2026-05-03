@@ -43,11 +43,8 @@ if [[ -z "$GIT" ]]; then
 fi
 
 # Get the information needed for the header file.
-# FIXME: No Git access in Nix build; need to find workaround
-BRANCH=???
-COMMIT=???
-#BRANCH=$($GIT rev-parse --abbrev-ref HEAD)
-#COMMIT=$($GIT rev-parse HEAD)
+BRANCH=$($GIT rev-parse --abbrev-ref HEAD 2>/dev/null || echo '???')
+COMMIT=$($GIT rev-parse HEAD 2>/dev/null || echo '???')
 DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 # If Xcode User Script Sandboxing is enabled then git will malfunction because Xcode will deny

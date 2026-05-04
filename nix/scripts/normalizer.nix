@@ -31,10 +31,8 @@ pkgs.writeShellApplication {
     is_macho() {
       # true for thin/fat Mach-O; false for scripts/text
       if [[ "$1" == *".strings" ]] || [[ "$1" == *".nib" ]]; then
-        # Heuristic: .strings and .nib files are not Mach-O binaries
         return 1
       fi
-      
       file -b "$1" 2>/dev/null | grep -Eq 'Mach-O (universal binary|64-bit|arm64|x86_64)'
     }
 
@@ -76,7 +74,7 @@ pkgs.writeShellApplication {
       done
 
       # bare dylibs (no /, no @) → @rpath/<basename>
-      otool -L "$bin" | awk 'NF && $1 !~ /:$/ && $1 ~ /^[^/@][^/]*\.dylib$/ {print $1}' | while read -r bare; do
+      otool -L "$bin" | awk 'NF && $1 !~ /:$/ && $1 ~ /^[^\/@][^\/]*\.dylib$/ {print $1}' | while read -r bare; do
         local base
         base=$(basename "$bare")
         echo "  🔁 bare → @rpath: $bare → @rpath/$base"

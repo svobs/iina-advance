@@ -468,7 +468,7 @@
                 cp -RL ${depsExecutable}/. "$macos/"
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${scripts.normalizer}/bin/iina-normalize-app "$frameworks" "$frameworks"
+                ${scripts.normalizer}/bin/iina-normalize-app "$app" "$frameworks"
 
                 echo "✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
@@ -582,7 +582,7 @@
                 done
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${scripts.normalizer}/bin/iina-normalize-app "$frameworks" "$frameworks"
+                ${scripts.normalizer}/bin/iina-normalize-app "$app" "$frameworks"
 
                 echo "✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"

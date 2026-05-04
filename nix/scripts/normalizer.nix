@@ -169,7 +169,7 @@ pkgs.writeShellApplication {
     echo "🔍 Scanning app for dylib + executable dependencies…"
 
     # executables + loadable libs
-    find "$app" -type f \( -perm -111 -o -name "*.dylib" -o -name "*.so" \) | while read -r bin; do
+    find "$frameworks" -type f \( -perm -111 -o -name "*.dylib" -o -name "*.so" \) | while read -r bin; do
       echo "———"
       echo "🔍 Inspecting: $bin"
       ensure_writable "$bin"

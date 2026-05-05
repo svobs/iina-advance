@@ -24,6 +24,20 @@
             resign = import ./nix/scripts/resign.nix { inherit pkgs; };
           };
 
+          normalize_libs = pkgs.stdenv.mkDerivation {
+            pname = "normalize_libs";
+            version = "1.0.0";
+
+            propagatedBuildInputs = [
+            (pkgs.python3.withPackages (pythonPackages: with pythonPackages; [
+              # Add Python packages here
+            ]))];
+
+            dontUnpack = true;
+
+            installPhase = "install -Dm755 ${./nix/scripts/normalize_libs.py} $out/bin/normalize_libs";
+          };
+
           # Pull system's xcode in
           xcode = pkgs.runCommand "system-xcode" { } ''
             mkdir -p $out/bin
@@ -86,8 +100,8 @@
             sixelSupport = false;
           };
 
-          # Collect include deps as per readme.md
-          depsInc = pkgs.linkFarm "iina-deps-inc" [
+          # Collect include deps (header files) as per readme.md
+          depsInclude = pkgs.linkFarm "iina-deps-inc" [
             {
               name = "mpv";
               path = "${pkgs.lib.getDev mpv}/include/mpv";
@@ -368,7 +382,7 @@
               nativeBuildInputs = [
                 pkgs.coreutils
                 xcode
-                mypyscript
+                normalize_libs
                 pkgs.rsync
                 pkgs.git
                 pkgs.gnused
@@ -392,8 +406,6 @@
                 export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"
                 export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 
-                ${mypyscript}/bin/mypyscript "Communication successful"
-
                 APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
                 export PATH="$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin"
 
@@ -412,7 +424,7 @@
                 rm -rf deps/include deps/lib
 
                 mkdir -p deps/include deps/lib deps/executable
-                cp -RL ${depsInc}/.               deps/include
+                cp -RL ${depsInclude}/.           deps/include
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
 
@@ -468,17 +480,16 @@
                 mkdir -p "$resources"
 
                 echo "[${system}] 📦 Bundling ${depsIndirect} into IINA.app"
-                ls -l ${depsIndirect}
+                echo "DEPS_INDIRECT CONTENTS:"
+                ls "${depsIndirect}/"
                 cp -RL ${depsIndirect}/. "$frameworks/"
+                echo "FRAMEWORKS CONTENTS:"
+                ls "$frameworks/"
 
                 echo "[${system}] 📦 Bundling ${depsExecutable} into IINA.app"
                 cp -RL ${depsExecutable}/. "$macos/"
 
-                echo "[${system}] 📦 Copying ${depsExecutable} to deps/executable"
-                executableDir="$out/deps/executable"
-                mkdir -p "$executableDir"
-                cp -RL ${depsExecutable}/. "$executableDir/"
-
+                ${normalize_libs}/bin/normalize_libs "$app" "$frameworks"
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
                 ${scripts.normalizer}/bin/iina-normalize-app "$app" "$frameworks"
 
@@ -487,17 +498,19 @@
 
                 echo "[${system}] ✏️ Setting up environment variables"
 
-                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                                                             "$plist" 2>/dev/null || true
-                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE    string "@executable_path"'                                    "$plist" 2>/dev/null || true
-                /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:IINA_EXECUTABLE           "@executable_path"'                                    "$plist"
-                /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.commit           $git_rev"                                    "$plist"
-                /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.branch           $git_branch"                                    "$plist"
+                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                          "$plist" 2>/dev/null || true
+                /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE    string "@executable_path"'  "$plist" 2>/dev/null || true
+                /usr/libexec/PlistBuddy -c 'Set :LSEnvironment:IINA_EXECUTABLE           "@executable_path"'  "$plist"
+                # Overwrite Git info from build (which were set to placeholders because Xcode script could not determine them at build time)
+                /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.commit        $git_rev"            "$plist"
+                /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.branch        $git_branch"         "$plist"
 
                 # echo "[${system}] 🔏 Re-signing IINA.app..."
                 # ${scripts.resign}/bin/iina-resign "$app"
               '';
             };
 
+            # --- IINA Universal ---
             iina-universal = pkgs.stdenv.mkDerivation {
               pname = "iina-universal";
               version = "${self.shortRev or self.dirtyShortRev}";
@@ -599,8 +612,16 @@
                 echo "✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
 
+                echo "[${system}] 📦 Copying executable files to deps/executable"
+                executableDir="$out/deps/executable"
+                mkdir -p "$executableDir"
+                cp -RL ${depsExecutable}/. "$executableDir/"
+
                 echo "🔏 Re-signing IINA.app..."
                 ${scripts.resign}/bin/iina-resign "$app"
+
+                app_real=$(realpath "$app" 2>/dev/null || echo "$app")
+                echo "✅✅ Done! Universal IINA.app is ready at $app_real"
               '';
 
               preFixup = ''
@@ -641,7 +662,7 @@
                   ln -sfn "$target" "$link"
                 }
 
-                link_tree ${depsInc} "$deps_root/include"
+                link_tree ${depsInclude} "$deps_root/include"
                 link_tree ${depsLib} "$deps_root/lib"
                 link_tree ${depsExecutable} "$deps_root/executable"
                 link_tree ${depsIndirect} "$deps_root/indirect"

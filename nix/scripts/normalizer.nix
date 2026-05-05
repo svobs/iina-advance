@@ -166,7 +166,7 @@ pkgs.writeShellApplication {
             subbase=$(basename "$sub")
             echo "  🔗 Repointing subdep for $real_base: $sub → @rpath/$subbase"
             install_name_tool -change "$sub" "@rpath/$subbase" "$canonical" || true
-            bundle_dep "$sub"
+            # bundle_dep "$sub"
             ;;
           *) : ;;
         esac

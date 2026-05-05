@@ -17,7 +17,7 @@ LIBS=(
   "libtasn1.6.dylib" "libuchardet.0.dylib" "libunibreak.6.dylib" "libunistring.5.dylib" "libvidstab.1.2.dylib"
   "libvulkan.1.dylib" "libwebp.7.dylib" "libwebpmux.3.dylib" "libX11.6.dylib" "libXau.6.dylib"
   "libxcb-shape.0.dylib" "libxcb-shm.0.dylib" "libxcb-xfixes.0.dylib" "libxcb.1.dylib" "libXdmcp.6.dylib"
-  "libzimg.2.dylib" "libzmq.5.dylib" "libzstd.1.dylib"
+  "libz.1.dylib" "libzimg.2.dylib" "libzmq.5.dylib" "libzstd.1.dylib"
 )
 
 get_script_dir()

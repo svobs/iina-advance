@@ -30,6 +30,14 @@
             ln -sf /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild $out/bin/xcodebuild
           '';
 
+          # https://epics-extensions.github.io/EPNix/dev/ioc/user-guides/testing/python-scripts.html
+          mypyscript = pkgs.writers.writePython3Bin "mypyscript" { } ''
+            import sys
+
+            custom_arg = sys.argv[1]
+            print("Hello, World! Custom arg: " + custom_arg)
+          '';
+
           # Override ffmpeg to use our version of libs
           ffmpeg = pkgs.ffmpeg.override {
             withSoxr = true;
@@ -360,6 +368,7 @@
               nativeBuildInputs = [
                 pkgs.coreutils
                 xcode
+                mypyscript
                 pkgs.rsync
                 pkgs.git
                 pkgs.gnused
@@ -373,7 +382,7 @@
               ];
 
               buildPhase = ''
-                echo "[$(system)] 🔧 Setting up build environment"
+                echo "[${system}] 🔧 Setting up build environment"
                 git_rev="${self.rev or self.dirtyRev}"
                 git_branch="???"  # FIXME: Find way to get the actual git branch
                 echo "Git revision: $git_rev"
@@ -382,6 +391,8 @@
                 export __XPC_CFFIXED_USER_HOME="$HOME"
                 export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"
                 export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+
+                ${mypyscript}/bin/mypyscript "Communication successful"
 
                 APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
                 export PATH="$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin"
@@ -396,19 +407,16 @@
                 echo "Using $TOOLCHAINS toolchain"
                 echo "Using $SDKROOT sdk"
 
-                echo "📦 Copying external deps"
+                echo "[${system}] 📦 Copying external deps"
                 mkdir -p deps
                 rm -rf deps/include deps/lib
 
                 mkdir -p deps/include deps/lib deps/executable
-
                 cp -RL ${depsInc}/.               deps/include
-                echo "⏰ DEPS_Lib"
-                ls -l ${depsLib}
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
 
-                echo "📦 Copying SPM deps"
+                echo "[${system}] 📦 Copying SPM deps"
                 rsync -a ${spmDeps}/ ./
                 chmod -R u+rwx,g+rx,o+rx .
 
@@ -420,7 +428,7 @@
                 fi
 
                 # Build IINA
-                echo "🔨 Building IINA"
+                echo "[${system}] 🔨 Building IINA"
                 xcodebuild \
                   -workspace iina.xcodeproj/project.xcworkspace \
                   -scheme iina \
@@ -459,21 +467,25 @@
                 mkdir -p "$frameworks"
                 mkdir -p "$resources"
 
-                echo "📦 Bundling ${depsIndirect} into IINA.app"
-                echo "⏰ DEPS_Indirect"
+                echo "[${system}] 📦 Bundling ${depsIndirect} into IINA.app"
                 ls -l ${depsIndirect}
                 cp -RL ${depsIndirect}/. "$frameworks/"
 
-                echo "📦 Bundling ${depsExecutable} into IINA.app"
+                echo "[${system}] 📦 Bundling ${depsExecutable} into IINA.app"
                 cp -RL ${depsExecutable}/. "$macos/"
 
-                echo "📦 Deep-bundling dynamic dependencies into IINA.app"
+                echo "[${system}] 📦 Copying ${depsExecutable} to deps/executable"
+                executableDir="$out/deps/executable"
+                mkdir -p "$executableDir"
+                cp -RL ${depsExecutable}/. "$executableDir/"
+
+                echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
                 ${scripts.normalizer}/bin/iina-normalize-app "$app" "$frameworks"
 
-                echo "✏️ Canonicalize Lib Groups"
+                echo "[${system}] ✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
 
-                echo "✏️ Setting up environment variables"
+                echo "[${system}] ✏️ Setting up environment variables"
 
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                                                             "$plist" 2>/dev/null || true
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE    string "@executable_path"'                                    "$plist" 2>/dev/null || true
@@ -481,7 +493,7 @@
                 /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.commit           $git_rev"                                    "$plist"
                 /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.branch           $git_branch"                                    "$plist"
 
-                # echo "🔏 Re-signing IINA.app..."
+                # echo "[${system}] 🔏 Re-signing IINA.app..."
                 # ${scripts.resign}/bin/iina-resign "$app"
               '';
             };

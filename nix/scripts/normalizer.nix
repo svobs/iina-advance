@@ -7,6 +7,7 @@ pkgs.writeShellApplication {
     pkgs.findutils
     pkgs.gawk
     pkgs.gnugrep
+    pkgs.gnused
     pkgs.file
   ];
   text = ''
@@ -91,18 +92,25 @@ pkgs.writeShellApplication {
       local dep_real
       dep_real=$(realpath "$dep" 2>/dev/null || echo "$dep")
 
-      # Break cycles by *real* path
+      # Extract a common "compat" basename for cycle detection and canonicalization (and to avoid symlinks in the Xcode project).
+      # This simply strips all but the major version from the filename, or leaves it unchanged if no version is present.
+      # Example: "libfoo.1.2.4.dylib" → "libfoo.1.dylib"
+      # Warning: This does not verify compatibility! It is assumed that the source dylibs have already been vetted for compatibility.
+      local real_base
+      #real_base=$(basename "$dep_real" | sed -e 's/\([^.]*\.[^.]*\.\).*\.dylib/\1dylib/')
+      real_base=$(basename "$dep_real")
+      echo "REALBASE: $real_base"
+
+      # Ensure the real payload file exists in Frameworks under some canonical name
+      local canonical
+      canonical="$frameworks/$real_base"
+
+      # Break cycles, skip duplicates
       if [[ -n "''${BUNDLED_DEPS["$dep_real"]:-}" ]]; then
-        echo "🔁 Already processed dep: $dep_real"
+        echo "🔁 Skipping duplicate/equivalent dep: $dep_real"
         return
       fi
       BUNDLED_DEPS["$dep_real"]=1
-
-      local request_base
-      request_base=$(basename "$dep")
-      local real_base
-      real_base=$(basename "$dep_real")
-      local dest="$frameworks/$request_base"
 
       if [[ "$dep_real" == */Sparkle.framework/* ]]; then
         echo "🚫 Skipping Sparkle executable: $dep_real"
@@ -119,12 +127,15 @@ pkgs.writeShellApplication {
         return
       fi
 
-      # Ensure the real payload file exists in Frameworks under some canonical name
-      local canonical="$frameworks/$real_base"
       if [ ! -f "$canonical" ]; then
         echo "📥 Copying dep → Frameworks: $dep_real → $canonical"
         cp -L -p "$dep_real" "$canonical" || { echo "❌ Copy failed for $dep_real"; return; }
       fi
+
+      local dest
+      dest="$frameworks/$real_base"
+      local request_base
+      request_base=$(basename "$dep")
 
       # Ensure the *requested* name exists and points to the payload
       if [ ! -e "$dest" ]; then

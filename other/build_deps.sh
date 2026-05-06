@@ -72,6 +72,7 @@ if [[ "$BUILD_NIX" = true ]]; then
   fi
 fi
 
+echo "Replacing deps/lib..."
 frameworksDir="$projDir/result/Applications/IINA.app/Contents/Frameworks/"
 dstLibDir="$projDir/deps/lib"
 rm -rf "$dstLibDir"
@@ -83,3 +84,12 @@ do
   cp -v "$srcLibPath" "$dstLibDir/"
 done
 
+echo "Replacing deps/executable..."
+srcExecutablesDir="$projDir/result/deps/executable"
+dstExecutablesDir="$projDir/deps/executable"
+rm -rf "$dstExecutablesDir"
+mkdir -p "$dstExecutablesDir"
+for executable in "$srcExecutablesDir"/*
+do
+  cp -v "$executable" "$dstExecutablesDir/"
+done

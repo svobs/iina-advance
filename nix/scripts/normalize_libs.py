@@ -1,40 +1,233 @@
 #!/usr/bin/env python3
-import sys
-"""
-normalize_libs.py
+"""normalize_libs.py
 
 A script to collect IINA's libs & their transitive libs, then consolidate similar versions & normalize their paths for
 use in the app bundle. This is needed to avoid multiple versions of the same lib being bundled, which is more difficult
 to integrate into Xcode builds. Fixing the rpaths is also needed to replace hard-coded paths to the nix store with
 relative paths within the app bundle.
 
-_Pseudocode_:
-let nameVariantsMap = [base_id -> [nameVariant -> fullVariantPath]]
-let canonicalNameMap = [base_id -> canonicalName]
-For all deps, build nameVariantsMap:
+Pseudocode:
+-----------
+let name_variants_map = [base_id -> [name_variant -> variant_full_path]]
+let canonical_name_map = [base_id -> canonical_name]
+For all deps, build name_variants_map:
 1. Find base_id from dep
-2. Add to nameVariantsMap
+2. Add to name_variants_map
 
-For all entries in nameVariantsMap, build canonicalNameMap:
-1. For each base_id, determine best canonicalName:
+For all entries in name_variants_map, build canonical_name_map:
+1. For each base_id, determine best canonical_name:
    Use most specific version available: split by dots. Verify that no major differences in vesions found!
-2. Store best variant name in canonicalNameMap
-3. Copy best variant to frameworksStaging
+2. Store best variant name in canonical_name_map
+3. Copy best variant to frameworks_staging
 
-For all files in frameworksStaging:
+For all files in frameworks_staging:
 1. Fix nixpath rpaths. Need to extract base_id for each & rewrite to use best variant! 
 2. Fix any other rpaths needed
 """
 
+import os
+from pathlib import Path
+import sys
+import stat
+import subprocess
+import shutil
+from typing import Optional
+
+lc_rpath: str = '@executable_path/../Frameworks'
+blacklist = ['libswift_Concurrency', 'libffi-trampoline', 'libiconv']
+
+# Set given file R+W by the owner.
+def ensure_writable(file_path: str):
+	os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR)
+
+def ensure_subtree_writable(root_path: str):
+  for root, dirs, files in os.walk(root_path, topdown=False):
+    for dirpath in [os.path.join(root, d) for d in dirs]:
+        os.chmod(dirpath, stat.S_IRWXU)
+    for filepath in [os.path.join(root, f) for f in files]:
+        os.chmod(filepath, stat.S_IRUSR | stat.S_IWUSR)
+        
+def parse_base(filepath: str) -> Optional[tuple[str, str]]:
+    basename = os.path.basename(filepath)
+    name_tokens = basename.split('.')
+    return (basename, name_tokens[0]) if name_tokens else None
+  
+def ensure_rpath(libpath: str):
+  result = subprocess.run(['otool', '-l', libpath], capture_output=True, text=True)
+  for line in result.stdout.splitlines():
+    if lc_rpath in line:
+      print(f'✅ LC_RPATH present → {libpath}')
+      return
+  
+  print(f'➕ LC_RPATH {lc_rpath} → {libpath}')
+  subprocess.run(['install_name_tool', '-add_rpath', lc_rpath, libpath])
+
 def main():
   if len(sys.argv) < 3:
-    print("usage: iina-normalize-app /path/to/IINA.app /path/to/IINA.app/ContentsFrameworks")
+    print('usage: iina-normalize-app /path/to/IINA.app /path/to/IINA.app/ContentsFrameworks')
     exit(1)
 
-    app_path = sys.argv[1]
-    frameworks_path = sys.argv[2]
-    
-    print(f"Normalizing libs for appPath={app_path}, frameworksPath={frameworks_path}")
+  app_path = sys.argv[1]
+  frameworks_path = sys.argv[2]
+  
+  print(f'🔧 Normalizing libs for frameworksPath={frameworks_path}')
+  
+  # print('📝 Making app contents writable')
+  # ensure_subtree_writable(app_path)
+  
+  # Collect info to populate name_variants_map (base_id -> {variant_basename -> variant_full_path})
+  name_variants_map: dict[str, dict[str, str]] = {}
+  
+  files = [f for f in os.listdir(frameworks_path) if os.path.isfile(os.path.join(frameworks_path, f))]
+  for file_basename in files:
+    filepath = os.path.join(frameworks_path, file_basename)
+    print(f'Examining file {filepath}')
+    if filepath.endswith('.dylib') or filepath.endswith('.so'):
+      (basename, base_id) = parse_base(filepath)
+      if not base_id:
+        continue
+      variants_map = name_variants_map.get(base_id, dict())
+      variants_map[basename] = filepath
+      name_variants_map[base_id] = variants_map
+      
+      otool_result = subprocess.run(['otool', '-L', filepath], capture_output=True, text=True)
+      for line in otool_result.stdout.splitlines():
+        # Skip header lines which contain the source file path.
+        # We are interested in the lines under them which are indented.
+        if len(line) > 0 and line[0].isspace():
+          # Fuzzy logic to allow spaces in filenames: check for start of version string instead
+          ref_end_index = line.index(' (compat')  # `(compatibility version`
+          if ref_end_index < 0:
+            continue
+          ref_path = line[1:ref_end_index].strip()
 
-if __name__ == "__main__":
+          # We only care about local libs, which start out generated by Nix.
+          if not ref_path.startswith('/nix/store/'):
+            continue
+
+          # print(f'Found reference: {ref_path}')
+          (basename, base_id) = parse_base(ref_path)
+          if not base_id:
+            continue
+
+          variants_map = name_variants_map.get(base_id, dict())
+          variants_map[basename] = ref_path
+          name_variants_map[base_id] = variants_map
+
+  # Do not include Swift concurrency library
+  # Also skip 'libffi-trampoline' (apparently a typo of 'libffi-trampolines'?)
+  for blacklisted in blacklist:
+    if blacklisted in name_variants_map:
+      name_variants_map.pop(blacklisted)
+  
+  for base_id, variants in name_variants_map.items():
+    print(f'Variants of {base_id}: {variants}')
+  
+  # Determine the best canonical name for each item in name_variants_map
+  canonical_name_map: dict[str, str] = {}
+  for base_id, variants_map in name_variants_map.items():
+    # Determine the best canonical name (most specific version)
+    best_variant_name: str = ''
+    best_variant_specificity: int = 0
+    for variant_name in variants_map.keys():
+      specificity = len(variant_name.split('.'))
+      if specificity > best_variant_specificity:
+        best_variant_specificity = specificity
+        best_variant_name = variant_name
+    canonical_name_map[base_id] = best_variant_name
+    
+  frameworks_staging_path = os.path.join(frameworks_path, '../FrameworksStaging')
+  os.makedirs(frameworks_staging_path, exist_ok=True)
+
+  for base_id, canonical_name in canonical_name_map.items():
+    print(f'Canonical name of {base_id}: {canonical_name}')
+    best_variant_path = name_variants_map[base_id][canonical_name]
+    dst = os.path.join(frameworks_staging_path, canonical_name)
+    shutil.copyfile(best_variant_path, dst)
+  
+  old_lib_links = [f for f in os.listdir(frameworks_path) if os.path.islink(os.path.join(frameworks_path, f))]
+  for old_lib_link in old_lib_links:
+    link_path = os.path.join(frameworks_path, old_lib_link)
+    os.unlink(link_path)
+  
+  print(f'Removing old libs from {frameworks_path}')
+  oldlibs = [f for f in os.listdir(frameworks_path) if os.path.isfile(os.path.join(frameworks_path, f))]
+  for oldlib in oldlibs:
+    lib_path = os.path.join(frameworks_path, oldlib)
+    os.remove(lib_path)
+    
+  staging_libs = [f for f in os.listdir(frameworks_staging_path) if os.path.isfile(os.path.join(frameworks_staging_path, f))]
+  for lib_basename in staging_libs:
+    libpath = os.path.join(frameworks_staging_path, lib_basename)
+    if libpath.endswith('.dylib') or libpath.endswith('.so'):
+      ensure_writable(libpath)
+      ensure_rpath(libpath)
+      print(f"✏️ Setting install_name id on {lib_basename}")
+      subprocess.run(['install_name_tool', '-id', f'@rpath/{lib_basename}', libpath], capture_output=True, text=True)
+      
+      otool_result = subprocess.run(['otool', '-L', libpath], capture_output=True, text=True)
+      for line in otool_result.stdout.splitlines():
+        # Skip header lines which contain the source file path.
+        # We are interested in the lines under them which are indented.
+        if len(line) > 0 and line[0].isspace():
+          # Fuzzy logic to allow spaces in filenames: check for start of version string instead
+          ref_end_index = line.index(' (compat')  # `(compatibility version`
+          if ref_end_index < 0:
+            continue
+          ref_path = line[1:ref_end_index].strip()
+
+          # We only care about local libs, which start out generated by Nix.
+          if not ref_path.startswith('/nix/store/'):
+            continue
+
+          # print(f'Found reference: {ref_path}')
+          (basename, base_id) = parse_base(ref_path)
+          if not base_id:
+            continue
+
+          sub_canonical_name = canonical_name_map.get(base_id, '')
+          if not sub_canonical_name:
+            continue
+          print(f"🔗 Repointing subdep for {lib_basename}: {ref_path} → @rpath/{sub_canonical_name}")
+          subprocess.run(['install_name_tool', '-change', ref_path, f'@rpath/{sub_canonical_name}', libpath], capture_output=True, text=True)
+          
+      shutil.move(libpath, os.path.join(frameworks_path, os.path.basename(libpath)))
+  
+  # Remove staging directory now that all libs have been transferred
+  shutil.rmtree(frameworks_staging_path)
+  
+  mac_os_path = os.path.join(app_path, 'Contents/MacOS')
+  print(f'🔧 Normalizing executables for {mac_os_path}')
+  executables = [f for f in os.listdir(mac_os_path) if os.path.isfile(os.path.join(mac_os_path, f))]
+  for exe_name in executables:
+    exe_path = os.path.join(mac_os_path, exe_name)
+    ensure_rpath(exe_path)
+    
+    otool_result = subprocess.run(['otool', '-L', exe_path], capture_output=True, text=True)
+    for line in otool_result.stdout.splitlines():
+      # Skip header lines which contain the source file path.
+      # We are interested in the lines under them which are indented.
+      if len(line) > 0 and line[0].isspace():
+        # Fuzzy logic to allow spaces in filenames: check for start of version string instead
+        ref_end_index = line.index(' (compat')  # `(compatibility version`
+        if ref_end_index < 0:
+          continue
+        ref_path = line[1:ref_end_index].strip()
+
+        # We only care about local libs, which start out generated by Nix.
+        if not ref_path.startswith('/nix/store/'):
+          continue
+
+        # print(f'Found reference: {ref_path}')
+        (basename, base_id) = parse_base(ref_path)
+        if not base_id:
+          continue
+
+        sub_canonical_name = canonical_name_map.get(base_id, '')
+        if not sub_canonical_name:
+          continue
+        print(f"🔗 Repointing subdep for {exe_name}: {ref_path} → @rpath/{sub_canonical_name}")
+        subprocess.run(['install_name_tool', '-change', ref_path, f'@rpath/{sub_canonical_name}', exe_path], capture_output=True, text=True)
+
+if __name__ == '__main__':
     main()

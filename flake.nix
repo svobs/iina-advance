@@ -611,11 +611,6 @@
                 echo "✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
 
-                echo "[${system}] 📦 Copying executable files to deps/executable"
-                executableDir="$out/deps/executable"
-                mkdir -p "$executableDir"
-                cp -RL ${depsExecutable}/. "$executableDir/"
-
                 echo "🔏 Re-signing IINA.app..."
                 ${scripts.resign}/bin/iina-resign "$app"
 

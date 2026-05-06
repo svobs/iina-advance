@@ -72,20 +72,21 @@ if [[ "$BUILD_NIX" = true ]]; then
   fi
 fi
 
-echo "Replacing deps/lib..."
-frameworksDir="$projDir/result/Applications/IINA.app/Contents/Frameworks/"
+echo "📎 Replacing deps/lib..."
+appContentsDir="$projDir/result/Applications/IINA.app/Contents"
+srcLibDir="$appContentsDir/Frameworks"
 dstLibDir="$projDir/deps/lib"
 rm -rf "$dstLibDir"
 mkdir -p "$dstLibDir"
 
 for libName in "${LIBS[@]}"
 do
-  srcLibPath="$frameworksDir/$libName"
+  srcLibPath="$srcLibDir/$libName"
   cp -v "$srcLibPath" "$dstLibDir/"
 done
 
-echo "Replacing deps/executable..."
-srcExecutablesDir="$projDir/result/deps/executable"
+echo "📎 Replacing deps/executable..."
+srcExecutablesDir="$appContentsDir/MacOS"
 dstExecutablesDir="$projDir/deps/executable"
 rm -rf "$dstExecutablesDir"
 mkdir -p "$dstExecutablesDir"
@@ -93,3 +94,6 @@ for executable in "$srcExecutablesDir"/*
 do
   cp -v "$executable" "$dstExecutablesDir/"
 done
+
+echo "✅ Done replacing deps/lib & deps/executable"
+

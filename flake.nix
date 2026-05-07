@@ -490,7 +490,7 @@
                 cp -RL ${depsExecutable}/. "$macos/"
 
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs "$app" "$frameworks"
+                ${normalize_libs}/bin/normalize_libs "$app" "$frameworks" "purge=yes"
 
                 echo "[${system}] ✏️ Canonicalize Lib Groups"
                 ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"

@@ -92,7 +92,9 @@ rm -rf "$dstExecutablesDir"
 mkdir -p "$dstExecutablesDir"
 for executable in "$srcExecutablesDir"/*
 do
-  cp -v "$executable" "$dstExecutablesDir/"
+  if [[ ${executable,,} != *"iina"* ]]; then
+    cp -v "$executable" "$dstExecutablesDir/"
+  fi
 done
 
 echo "✅ Done replacing deps/lib & deps/executable"

@@ -33,13 +33,14 @@ import subprocess
 import shutil
 from typing import Optional
 
-print_nix_paths_then_exit = False
+print_nix_paths_then_exit = True
 
-lc_rpath: str = '@executable_path/../Frameworks'
+LC_RPATH: str = '@executable_path/../Frameworks'
 
-# Do not include Swift concurrency library
+# Set of lib IDs to exclude.
+# Do not include Swift concurrency library.
 # Also skip 'libffi-trampoline' (apparently a typo of 'libffi-trampolines'?)
-blacklist = ['libswift_Concurrency', 'libffi-trampoline']
+BLACKLIST: set[str] = {'libswift_Concurrency', 'libffi-trampoline'}
 
 # Simplifies a version string by removing any trailing '.0' segments.
 def simplify_version(full_version: str) -> str:
@@ -51,8 +52,12 @@ def simplify_version(full_version: str) -> str:
 def parse_base(file_path: str) -> Optional[tuple[str, str]]:
     basename = os.path.basename(file_path)
     name_tokens = basename.split('.')
-    return (basename, name_tokens[0]) if name_tokens else None
-  
+    if name_tokens:
+        return (basename, name_tokens[0])
+    
+    print(f"⚠️ Could not derive base ID from path: {file_path}")
+    return None
+
 # Set given file R+W by the owner.
 def ensure_writable(file_path: str):
 	os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR)
@@ -64,12 +69,12 @@ def ls_files_in_dir(dir_path: str):
 def ensure_rpath(lib_path: str):
   result = subprocess.run(['otool', '-l', lib_path], capture_output=True, text=True)
   for line in result.stdout.splitlines():
-    if lc_rpath in line:
+    if LC_RPATH in line:
       print(f'✅ LC_RPATH present → {lib_path}')
       return
   
-  print(f'➕ LC_RPATH {lc_rpath} → {lib_path}')
-  subprocess.run(['install_name_tool', '-add_rpath', lc_rpath, lib_path])
+  print(f'➕ LC_RPATH {LC_RPATH} → {lib_path}')
+  subprocess.run(['install_name_tool', '-add_rpath', LC_RPATH, lib_path])
   
 # Return `otool -L` stdouut output as list of lines for given bin_path (Mach-O lib or executable binary)
 def otool_list_shared_libs(bin_path: str) -> list[str]:
@@ -102,56 +107,79 @@ def otool_find_nix_libs(bin_path: str) -> list[(str, str, str)]:
   
 def rewrite_lib_entry(current_entry: str, to: str, bin_path: str):
   subprocess.run(['install_name_tool', '-change', current_entry, to, bin_path], capture_output=False, text=True)
-  
+
+#--- MAIN ---#
+
 def main():
   if len(sys.argv) < 3:
     print('usage: iina-normalize-app /path/to/IINA.app /path/to/IINA.app/ContentsFrameworks')
     exit(1)
 
+  app_path = sys.argv[1]
   frameworks_path = sys.argv[2]
   
-  print(f'🔧 Normalizing libs for frameworksPath={frameworks_path}')
-  
-  # Collect info to populate name_variants_map
+  # FIRST PASS: Scan all libs; collecting dependency metadata to populate name_variants_map
   # {base_id: {variant_basename: {variant_compatibility_version: variant_full_path}}}
+  # By assembling the data first, we can elimminate the (many) duplicates before doing ELF work which will speed things
+  # up greatly.
   name_variants_map: dict[str, dict[str, dict[str, str]]] = {}
+  libs_searched: dict[str, bool] = {}
   
-  for file_basename, file_path in ls_files_in_dir(frameworks_path):
-    if not (file_basename.endswith('.dylib') or file_basename.endswith('.so')):
+  for _, file_path in ls_files_in_dir(frameworks_path):
+    if not (file_path.endswith('.dylib') or file_path.endswith('.so')):
       continue
+    libs_searched[file_path] = False
     
-    # Here we want to get a survey of *all* canonical libs which need to be modified
-    for ref_path, compat_version, current_version in otool_find_nix_libs(file_path):
-      print(f'Found ref: {ref_path} → {compat_version} / {current_version}')
-      (ref_basename, base_id) = parse_base(ref_path)
+  while True:
+    files_to_search = [path for path, searched in libs_searched.items() if not searched]
+    if not files_to_search:
+      break
+    
+    for file_path in files_to_search:
+      libs_searched[file_path] = True
+      
+      (_, base_id) = parse_base(file_path)
       if not base_id:
         continue
+      # See notes for blacklist above
+      if base_id in BLACKLIST:
+        print(f'File is in blacklist, skipping: {file_path}')
+        continue
+      
+      # Here we want to get a survey of *all* canonical libs which need to be modified
+      for ref_path, compat_version, current_version in otool_find_nix_libs(file_path):
+        print(f'Found ref: {ref_path} → {compat_version} / {current_version}')
+        (ref_basename, base_id) = parse_base(ref_path)
+        if not base_id:
+          continue
+        if base_id in BLACKLIST:
+          print(f'Ref is in blacklist, skipping: {ref_path}')
+          continue
+        if libs_searched.get(ref_path, False):
+          # print(f'Ref already checked, skipping: {ref_path}')
+          continue
+        # Need to search this ref for any transitive refs:
+        libs_searched[ref_path] = False
 
-      variants_map = name_variants_map.get(base_id, dict())
-      variant_versions_map = variants_map.get(compat_version, dict())
-      variant_versions_map[ref_basename] = ref_path
-      variants_map[compat_version] = variant_versions_map
-      name_variants_map[base_id] = variants_map
+        variants_map = name_variants_map.get(base_id, dict())
+        variant_versions_map = variants_map.get(compat_version, dict())
+        variant_versions_map[ref_basename] = ref_path
+        variants_map[compat_version] = variant_versions_map
+        name_variants_map[base_id] = variants_map
  
-  # Skip blacklisted items (see notes for blacklist above)
-  for blacklisted in blacklist:
-    if blacklisted in name_variants_map:
-      name_variants_map.pop(blacklisted)
-  
   for base_id, variants in name_variants_map.items():
-    print(f'Variants of {base_id}: {variants}')
+    print(f'Variants of lib {base_id}: {variants}')
   
   if print_nix_paths_then_exit:
     return
   
   # Only needed if multiple versions found for the same ID. Map of {canonical_name: variant_path}.
-  # This is needed when we are using a canonical name which we have created ourself, which breaks
-  # our ability to look up the path of its source variant in name_variants_map.
+  # This is needed when we are using a canonical name which we have created ourself, which breaks our ability to look
+  # up the path of its source variant in name_variants_map.
   rename_map: dict[str, str] = {}
   # Determine the best canonical name for each item in name_variants_map, populate canonical_name_map.
   # canonical_name_map = {base_id: {compat_version: canonical_name}}
-  # Note: all versions must be simplified using simplify_version()! Otherwise string-based comparisons
-  # will fail.
+  # Note: all versions must be simplified using simplify_version()! Otherwise string-based comparisons will fail.
   canonical_name_map: dict[str, dict[str, str]] = {}
   for base_id, variants_map in name_variants_map.items():
     multiple_versions_found = len(variants_map) > 1
@@ -173,7 +201,7 @@ def main():
         # require two versions of it as a transitive dependency. These versions are internally labelled v7 or v10,
         # respectively, but both have the same filename (`libiconv.2.lib`). We resolve the issue by renaming both files
         # and rewriting all references to use the new names.
-        base_id_new = base_id + variant_compat_ver #"-" + variant_compat_ver.replace('.', '_')
+        base_id_new = base_id + variant_compat_ver
         canonical_name = best_variant_name.replace(base_id, base_id_new)
         best_variant_path = variant_versions_map[best_variant_name]
         rename_map[canonical_name] = best_variant_path
@@ -185,10 +213,11 @@ def main():
         canonical_versions_map = canonical_name_map.get(base_id, dict())
         canonical_versions_map[variant_compat_ver] = best_variant_name
         canonical_name_map[base_id] = canonical_versions_map
-    
+  
+  # Create staging directory; copy all libs to be processed into it.
+  # This side-steps any thorny issues which might be caused by symlinks, makes purging Frameworks directory easier.
   frameworks_staging_path = os.path.join(frameworks_path, '../FrameworksStaging')
   os.makedirs(frameworks_staging_path, exist_ok=True)
-
   print(f'Copying {len(canonical_name_map)} libs into {frameworks_staging_path}')
   for base_id, canonical_versions_map in canonical_name_map.items():
     variants_map: dict[str, dict[str, str]] = name_variants_map[base_id]
@@ -206,6 +235,8 @@ def main():
       dst = os.path.join(frameworks_staging_path, canonical_name)
       shutil.copyfile(src_path, dst)
   
+  # (Optional): Remove unused lib files and links from Frameworks directory.
+  # Note: this is not recursive. Sparkle.framework and any other directories will be untouched.
   if len(sys.argv) >= 4 and sys.argv[3] == "purge=yes":
     print(f'Removing old lib files and links from {frameworks_path}')
     old_lib_links = [f for f in os.listdir(frameworks_path) if os.path.islink(os.path.join(frameworks_path, f))]
@@ -215,6 +246,9 @@ def main():
     for _, oldlib_path in ls_files_in_dir(frameworks_path):
       os.remove(oldlib_path)
   
+  # SECOND PASS: Update install names and lib references.
+  # After each file is processed, it is moved from FrameworksStaging to Frameworks.
+  print(f'🔧 Normalizing libs for frameworksPath={frameworks_path}')
   for lib_basename, lib_path in ls_files_in_dir(frameworks_staging_path):
     if not (lib_path.endswith('.dylib') or lib_path.endswith('.so')):
       continue
@@ -227,7 +261,6 @@ def main():
     for ref_path, compat_version, _ in otool_find_nix_libs(lib_path):
       (_, base_id) = parse_base(ref_path)
       if not base_id:
-        print(f"⚠️ Could not derive base ID from path, skipping: {ref_path}")
         continue
 
       sub_canonical_versions_map = canonical_name_map.get(base_id, '')
@@ -246,16 +279,21 @@ def main():
   # Remove staging directory now that all libs have been transferred
   shutil.rmtree(frameworks_staging_path)
   
-  app_path = sys.argv[1]
+  # Now process the executable binaries in MacOS directory.
   mac_os_path = os.path.join(app_path, 'Contents/MacOS')
   print(f'🔧 Normalizing executables for {mac_os_path}')
   for exe_base_name, exe_path in ls_files_in_dir(mac_os_path):
+    if exe_base_name == ".yt-dlp-wrapped":
+      # Is there a way to prevent this file from being generated in the first place?
+      print(f"Removing unneeded file: {exe_path}:")
+      os.remove(exe_path)
+      continue
+    
     ensure_rpath(exe_path)
     
     for ref_path, compat_version, _ in otool_find_nix_libs(exe_path):
       (_, base_id) = parse_base(ref_path)
       if not base_id:
-        print(f"⚠️ Could not derive base ID from path, skipping: {ref_path}")
         continue
 
       sub_canonical_versions_map = canonical_name_map.get(base_id, '')

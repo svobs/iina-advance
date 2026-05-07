@@ -78,5 +78,11 @@ do
   fi
 done
 
-echo "✅ Done replacing deps/lib & deps/executable"
+# srcIncludeDir="$projDir/result/include"
+# dstIncludeDir="$projDir/deps/include"
+# echo "📎 Replacing include files @ $dstIncludeDir …"
+# rm -rf "$dstIncludeDir"
+# cp -vr "$srcIncludeDir" "$dstIncludeDir"
+
+echo "✅ Done replacing deps/lib, deps/executable"
 

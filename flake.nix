@@ -494,9 +494,6 @@
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
                 ${normalize_libs}/bin/normalize_libs "$app" "$frameworks" "purge=yes"
 
-                echo "[${system}] ✏️ Canonicalize Lib Groups"
-                ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
-
                 echo "[${system}] ✏️ Setting up environment variables"
 
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                          "$plist" 2>/dev/null || true
@@ -609,9 +606,6 @@
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
                 ${normalize_libs}/bin/normalize_libs "$app" "$frameworks"
-
-                echo "✏️ Canonicalize Lib Groups"
-                ${scripts.canonicalizeLibGroups}/bin/iina-canonicalize-lib-groups "$app"
 
                 echo "🔏 Re-signing IINA.app..."
                 ${scripts.resign}/bin/iina-resign "$app"

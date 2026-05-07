@@ -19,8 +19,6 @@
           pkgs = import nixpkgs { inherit system; };
 
           scripts = {
-            normalizer = import ./nix/scripts/normalizer.nix { inherit pkgs; };
-            canonicalizeLibGroups = import ./nix/scripts/canonicalize-lib-groups.nix { inherit pkgs; };
             resign = import ./nix/scripts/resign.nix { inherit pkgs; };
           };
 

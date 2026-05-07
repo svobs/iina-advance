@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUILD_NIX=true
+BUILD_NIX=false
 DEBUG=true
 
 LIBS=(
@@ -17,7 +17,7 @@ LIBS=(
   "libtasn1.6.dylib" "libuchardet.0.dylib" "libunibreak.6.dylib" "libunistring.5.dylib" "libvidstab.1.2.dylib"
   "libvulkan.1.dylib" "libwebp.7.dylib" "libwebpmux.3.dylib" "libX11.6.dylib" "libXau.6.dylib"
   "libxcb-shape.0.dylib" "libxcb-shm.0.dylib" "libxcb-xfixes.0.dylib" "libxcb.1.dylib" "libXdmcp.6.dylib"
-  "libz.1.dylib" "libzimg.2.dylib" "libzmq.5.dylib" "libzstd.1.dylib"
+  "libz.dylib" "libzimg.2.dylib" "libzmq.5.dylib" "libzstd.1.5.7.dylib"
 )
 
 get_script_dir()
@@ -90,10 +90,10 @@ srcExecutablesDir="$appContentsDir/MacOS"
 dstExecutablesDir="$projDir/deps/executable"
 rm -rf "$dstExecutablesDir"
 mkdir -p "$dstExecutablesDir"
-for executable in "$srcExecutablesDir"/*
+for executable in $(ls $srcExecutablesDir)
 do
-  if [[ ${executable,,} != *"iina"* ]]; then
-    cp -v "$executable" "$dstExecutablesDir/"
+  if [[ "$executable" != *"iina"* ]] && [[ "$executable" != *"IINA"* ]]; then
+    cp -v "$srcExecutablesDir/$executable" "$dstExecutablesDir/"
   fi
 done
 

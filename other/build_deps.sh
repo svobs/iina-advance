@@ -1,6 +1,7 @@
 #!/bin/bash
 
-BUILD_NIX=false
+MIN_NIX_VERSION="2.34.6"
+BUILD_NIX=true
 DEBUG=true
 
 get_script_dir()
@@ -25,26 +26,22 @@ get_script_dir()
     echo "$SCRIPT_DIR"
 }
 
-scriptDir="$(get_script_dir)"
-echo "Script dir: $scriptDir"
-
 set -euo pipefail
-
-projDir="$scriptDir/.."
-cd "$scriptDir/.."
-echo "Project root directory: $projDir"
+scriptDir="$(get_script_dir)"
+projDir=`realpath ${scriptDir}/..`
+echo "Project root directory seems to be: $projDir"
 
 if [[ "$BUILD_NIX" = true ]]; then
   nixExec=$(which nix)
 
   if [[ -z "$nixExec" ]]; then
-    echo "Could not find 'nix' executable. Please ensure Nix is installed."
+    echo "ERROR: Could not find 'nix' command. Please ensure Nix $MIN_NIX_VERSION or higher is installed."
     exit 1
   fi
 
   if [[ ! -f $projDir/flake.nix ]]; then
-    echo "Could not find flake.nix in project root directory."
-    echo "Please ensure it is present and this script is located in {project_root}/other/"
+    echo "ERROR: Could not find 'flake.nix' (expected location: $projDir/flake.nix)."
+    echo "Please ensure it is present and this script is located in $projDir/other/"
     exit 1
   fi
 

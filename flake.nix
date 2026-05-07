@@ -53,7 +53,7 @@
           '';
 
           # Override ffmpeg to use our version of libs
-          ffmpeg = pkgs.ffmpeg.override {
+          ffmpeg = (pkgs.ffmpeg.override {
             withSoxr = true;
             soxr = pkgs.soxr;
 
@@ -68,7 +68,10 @@
 
             withJxl = true;
             libjxl = pkgs.libjxl;
-          };
+          }).overrideAttrs (_: {
+            # Skip tests to speed up build
+            doCheck = false;
+            });
 
           # Override mpv with desired features support
           mpv = pkgs.mpv-unwrapped.override {
@@ -126,10 +129,6 @@
               name = "libavutil";
               path = "${pkgs.lib.getDev ffmpeg}/include/libavutil";
             }
-            # {
-            #   name = "libpostproc";
-            #   path = "${pkgs.lib.getDev ffmpeg}/include/libpostproc";
-            # }
             {
               name = "libswresample";
               path = "${pkgs.lib.getDev ffmpeg}/include/libswresample";
@@ -424,6 +423,7 @@
                 rm -rf deps/include deps/lib
 
                 mkdir -p deps/include deps/lib deps/executable
+                echo "DEPS_LIB: ${depsLib}"
                 cp -RL ${depsInclude}/.           deps/include
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
@@ -482,8 +482,10 @@
                 echo "[${system}] 📦 Bundling ${depsIndirect} into IINA.app"
                 echo "DEPS_INDIRECT CONTENTS:"
                 ls "${depsIndirect}/"
+                echo "FRAMEWORKS CONTENTS BEFORE COPYING INDIRECT:"
+                ls "$frameworks/"
                 cp -RL ${depsIndirect}/. "$frameworks/"
-                echo "FRAMEWORKS CONTENTS:"
+                echo "FRAMEWORKS CONTENTS *AFTER* COPYING INDIRECT:"
                 ls "$frameworks/"
 
                 echo "[${system}] 📦 Bundling ${depsExecutable} into IINA.app"
@@ -613,6 +615,10 @@
 
                 echo "🔏 Re-signing IINA.app..."
                 ${scripts.resign}/bin/iina-resign "$app"
+
+                echo "[${system}] 📦 Copying include dir"
+                mkdir -p "$out/include"
+                cp -RL ${depsInclude}/. $out/include
 
                 app_real=$(realpath "$app" 2>/dev/null || echo "$app")
                 echo "✅✅ Done! Universal IINA.app is ready at $app_real"

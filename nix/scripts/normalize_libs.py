@@ -33,7 +33,9 @@ import subprocess
 import shutil
 from typing import Optional
 
-print_nix_paths_then_exit = True
+# If specified as the first arg, search for all /nix/store refrences in the second arg, print them, then exit
+# without doing any modifications. This is useful for debugging & verifying lib references after a build.
+PRINT_PATHS_ONLY_ARG = "--print-only"
 
 LC_RPATH: str = '@executable_path/../Frameworks'
 
@@ -112,9 +114,11 @@ def rewrite_lib_entry(current_entry: str, to: str, bin_path: str):
 
 def main():
   if len(sys.argv) < 3:
-    print('usage: iina-normalize-app /path/to/IINA.app /path/to/IINA.app/ContentsFrameworks')
+    print(f'usage: iina-normalize-app /path/to/IINA.app /path/to/IINA.app/ContentsFrameworks')
+    print(f'   or: iina-normalize-app {PRINT_PATHS_ONLY_ARG} /path/to/IINA.app/ContentsFrameworks')
     exit(1)
 
+  print_nix_paths_then_exit = sys.argv[1] == PRINT_PATHS_ONLY_ARG
   app_path = sys.argv[1]
   frameworks_path = sys.argv[2]
   
@@ -171,6 +175,7 @@ def main():
     print(f'Variants of lib {base_id}: {variants}')
   
   if print_nix_paths_then_exit:
+    print(f"⚠️ Exiting script now without modifying any files, as {PRINT_PATHS_ONLY_ARG} arg was provided.")
     return
   
   # Only needed if multiple versions found for the same ID. Map of {canonical_name: variant_path}.

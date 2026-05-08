@@ -194,6 +194,14 @@ export YELLOW
 export GREEN
 export NC
 
+# Process files in smaller batches using xargs
+printf "%s\n" "${files[@]}" | xargs -n 1 -P "$PARALLEL_DOWNLOADS" bash -c 'download_file "$@"' _
+
+mkdir -p "$EXEC_PATH"
+echo -e "${YELLOW}Downloading yt-dlp...${NC}"
+curl -s -L "$YT_DLP_DOWNLOAD_PATH" -o "$YT_DLP_PATH" && echo -e "${GREEN}yt-dlp downloaded${NC}"
+chmod +x "$YT_DLP_PATH"
+
 mkdir -p "$PLUGIN_PATH"
 
 if [[ "$SKIP_PLUGINS" == true ]]; then

@@ -2,7 +2,7 @@
 
 MIN_NIX_VERSION="2.34.6"
 BUILD_NIX=true
-DEBUG=true
+DEBUG_NIX=false
 
 get_script_dir()
 {
@@ -45,10 +45,10 @@ if [[ "$BUILD_NIX" = true ]]; then
     exit 1
   fi
 
-  if [[ "$DEBUG" = true ]]; then
+  if [[ "$DEBUG_NIX" = true ]]; then
     $nixExec build --keep-failed --print-build-logs --verbose
   else
-    $nixExec build
+    $nixExec build --print-build-logs --verbose
   fi
 fi
 

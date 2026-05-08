@@ -459,7 +459,7 @@
                 cp -RL ${depsExecutable}/. "$macos/"
 
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${libTool}/bin/iina-lib-tool --make-canonical --purge "$frameworks" "$macos"
+                ${libTool}/bin/iina-lib-tool --canonicalize --purge "$frameworks" "$macos"
 
                 echo "[${system}] ✏️ Setting up environment variables"
 
@@ -573,7 +573,7 @@
                 done
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${libTool}/bin/iina-lib-tool --canonicalize-libs "$frameworks" "$app/Contents/MacOS"
+                ${libTool}/bin/iina-lib-tool --canonicalize "$frameworks" "$app/Contents/MacOS"
 
                 echo "🔏 Re-signing IINA.app..."
                 ${resign}/bin/iina-resign "$app"

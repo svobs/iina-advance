@@ -398,7 +398,7 @@
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
                 
-                ${normalize_libs}/bin/normalize_libs deps/executable deps/lib --add-cname-links
+                ${normalize_libs}/bin/normalize_libs --add-canonical-links deps/lib deps/executable
 
                 echo "[${system}] 📦 Copying SPM deps"
                 rsync -a ${spmDeps}/ ./
@@ -455,7 +455,7 @@
                 cp -RL ${depsExecutable}/. "$macos/"
 
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs "$macos" "$frameworks" "--purge"
+                ${normalize_libs}/bin/normalize_libs --make-canonical --purge "$frameworks" "$macos"
 
                 echo "[${system}] ✏️ Setting up environment variables"
 
@@ -568,7 +568,7 @@
                 done
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs "$app/Contents/MacOS" "$frameworks"
+                ${normalize_libs}/bin/normalize_libs --canonicalize-libs "$frameworks" "$app/Contents/MacOS"
 
                 echo "🔏 Re-signing IINA.app..."
                 ${scripts.resign}/bin/iina-resign "$app"

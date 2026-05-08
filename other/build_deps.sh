@@ -1,7 +1,11 @@
 #!/bin/bash
 
+NIX_BUILD=true
+REPLACE_LIBS=true
+REPLACE_EXECUTABLES=true
+REPLACE_INCLUDES=false
+
 MIN_NIX_VERSION="2.34.6"
-BUILD_NIX=true
 DEBUG_NIX=false
 
 get_script_dir()
@@ -31,7 +35,7 @@ scriptDir="$(get_script_dir)"
 projDir=`realpath ${scriptDir}/..`
 echo "Project root directory seems to be: $projDir"
 
-if [[ "$BUILD_NIX" = true ]]; then
+if [[ "$NIX_BUILD" = true ]]; then
   nixExec=$(which nix)
 
   if [[ -z "$nixExec" ]]; then
@@ -53,36 +57,46 @@ if [[ "$BUILD_NIX" = true ]]; then
 fi
 
 appContentsDir="$projDir/result/Applications/IINA.app/Contents"
-srcLibDir="$appContentsDir/Frameworks"
-dstLibDir="$projDir/deps/lib"
-echo "📎 Replacing libs @ $dstLibDir …"
-rm -rf "$dstLibDir"
-mkdir -p "$dstLibDir"
 
-for srclib in $(ls $srcLibDir)
-do
-  if [[ "$srclib" == *".dylib" ]]; then
-    cp -v "$srcLibDir/$srclib" "$dstLibDir/"
-  fi
-done
+if [[ "$REPLACE_LIBS" = true ]]; then
+  srcLibDir="$appContentsDir/Frameworks"
+  dstLibDir="$projDir/deps/lib"
+  echo "📎 Replacing libs @ $dstLibDir …"
+  rm -rf "$dstLibDir"
+  mkdir -p "$dstLibDir"
 
-srcExecutablesDir="$appContentsDir/MacOS"
-dstExecutablesDir="$projDir/deps/executable"
-echo "📎 Replacing executables @ $dstExecutablesDir …"
-rm -rf "$dstExecutablesDir"
-mkdir -p "$dstExecutablesDir"
-for executable in $(ls $srcExecutablesDir)
-do
-  if [[ "$executable" != *"iina"* ]] && [[ "$executable" != *"IINA"* ]]; then
-    cp -v "$srcExecutablesDir/$executable" "$dstExecutablesDir/"
-  fi
-done
+  for srclib in $(ls $srcLibDir)
+  do
+    if [[ "$srclib" == *".dylib" ]]; then
+      cp -v "$srcLibDir/$srclib" "$dstLibDir/"
+    fi
+  done
+fi
 
-# srcIncludeDir="$projDir/result/include"
-# dstIncludeDir="$projDir/deps/include"
-# echo "📎 Replacing include files @ $dstIncludeDir …"
-# rm -rf "$dstIncludeDir"
-# cp -vr "$srcIncludeDir" "$dstIncludeDir"
+if [[ "$REPLACE_EXECUTABLES" = true ]]; then
+  srcExecutablesDir="$appContentsDir/MacOS"
+  dstExecutablesDir="$projDir/deps/executable"
+  echo "📎 Replacing executables @ $dstExecutablesDir …"
+  rm -rf "$dstExecutablesDir"
+  mkdir -p "$dstExecutablesDir"
+  for executable in $(ls $srcExecutablesDir)
+  do
+    if [[ "$executable" != *"iina"* ]] && [[ "$executable" != *"IINA"* ]]; then
+      cp -v "$srcExecutablesDir/$executable" "$dstExecutablesDir/"
+    fi
+  done
+fi
 
-echo "✅ Done replacing deps/lib, deps/executable"
+if [[ "$REPLACE_INCLUDES" = true ]]; then
+  srcIncludeDir="$projDir/result/include"
+  dstIncludeDir="$projDir/deps/include"
+  echo "📎 Replacing include files @ $dstIncludeDir …"
+  mkdir -p "$dstIncludeDir"
+  find "$dstIncludeDir" -name "*.h" -print0 | xargs -0 rm
+  rsync -rv "$srcIncludeDir/" "$dstIncludeDir/"
+  chmod -R u+rw "$dstIncludeDir"
+fi
+
+echo ""
+echo "✅ Done"
 

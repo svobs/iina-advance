@@ -32,7 +32,6 @@
             ]))];
 
             dontUnpack = true;
-
             installPhase = "install -Dm755 ${./nix/scripts/normalize_libs.py} $out/bin/normalize_libs";
           };
 
@@ -208,34 +207,8 @@
                   pkgs.zeromq
                   pkgs.zimg
                   pkgs.zstd
-                ]
-            )
-          );
 
-          # Collect indirect deps
-          depsIndirect = pkgs.linkFarm "iina-deps-indirect" (
-            pkgs.lib.flatten (
-              map
-                (
-                  pkg:
-                  let
-                    libdir = "${pkgs.lib.getLib pkg}/lib";
-                    files = builtins.attrNames (builtins.readDir libdir);
-                  in
-                  pkgs.lib.concatMap (
-                    file:
-                    if pkgs.lib.hasSuffix ".dylib" file then
-                      [
-                        {
-                          name = file;
-                          path = "${libdir}/${file}";
-                        }
-                      ]
-                    else
-                      [ ]
-                  ) files
-                )
-                [
+                  # Indirect libs
                   pkgs.bzip2
                   pkgs.expat
                   pkgs.lame
@@ -421,10 +394,11 @@
                 rm -rf deps/include deps/lib
 
                 mkdir -p deps/include deps/lib deps/executable
-                echo "DEPS_LIB: ${depsLib}"
                 cp -RL ${depsInclude}/.           deps/include
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
+                
+                ${normalize_libs}/bin/normalize_libs deps/executable deps/lib --add-cname-links
 
                 echo "[${system}] 📦 Copying SPM deps"
                 rsync -a ${spmDeps}/ ./
@@ -477,20 +451,11 @@
                 mkdir -p "$frameworks"
                 mkdir -p "$resources"
 
-                echo "[${system}] 📦 Bundling ${depsIndirect} into IINA.app"
-                echo "DEPS_INDIRECT CONTENTS:"
-                ls "${depsIndirect}/"
-                echo "FRAMEWORKS CONTENTS BEFORE COPYING INDIRECT:"
-                ls "$frameworks/"
-                cp -RL ${depsIndirect}/. "$frameworks/"
-                echo "FRAMEWORKS CONTENTS *AFTER* COPYING INDIRECT:"
-                ls "$frameworks/"
-
                 echo "[${system}] 📦 Bundling ${depsExecutable} into IINA.app"
                 cp -RL ${depsExecutable}/. "$macos/"
 
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs "$app" "$frameworks" "purge=yes"
+                ${normalize_libs}/bin/normalize_libs "$macos" "$frameworks" "--purge"
 
                 echo "[${system}] ✏️ Setting up environment variables"
 
@@ -603,7 +568,7 @@
                 done
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs "$app" "$frameworks"
+                ${normalize_libs}/bin/normalize_libs "$app/Contents/MacOS" "$frameworks"
 
                 echo "🔏 Re-signing IINA.app..."
                 ${scripts.resign}/bin/iina-resign "$app"
@@ -657,7 +622,6 @@
                 link_tree ${depsInclude} "$deps_root/include"
                 link_tree ${depsLib} "$deps_root/lib"
                 link_tree ${depsExecutable} "$deps_root/executable"
-                link_tree ${depsIndirect} "$deps_root/indirect"
 
                 echo "📦 Syncing SwiftPM deps"
                 rsync -a --chmod=Du+rwx,Fu+rw ${spmDeps}/ ./

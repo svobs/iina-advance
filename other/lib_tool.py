@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""normalize_libs.py
+"""lib_tool.py
 
-A script to collect IINA's libs & their transitive libs, then consolidate similar versions & normalize their paths for
-use in the app bundle. This is needed to avoid multiple versions of the same lib being bundled, which is more difficult
-to integrate into Xcode builds. Fixing the rpaths is also needed to replace hard-coded paths to the nix store with
-relative paths within the app bundle.
+A script to collect IINA's libs & their dependencies, consolidating compatible versions & normalize their paths for
+use in the app bundle. This is useful to avoid multiple versions of the same lib being bundled, and by using a set
+of well-defined ("canonical") names, the set of libs can be reduced to a manageable quantity, and faciltates sharing
+libs between Nix and Xcode builds. This tool can also replace Nix's hard-coded paths to /nix/store/ with relative
+paths within the app bundle, which is necessary for packaging the app for distribution.
 
 Pseudocode:
 -----------
@@ -45,7 +46,7 @@ from typing import Callable, Optional
 
 # --- Constants ---
 
-LC_RPATH: str = 'executable_path/../Frameworks'
+LC_RPATH: str = '@executable_path/../Frameworks'
 
 # Set of lib IDs to exclude. Do not include Swift concurrency library.
 # Also skip 'libffi-trampoline' (apparently a typo of 'libffi-trampolines'?)
@@ -356,9 +357,11 @@ def main():
   if args.add_canonical_links:
     print(f"Adding symblinks for missing canonically named libs.")
     
-    def cname_handler(canonical_name: str, _, src_path: str):
+    def cname_handler(canonical_name: str, compat_version: str, src_path: str):
+      print(f'Canonical name: v{compat_version}: {canonical_name}')
       dst_path = os.path.join(lib_dir, canonical_name)
       if os.path.isfile(dst_path):
+        print(f"Already exists: {dst_path}")
         return
       print(f"Adding link: {src_path} → {dst_path}")
       os.symlink(src_path, dst_path, target_is_directory=False)

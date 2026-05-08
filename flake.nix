@@ -18,13 +18,24 @@
         let
           pkgs = import nixpkgs { inherit system; };
 
-          scripts = {
-            resign = import ./nix/scripts/resign.nix { inherit pkgs; };
+          resign = pkgs.writeShellApplication {
+            name = "iina-resign";
+            runtimeInputs = [ pkgs.findutils pkgs.coreutils ];
+            text = ''
+              set -euo pipefail
+              app="$1"
+
+              find "$app" -type d -exec chmod u+rwx {} \;
+              find "$app" -type f -exec chmod u+rw  {} \;
+              find "$app/Contents/MacOS" -type f -perm -111 -exec chmod u+rw {} \;
+
+              /usr/bin/codesign --force --deep --sign - "$app"
+            '';
           };
 
-          normalize_libs = pkgs.stdenv.mkDerivation {
-            pname = "normalize_libs";
-            version = "1.0.0";
+          libTool = pkgs.stdenv.mkDerivation {
+            pname = "iina-lib-tool";
+            version = "1.0";
 
             propagatedBuildInputs = [
             (pkgs.python3.withPackages (pythonPackages: with pythonPackages; [
@@ -32,21 +43,13 @@
             ]))];
 
             dontUnpack = true;
-            installPhase = "install -Dm755 ${./nix/scripts/normalize_libs.py} $out/bin/normalize_libs";
+            installPhase = "install -Dm755 ${./other/lib_tool.py} $out/bin/iina-lib-tool";
           };
 
           # Pull system's xcode in
           xcode = pkgs.runCommand "system-xcode" { } ''
             mkdir -p $out/bin
             ln -sf /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild $out/bin/xcodebuild
-          '';
-
-          # https://epics-extensions.github.io/EPNix/dev/ioc/user-guides/testing/python-scripts.html
-          mypyscript = pkgs.writers.writePython3Bin "mypyscript" { } ''
-            import sys
-
-            custom_arg = sys.argv[1]
-            print("Hello, World! Custom arg: " + custom_arg)
           '';
 
           # Override ffmpeg to use our version of libs
@@ -352,7 +355,7 @@
               nativeBuildInputs = [
                 pkgs.coreutils
                 xcode
-                normalize_libs
+                libTool
                 pkgs.rsync
                 pkgs.git
                 pkgs.gnused
@@ -398,11 +401,12 @@
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
                 
-                ${normalize_libs}/bin/normalize_libs --add-canonical-links deps/lib deps/executable
-
                 echo "[${system}] 📦 Copying SPM deps"
                 rsync -a ${spmDeps}/ ./
                 chmod -R u+rwx,g+rx,o+rx .
+
+                echo "[${system}] 📦 Adding canonical links"
+                ${libTool}/bin/iina-lib-tool --add-canonical-links "./deps/lib" "./deps/executable"
 
                 # Rewrite SwiftPM workspace-state.json to fix absolute paths
                 if [ -f .spm/workspace-state.json ]; then
@@ -455,7 +459,7 @@
                 cp -RL ${depsExecutable}/. "$macos/"
 
                 echo "[${system}] 📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs --make-canonical --purge "$frameworks" "$macos"
+                ${libTool}/bin/iina-lib-tool --make-canonical --purge "$frameworks" "$macos"
 
                 echo "[${system}] ✏️ Setting up environment variables"
 
@@ -467,7 +471,7 @@
                 /usr/libexec/PlistBuddy -c "Set :com.colliderli.iina.build.branch        $git_branch"         "$plist"
 
                 # echo "[${system}] 🔏 Re-signing IINA.app..."
-                # ${scripts.resign}/bin/iina-resign "$app"
+                # ${resign}/bin/iina-resign "$app"
               '';
             };
 
@@ -477,6 +481,7 @@
               version = "${self.shortRev or self.dirtyShortRev}";
 
               nativeBuildInputs = [
+                libTool
                 pkgs.rsync
                 pkgs.coreutils
               ];
@@ -568,10 +573,10 @@
                 done
 
                 echo "📦 Deep-bundling dynamic dependencies into IINA.app"
-                ${normalize_libs}/bin/normalize_libs --canonicalize-libs "$frameworks" "$app/Contents/MacOS"
+                ${libTool}/bin/iina-lib-tool --canonicalize-libs "$frameworks" "$app/Contents/MacOS"
 
                 echo "🔏 Re-signing IINA.app..."
-                ${scripts.resign}/bin/iina-resign "$app"
+                ${resign}/bin/iina-resign "$app"
 
                 echo "[${system}] 📦 Copying include dir"
                 mkdir -p "$out/include"

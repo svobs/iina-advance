@@ -369,6 +369,7 @@
               ];
 
               buildPhase = ''
+                echo "hello"
                 echo "[${system}] 🔧 Setting up build environment"
                 git_rev="${self.rev or self.dirtyRev}"
                 git_branch="???"  # FIXME: Find way to get the actual git branch

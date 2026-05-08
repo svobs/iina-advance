@@ -89,6 +89,8 @@ LC_RPATH: str = '@executable_path/../Frameworks'
 # Also skip 'libffi-trampoline' (apparently a typo of 'libffi-trampolines'?)
 BLACKLIST: set[str] = {'libswift_Concurrency', 'libffi-trampoline'}
 
+LOG_VERBOSE: bool = False
+
 # --- Command line options ---
 
 def make_arg_parser() -> argparse.ArgumentParser:
@@ -226,6 +228,8 @@ class LibMetaDB:
     self.rpaths_map[base_id] = rpaths_map
     
   def populate_from_disk(self, lib_dir: str, executable_dir: str):
+    print(f'Scanning for lib dependencies…')
+
     libs_searched: dict[str, bool] = {}
     
     # Add libs in Frameworks directory to search list. These are the "roots" of our search.
@@ -259,7 +263,8 @@ class LibMetaDB:
         
         # Here we want to get a survey of *all* canonical libs which need to be modified
         def nix_store_handler(_, ref_path, compat_version, current_version):
-          print(f'Found ref: {ref_path} → compat: {compat_version} curr: {current_version}')
+          if LOG_VERBOSE:
+            print(f'Found ref: {ref_path} compat: {compat_version} curr: {current_version}')
           base_tuple = parse_base(ref_path)
           if not base_tuple:
             return
@@ -283,10 +288,12 @@ class LibMetaDB:
             print(f'Ref is in blacklist, skipping: {ref_path}')
             return
           
-          print(f'Found @rpath ref: {ref_path} → compat: {compat_version} curr: {current_version}')
+          if LOG_VERBOSE:
+            print(f'Found @rpath ref: {ref_path} compat: {compat_version} curr: {current_version}')
           self.store_rpath_variant(base_id, ref_basename, compat_version, ref_path)
           
-        print(f'Scanning deps: {file_path}')
+        if LOG_VERBOSE:
+          print(f'Scanning: {file_path}')
         otool_find_lib_refs(file_path, nix_store_handler, rpath_handler)
 
 
@@ -326,7 +333,7 @@ class CanonicalNameDB:
           # issue by renaming both files and rewriting all references to them using the new names.
           base_id_new: str = base_id + variant_compat_ver
           canonical_name = best_variant_name.replace(base_id, base_id_new)
-          print(f'Will rename {best_variant_name} compat ver {variant_compat_ver} → {canonical_name}')
+          print(f'Deriving novel canonical name for variant {best_variant_name}, compatVersion {variant_compat_ver} → {canonical_name}')
           best_variant_path: str = variant_subversions_map[best_variant_name]
           # Store the new canonical name back into the map, so we can find its source path when copying files.
           variant_subversions_map[canonical_name] = best_variant_path
@@ -344,11 +351,11 @@ class CanonicalNameDB:
       # Try rpaths
       canonical_versions_map = self.lib_db.rpaths_map.get(base_id, {})
       if not canonical_versions_map:
-        print(f'⚠️ Could not find any canonical versions for id={base_id}')
+        print(f'⚠️ Could not find any versions for id={base_id} in canonical name map or rpaths map!')
         return None
     canonical_name = canonical_versions_map.get(compat_version, '')
     if not canonical_name:
-      print(f'⚠️ Could not find canonical name for id={base_id}, compatVersion={compat_version}')
+      print(f'⚠️ Could not find canonical name for id={base_id} compatVersion={compat_version}')
       return None
     return canonical_name
 
@@ -395,22 +402,23 @@ def main():
     return
   
   if args.add_canonical_links:
-    print(f"Adding symblinks for missing canonically named libs.")
+    print(f"Adding symlinks for missing canonically named libs…")
     
     def cname_handler(canonical_name: str, compat_version: str, src_path: str):
-      print(f'Canonical name: v{compat_version}: {canonical_name}')
       dst_path = os.path.join(lib_dir, canonical_name)
       if os.path.isfile(dst_path):
-        print(f"Already exists: {dst_path}")
+        if LOG_VERBOSE:
+          print(f"Already exists: {dst_path}")
         return
       print(f"Adding link: {src_path} → {dst_path}")
       os.symlink(src_path, dst_path, target_is_directory=False)
 
     cname_db.for_all_canonical_names(cname_handler)
+    print(f"Adding symlinks: done")
     return
   
   assert(args.canonicalize)
-  
+  print(f"Canonicalizing libs in {lib_dir}…")
   # Create libStaging, then copy all libs to be processed into it.
   # This side-steps any thorny issues which might be caused by symlinks, makes purging Frameworks directory easier.
   lib_staging_dir_path = os.path.join(lib_dir, '../libStaging')
@@ -421,7 +429,7 @@ def main():
   copied_libs_count: int = 0
   
   def cname_handler(canonical_name: str, compat_version: str, src_path: str):
-    print(f'Canonical name: v{compat_version}: {canonical_name}')
+    print(f'Canonical name for v{compat_version}: {canonical_name}')
     dst_path = os.path.join(lib_staging_dir_path, canonical_name)
     shutil.copyfile(src_path, dst_path, follow_symlinks=True)
     nonlocal copied_libs_count
@@ -492,6 +500,7 @@ def main():
       ensure_lc_rpath_present(exe_path)
       otool_find_lib_refs(exe_path, nix_store_handler)
 
+  print(f"Canonicalizing libs: done")
 
 if __name__ == '__main__':
     main()

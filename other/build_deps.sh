@@ -46,10 +46,20 @@ if [[ "$NIX_BUILD" = true ]]; then
   if [[ ! -f $projDir/flake.nix ]]; then
     echo "ERROR: Could not find 'flake.nix' (expected location: $projDir/flake.nix)."
     echo "Please ensure it is present and this script is located in $projDir/other/"
+    echo "Aborting build."
     exit 1
   fi
 
+  cd "$projDir"
+
   if [[ "$DEBUG_NIX" = true ]]; then
+    nixStoreRefs=`grep '/nix/store/' "$projDir/iina.xcodeproj/project.pbxproj" || true`
+    if [ -n "$nixStoreRefs" ]; then
+      echo "ERROR: Found reference(s) to '/nix/store/' in project.pbxproj!"
+      echo "Ensure all framework references in the project files use relative paths which begin with 'deps/lib/'"
+      echo "Aborting build."
+      exit 1
+    fi
     $nixExec build --keep-failed --print-build-logs --verbose
   else
     $nixExec build --print-build-logs --verbose

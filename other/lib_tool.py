@@ -109,7 +109,7 @@ def make_arg_parser() -> argparse.ArgumentParser:
   )
   
   group = arg_parser.add_mutually_exclusive_group(required=True)
-  group.add_argument('--canonicalize', action='store_true', help="Renames all libs in Frameworks directory to their canonical names, and also adds all their transitive dependencies to the Frameworks directory using their cannonical names. Also, for all libs found in Frameworks directory & all executables found in the MacOS directory, rewrites all `/nix/store` lib references to `@rpath` references with each lib's canonical name. Also adds missing LC_RPATH entries to all libs.")
+  group.add_argument('--canonicalize', action='store_true', help="Renames all libs in Frameworks directory to their canonical names, and also adds all their transitive dependencies to the Frameworks directory using their canonical names. Also, for all libs found in Frameworks directory & all executables found in the MacOS directory, rewrites all `/nix/store` lib references to `@rpath` references with each lib's canonical name. Also adds missing LC_RPATH entries to all libs.")
   group.add_argument('--add-canonical-links', action='store_true', help="Add symbolic links for any missing canonically named libs to the Frameworks directory.")
   group.add_argument('--print-only', action='store_true', help="Search for all /nix/store references among all dependencies, print them, then exit without doing any modifications.")
   
@@ -423,7 +423,7 @@ def main():
   os.makedirs(lib_staging_dir_path, exist_ok=True)
   print(f'Copying libs into {lib_staging_dir_path}')
 
-  # Total count of libs copied, with different vesions of the same lib counted as multiple.
+  # Total count of libs copied, with different versions of the same lib counted as multiple.
   copied_libs_count: int = 0
   
   def copy_to_cname(canonical_name: str, compat_version: str, src_path: str):

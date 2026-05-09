@@ -1,6 +1,4 @@
 {
-  # Suggestion: to ease debugging of dev builds:
-  # nix build --keep-failed --print-build-logs --verbose
   description = "IINA – The modern video player for macOS.";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -369,7 +367,6 @@
               ];
 
               buildPhase = ''
-                echo "hello"
                 echo "[${system}] 🔧 Setting up build environment"
                 git_rev="${self.rev or self.dirtyRev}"
                 git_branch="???"  # FIXME: Find way to get the actual git branch
@@ -401,7 +398,7 @@
                 cp -RL ${depsInclude}/.           deps/include
                 cp -RL ${depsLib}/.               deps/lib
                 cp -RL ${depsExecutable}/.        deps/executable/
-                
+
                 echo "[${system}] 📦 Copying SPM deps"
                 rsync -a ${spmDeps}/ ./
                 chmod -R u+rwx,g+rx,o+rx .
@@ -450,11 +447,9 @@
                 app="$out/Applications/IINA.app"
                 macos="$app/Contents/MacOS"
                 frameworks="$app/Contents/Frameworks"
-                resources="$app/Contents/Resources"
                 plist="$app/Contents/Info.plist"
 
                 mkdir -p "$frameworks"
-                mkdir -p "$resources"
 
                 echo "[${system}] 📦 Bundling ${depsExecutable} into IINA.app"
                 cp -RL ${depsExecutable}/. "$macos/"

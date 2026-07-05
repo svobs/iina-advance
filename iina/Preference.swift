@@ -69,6 +69,9 @@ struct Preference {
 
     /** Material for OSC and title bar (Theme(int)) */
     static let themeMaterial = Key("themeMaterial")
+    static let useLiquidGlassOSD = Key("useLiquidGlassOSD")
+    static let useLiquidGlassOSC = Key("useLiquidGlassOSC")
+    static let useLiquidGlassSidebar = Key("useLiquidGlassSidebar")
     static let playerWindowOpacity = Key("playerWindowOpacity")
 
     /** Soft volume (int, 0 - 100)*/
@@ -143,6 +146,8 @@ struct Preference {
     static let screenshotFormat = Key("screenShotFormat")
     static let screenshotTemplate = Key("screenShotTemplate")
     static let screenshotShowPreview = Key("screenshotShowPreview")
+
+    static let enableLiveText = Key("enableLiveText")
 
     /// Whether to use RAM disk for temporary screenshot storage
     static let screenshotUseRAMDisk = Preference.Key("screenshotUseRAMDisk")
@@ -331,6 +336,8 @@ struct Preference {
     static let togglePipByMinimizingWindow = Key("togglePipByMinimizingWindow")
     static let togglePipWhenSwitchingSpaces = Key("togglePipWhenSwitchingSpaces")
     static let togglePipByMinimizingWindowForVideoOnly = Key("togglePipByMinimizingWindowForVideoOnly")
+    static let edgeToEdgeVideo = Key("edgeToEdgeVideo")
+    static let dockedControlBarAndTitlebar = Key("dockedControlBarAndTitlebar")
 
     static let disableAnimations = Key("disableAnimations")
     static let windowLaunchAnimation = Key("windowLaunchAnimation")
@@ -560,7 +567,9 @@ struct Preference {
     static let iinaLastPlayedFilePath = Key("iinaLastPlayedFilePath")
     static let iinaLastPlayedFilePosition = Key("iinaLastPlayedFilePosition")
 
+    /// Internal
     static let iinaEnablePluginSystem = Key("iinaEnablePluginSystem")
+    static let enableNewSettings = Key("enableNewSettings")
 
     /// Workaround for issue [#4688](https://github.com/iina/iina/issues/4688)
     /// - Note: This workaround can cause significant slowdown at startup if the list of recent documents contains files on a mounted
@@ -1458,9 +1467,10 @@ struct Preference {
     case subTrack
     case screenshot
     case plugins
-    
-    private func makeSymbol(_ names: [String], _ fallbackImage: NSImage.Name) -> NSImage {
-      let configuration = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+    case liveText
+
+    private func makeSymbol(_ names: [String], _ fallbackImage: NSImage.Name, size: CGFloat = 14) -> NSImage {
+      let configuration = NSImage.SymbolConfiguration(pointSize: size, weight: .medium)
       return NSImage.sf(names, withConfiguration: configuration)!
     }
 
@@ -1474,6 +1484,7 @@ struct Preference {
       case .subTrack: return makeSymbol(["captions.bubble.fill"], "sub-track")
       case .screenshot: return makeSymbol(["camera.shutter.button"], "screenshot")
       case .plugins: return makeSymbol(["puzzlepiece.extension"], "plugin")
+      case .liveText: return makeSymbol(["document.viewfinder", "doc.viewfinder", "doc.text.viewfinder"], "document.viewfinder")
       }
     }
 
@@ -1484,6 +1495,7 @@ struct Preference {
       case .pip: return makeSymbol(["pip.exit"], "pip")
       case .fullScreen: return makeSymbol(["arrow.down.forward.and.arrow.up.backward.rectangle", "arrow.down.right.and.arrow.up.left"], "fullscreen")
       case .plugins: return makeSymbol(["puzzlepiece.extension.fill"], "plugin")
+      case .liveText: return makeSymbol(["viewfinder.circle.fill"], "viewfinder.circle.fill")
       default: return nil
       }
     }
@@ -1499,6 +1511,7 @@ struct Preference {
       case .subTrack: key = "sub_track"
       case .screenshot: key = "screenshot"
       case .plugins: key = "plugins"
+      case .liveText: key = "liveText"
       }
 
       return key
@@ -1515,6 +1528,7 @@ struct Preference {
       case .subTrack: key = "SubTrack(\(rawValue))"
       case .screenshot: key = "Screenshot(\(rawValue))"
       case .plugins: key = "Plugins(\(rawValue))"
+      case .liveText: key = "LiveText(\(rawValue))"
       }
 
       return key
@@ -1624,6 +1638,55 @@ struct Preference {
     }
   }
 
+  // MARK: - Getters
+
+  static var unlockWindowAspectRatio: Bool {
+    !Preference.bool(for: .lockViewportToVideoSize) || !Preference.bool(for: .edgeToEdgeVideo)
+  }
+
+  static var isDocked: Bool {
+    !Preference.bool(for: .edgeToEdgeVideo) && Preference.bool(for: .dockedControlBarAndTitlebar)
+  }
+
+  enum LiquidGlassOption {
+    case osc, osd, sidebar
+  }
+
+  static func liquidGlass(_ component: LiquidGlassOption) -> Bool {
+    guard #available(macOS 26.0, *) else { return false }
+    return switch component {
+    case .osc:
+      Preference.bool(for: .useLiquidGlassOSC)
+    case .osd:
+      Preference.bool(for: .useLiquidGlassOSD)
+    case .sidebar:
+      Preference.bool(for: .useLiquidGlassSidebar)
+    }
+  }
+
+  static var isLiveTextAvailable: Bool = {
+    let defaults = UserDefaults.standard
+    if defaults.object(forKey: "AppleLiveTextEnabled") == nil {
+      return true
+    }
+    return defaults.bool(forKey: "AppleLiveTextEnabled")
+  }()
+
+  static var isLiveTextEnabled: Bool {
+    guard isLiveTextAvailable else { return false }
+    return Preference.bool(for: .enableLiveText)
+  }
+
+  // Expected to be removed later when the new settings window is stable
+  static var enableNewSettings: Bool {
+    set {
+      Preference.set(newValue, for: .enableNewSettings)
+    }
+    get {
+      Preference.bool(for: .enableNewSettings)
+    }
+  }
+
   // MARK: - Defaults
 
   static let defaultPreference: [Preference.Key: Any & Sendable] = [
@@ -1691,6 +1754,9 @@ struct Preference {
     .prefetchPlaylistVideoDuration: true,
     .prefetchPlaylistVideoGeometry: false,
     .themeMaterial: Theme.system.rawValue,
+    .useLiquidGlassOSD: true,
+    .useLiquidGlassOSC: true,
+    .useLiquidGlassSidebar: true,
     .playerWindowOpacity: 1.0,
     .enableOSD: true,
     .enableOSDInMusicMode: false,
@@ -1777,6 +1843,8 @@ struct Preference {
     .windowLaunchAnimation: WindowOpenCloseAnimation.useDefault.rawValue,
     .playerWindowOpenCloseAnimation: WindowOpenCloseAnimation.useDefault.rawValue,
     .auxWindowOpenCloseAnimation: WindowOpenCloseAnimation.useDefault.rawValue,
+    .edgeToEdgeVideo: true,
+    .dockedControlBarAndTitlebar: false,
 
       .videoThreads: 0,
     .hardwareDecoder: HardwareDecoderOption.autoCopy.rawValue,
@@ -1894,6 +1962,7 @@ struct Preference {
     .useUserDefinedConfDir: false,
     .userDefinedConfDir: "~/.config/mpv/",
     .iinaEnablePluginSystem: true,
+    .enableNewSettings: true,
 
       .keepOpenOnFileEnd: true,
     .quitWhenNoOpenedWindow: false,
@@ -1928,6 +1997,8 @@ struct Preference {
 
       .screenshotUseRAMDisk: false,
     .screenshotRAMDiskSizeMB: 100,
+
+    .enableLiveText: false,
 
       .watchProperties: [String](),
     .savedVideoFilters: [SavedFilter](),

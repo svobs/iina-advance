@@ -248,6 +248,7 @@ extension MenuController {
       .init(smallerSize, iinaCmd: true, [IINACommand.smallerWindow.rawValue]),
       .init(fitToScreen, iinaCmd: true, [IINACommand.fitToScreen.rawValue],),
       .init(miniPlayer, iinaCmd: true, [IINACommand.toggleMusicMode.rawValue]),
+      .init(liveText, iinaCmd: true, [IINACommand.liveText.rawValue]),
       .init(pictureInPicture, iinaCmd: true, [IINACommand.togglePIP.rawValue]),
       .init(cycleVideoTracks, iinaCmd: false, ["cycle", "video"]),
       .init(cycleAudioTracks, iinaCmd: false, ["cycle", "audio"]),

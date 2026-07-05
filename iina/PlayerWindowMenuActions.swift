@@ -287,7 +287,7 @@ extension PlayerWindowController {
 
   // MARK: - Audio
 
-    @objc func menuLoadExternalAudio(_ sender: NSMenuItem) {
+  @objc func menuLoadExternalAudio(_ sender: NSMenuItem) {
     let currentDir = player.info.currentURL?.deletingLastPathComponent()
     Utility.quickOpenPanel(title: "Load external audio file", chooseDir: false, dir: currentDir,
                            sheetWindow: player.window,
@@ -508,6 +508,15 @@ extension PlayerWindowController {
 
   @objc func menuAlwaysOnTop(_ sender: AnyObject) {
     toggleOnTop(sender)
+  }
+
+  @objc func menuLockAspectRatio(_ sender: NSMenuItem) {
+    let unlock = Preference.bool(for: .lockViewportToVideoSize)
+    Preference.set(!unlock, for: .lockViewportToVideoSize)
+  }
+
+  @objc func menuToggleLiveText(_ item: NSMenuItem) {
+    Preference.set(!Preference.bool(for: .enableLiveText), for: .enableLiveText)
   }
 
   @objc func menuTogglePIP(_ sender: AnyObject) {

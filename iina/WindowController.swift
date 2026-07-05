@@ -29,6 +29,11 @@ class WindowController: NSWindowController {
     (NSEvent.pressedMouseButtons & (1 << 0)) != 0
   }
 
+  var isMouseInWindow: Bool {
+    guard let window else { return false }
+    return NSPointInRect(NSEvent.mouseLocation, window.frame)
+  }
+
   func openWindow(_ sender: Any?) {
     if !AppDelegate.shared.isInteractiveLaunch {
       guard AppDelegate.shared.isDoneLaunching else {

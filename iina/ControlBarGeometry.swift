@@ -349,7 +349,7 @@ struct ControlBarGeometry: Sendable, CustomStringConvertible {
 
   // MARK: - Other Layout
 
-  /// Horizontal spacing between each of the set of controls in the bar (e.g., `playSliderAndTimeLabelsView`, `fragToolbarView`, etc.
+  /// Horizontal spacing between each of the set of controls in the bar (e.g., `playSliderAndTimeLabelsView`, `oscToolbarView`, etc.
   var hStackSpacing: CGFloat {
     if isTwoRowBarOSC {
       return (Constants.TwoRowOSC.oscSectionHSpacing * (barHeight / Constants.Slider.minPlaySliderHeight)).rounded()

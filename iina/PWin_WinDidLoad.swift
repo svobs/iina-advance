@@ -237,10 +237,10 @@ extension PlayerWindowController {
   }
 
   private func initOSCToolbar() {
-    fragToolbarView.idString = "OSC-ToolbarView"
-    fragToolbarView.translatesAutoresizingMaskIntoConstraints = false
-    fragToolbarView.orientation = .horizontal
-    fragToolbarView.distribution = .fill
+    oscToolbarView.idString = "OSC-ToolbarView"
+    oscToolbarView.translatesAutoresizingMaskIntoConstraints = false
+    oscToolbarView.orientation = .horizontal
+    oscToolbarView.distribution = .fill
   }
 
   private func initExitMusicModeButton(in contentView: NSView) {
@@ -384,7 +384,7 @@ extension PlayerWindowController {
     layer.shadowRadius = Constants.sidebarShadowRadius
   }
 
-  /// Init `fragPlaybackBtnsView` & its subviews
+  /// Init `oscPlaybackBtnsView` & its subviews
   private func initPlaybackBtnsView(using oscGeo: ControlBarGeometry) {
     log.verbose("[Load] Init playback buttons")
 
@@ -419,33 +419,33 @@ extension PlayerWindowController {
 
     initSpeedLabel()
 
-    fragPlaybackBtnsView.idString = "fragPlaybackBtnsView"
-    fragPlaybackBtnsView.addSubview(leftArrowButton)
-    fragPlaybackBtnsView.addSubview(playButton)
-    fragPlaybackBtnsView.addSubview(speedLabel)
-    fragPlaybackBtnsView.addSubview(rightArrowButton)
+    oscPlaybackBtnsView.idString = "oscPlaybackBtnsView"
+    oscPlaybackBtnsView.addSubview(leftArrowButton)
+    oscPlaybackBtnsView.addSubview(playButton)
+    oscPlaybackBtnsView.addSubview(speedLabel)
+    oscPlaybackBtnsView.addSubview(rightArrowButton)
 
-    let playBtnHorizOffsetConstraint = playButton.centerXAnchor.constraint(equalTo: fragPlaybackBtnsView.centerXAnchor)
+    let playBtnHorizOffsetConstraint = playButton.centerXAnchor.constraint(equalTo: oscPlaybackBtnsView.centerXAnchor)
     playBtnHorizOffsetConstraint.isActive = true
 
     speedLabel.centerXAnchor.constraint(equalTo: playButton.centerXAnchor).isActive = true
     // Snip off 2 pts from top & btm to reduce margin:
-    let speedLabelTopConstraint = fragPlaybackBtnsView.topAnchor.constraint(equalTo: speedLabel.topAnchor, constant: 2)
+    let speedLabelTopConstraint = oscPlaybackBtnsView.topAnchor.constraint(equalTo: speedLabel.topAnchor, constant: 2)
     speedLabelTopConstraint.identifier = "SpeedLabel-TopConstraint"
     speedLabelTopConstraint.isActive = true
     speedLabelBtmConstraint = speedLabel.bottomAnchor.constraint(equalTo: playButton.topAnchor, constant: 2)
     speedLabelBtmConstraint.identifier = "SpeedLabel-BtmConstraint"
     speedLabelBtmConstraint.isActive = false
 
-    fragPlaybackBtnsView.translatesAutoresizingMaskIntoConstraints = false
+    oscPlaybackBtnsView.translatesAutoresizingMaskIntoConstraints = false
 
-    fragPlaybackBtnsHeightConstraint = fragPlaybackBtnsView.heightAnchor.constraint(equalToConstant: 0)
-    fragPlaybackBtnsHeightConstraint.identifier = "fragPlaybackBtns-HeightConstraint"
-    fragPlaybackBtnsHeightConstraint.isActive = true
+    oscPlaybackBtnsHeightConstraint = oscPlaybackBtnsView.heightAnchor.constraint(equalToConstant: 0)
+    oscPlaybackBtnsHeightConstraint.identifier = "fragPlaybackBtns-HeightConstraint"
+    oscPlaybackBtnsHeightConstraint.isActive = true
 
-    fragPlaybackBtnsWidthConstraint = fragPlaybackBtnsView.widthAnchor.constraint(equalToConstant: oscGeo.totalPlayControlsWidth)
-    fragPlaybackBtnsWidthConstraint.identifier = "fragPlaybackBtns-WidthConstraint"
-    fragPlaybackBtnsWidthConstraint.isActive = true
+    oscPlaybackBtnsWidthConstraint = oscPlaybackBtnsView.widthAnchor.constraint(equalToConstant: oscGeo.totalPlayControlsWidth)
+    oscPlaybackBtnsWidthConstraint.identifier = "fragPlaybackBtns-WidthConstraint"
+    oscPlaybackBtnsWidthConstraint.isActive = true
 
     // Try to make sure the buttons' bounding boxes reach the full height, for activation
     // (their images will be limited by the width constraint & will stop scaling before this)
@@ -457,17 +457,17 @@ extension PlayerWindowController {
     rightArrowAspectConstraint.isActive = true
 
     // Video controllers and timeline indicators should not flip in a right-to-left language.
-    fragPlaybackBtnsView.userInterfaceLayoutDirection = .leftToRight
+    oscPlaybackBtnsView.userInterfaceLayoutDirection = .leftToRight
 
-    let playBtnVertOffsetConstraint = playButton.centerYAnchor.constraint(equalTo: fragPlaybackBtnsView.centerYAnchor)
+    let playBtnVertOffsetConstraint = playButton.centerYAnchor.constraint(equalTo: oscPlaybackBtnsView.centerYAnchor)
     playBtnVertOffsetConstraint.isActive = true
 
-    leftArrowBtn_CenterXOffsetConstraint = leftArrowButton.centerXAnchor.constraint(equalTo: fragPlaybackBtnsView.centerXAnchor,
+    leftArrowBtn_CenterXOffsetConstraint = leftArrowButton.centerXAnchor.constraint(equalTo: oscPlaybackBtnsView.centerXAnchor,
                                                                                     constant: oscGeo.leftArrowCenterXOffset)
     leftArrowBtn_CenterXOffsetConstraint.identifier = .init("leftArrowBtn-HorizOffsetConstraint")
     leftArrowBtn_CenterXOffsetConstraint.isActive = true
 
-    let leftArrowBtn_LeadingXOffsetConstraint = leftArrowButton.leadingAnchor.constraint(greaterThanOrEqualTo: fragPlaybackBtnsView.leadingAnchor)
+    let leftArrowBtn_LeadingXOffsetConstraint = leftArrowButton.leadingAnchor.constraint(greaterThanOrEqualTo: oscPlaybackBtnsView.leadingAnchor)
     leftArrowBtn_LeadingXOffsetConstraint.identifier = .init("leftArrowBtn-LeadingXOffset")
     leftArrowBtn_LeadingXOffsetConstraint.isActive = true
 
@@ -475,7 +475,7 @@ extension PlayerWindowController {
     arrowBtnWidthConstraint.identifier = .init("arrowBtn-WidthConstraint")
     arrowBtnWidthConstraint.isActive = true
 
-    rightArrowBtn_CenterXOffsetConstraint = rightArrowButton.centerXAnchor.constraint(equalTo: fragPlaybackBtnsView.centerXAnchor,
+    rightArrowBtn_CenterXOffsetConstraint = rightArrowButton.centerXAnchor.constraint(equalTo: oscPlaybackBtnsView.centerXAnchor,
                                                                                       constant: oscGeo.rightArrowCenterXOffset)
     rightArrowBtn_CenterXOffsetConstraint.identifier = .init("rightArrowBtn_CenterXOffsetConstraint")
     rightArrowBtn_CenterXOffsetConstraint.isActive = true
@@ -485,9 +485,9 @@ extension PlayerWindowController {
     arrowBtnsEqualWidthConstraint.identifier = .init("arrowBtnsEqualWidthConstraint")
     arrowBtnsEqualWidthConstraint.isActive = true
 
-    let leftArrowBtnVertCenterConstraint = leftArrowButton.centerYAnchor.constraint(equalTo: fragPlaybackBtnsView.centerYAnchor)
+    let leftArrowBtnVertCenterConstraint = leftArrowButton.centerYAnchor.constraint(equalTo: oscPlaybackBtnsView.centerYAnchor)
     leftArrowBtnVertCenterConstraint.isActive = true
-    let rightArrowBtnVertCenterConstraint = rightArrowButton.centerYAnchor.constraint(equalTo: fragPlaybackBtnsView.centerYAnchor)
+    let rightArrowBtnVertCenterConstraint = rightArrowButton.centerYAnchor.constraint(equalTo: oscPlaybackBtnsView.centerYAnchor)
     rightArrowBtnVertCenterConstraint.isActive = true
   }
 
@@ -592,9 +592,9 @@ extension PlayerWindowController {
     let hSpacing: CGFloat = 2
 
     // Volume view
-    fragVolumeView.idString = "fragVolumeView"
-    fragVolumeView.translatesAutoresizingMaskIntoConstraints = false
-    fragVolumeView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+    oscVolumeView.idString = "oscVolumeView"
+    oscVolumeView.translatesAutoresizingMaskIntoConstraints = false
+    oscVolumeView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 
     // Mute button
     muteButton.idString = "MuteBtn"
@@ -603,10 +603,10 @@ extension PlayerWindowController {
     muteButton.action = #selector(muteButtonAction(_:))
     muteButton.toolTip = "Toggle mute"
     muteButton.actionSymbolEffectFunc = SymButton.nullEffectFunc
-    fragVolumeView.addSubview(muteButton)
+    oscVolumeView.addSubview(muteButton)
     muteButton.translatesAutoresizingMaskIntoConstraints = false
     muteButton.addConstraintsToFillSuperview(leading: 0)
-    muteButton.centerYAnchor.constraint(equalTo: fragVolumeView.centerYAnchor).isActive = true
+    muteButton.centerYAnchor.constraint(equalTo: oscVolumeView.centerYAnchor).isActive = true
     volumeIconHeightConstraint = muteButton.heightAnchor.constraint(equalToConstant: oscGeo.volumeIconHeight)
     volumeIconHeightConstraint.priority = .init(900)
     volumeIconHeightConstraint.isActive = true
@@ -615,7 +615,7 @@ extension PlayerWindowController {
     volumeIconAspectConstraint.isActive = true
 
     // Volume slider
-    fragVolumeView.addSubview(volumeSlider)
+    oscVolumeView.addSubview(volumeSlider)
     volumeSlider.cell = volumeSliderCell
     volumeSliderCell.pwc = self
     // For some reason this needs to be set here, instead of in volumeSliderCell init.

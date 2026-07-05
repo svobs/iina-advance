@@ -252,7 +252,7 @@ extension PlayerWindowController {
     if isOpeningBarOSC || isClosingBarOSC {
       // Shrink all the buttons vertically to create cool animated effect.
       // Don't worry about horizontal.
-      for toolbarItem in fragToolbarView.views {
+      for toolbarItem in oscToolbarView.views {
         (toolbarItem as! OSCToolbarButton).setStyle(iconSize: 0, iconSpacing: 0)
       }
 
@@ -261,7 +261,7 @@ extension PlayerWindowController {
       // Play & arrow buttons
       playBtnHeightConstraint.animateToConstant(0)
       arrowBtnWidthConstraint.animateToConstant(0)
-      fragPlaybackBtnsHeightConstraint.animateToConstant(0)
+      oscPlaybackBtnsHeightConstraint.animateToConstant(0)
       playSliderHeightConstraint.animateToConstant(0)
 
     } else if outputLayout.hasControlBar {
@@ -284,7 +284,7 @@ extension PlayerWindowController {
       }
 
       if oldGeo.fullIconHeight > newGeo.fullIconHeight {
-        fragPlaybackBtnsHeightConstraint.animateToConstant(newGeo.fullIconHeight)
+        oscPlaybackBtnsHeightConstraint.animateToConstant(newGeo.fullIconHeight)
       }
 
       if transition.inputLayout.controlBarGeo.playSliderHeight > outputLayout.controlBarGeo.playSliderHeight {
@@ -298,7 +298,7 @@ extension PlayerWindowController {
       }
 
       if oldGeo.totalPlayControlsWidth > newGeo.totalPlayControlsWidth {
-        fragPlaybackBtnsWidthConstraint.animateToConstant(newGeo.totalPlayControlsWidth)
+        oscPlaybackBtnsWidthConstraint.animateToConstant(newGeo.totalPlayControlsWidth)
       }
 
       // `leftArrowCenterXOffset` is always negative! Need to reverse sign.
@@ -312,7 +312,7 @@ extension PlayerWindowController {
 
       let toolSize = min(newGeo.toolIconSize, oldGeo.toolIconSize)
       let toolSpacing = min(newGeo.toolIconSpacing, oldGeo.toolIconSpacing)
-      for toolbarItem in fragToolbarView.views {
+      for toolbarItem in oscToolbarView.views {
         (toolbarItem as! OSCToolbarButton).setStyle(iconSize: toolSize, iconSpacing: toolSpacing)
       }
       updateToolbarHStack(iconSpacing: toolSpacing)
@@ -563,15 +563,15 @@ extension PlayerWindowController {
       playSliderCell.knobHeight = Constants.Slider.musicModeKnobHeight
 
       // move playback buttons
-      if !miniPlayer.playbackBtnsWrapperView.subviews.contains(fragPlaybackBtnsView) {
-        miniPlayer.playbackBtnsWrapperView.addSubview(fragPlaybackBtnsView)
-        miniPlayer.playbackBtnsWrapperView.centerXAnchor.constraint(equalTo: fragPlaybackBtnsView.centerXAnchor).isActive = true
-        miniPlayer.playbackBtnsWrapperView.centerYAnchor.constraint(equalTo: fragPlaybackBtnsView.centerYAnchor).isActive = true
+      if !miniPlayer.playbackBtnsWrapperView.subviews.contains(oscPlaybackBtnsView) {
+        miniPlayer.playbackBtnsWrapperView.addSubview(oscPlaybackBtnsView)
+        miniPlayer.playbackBtnsWrapperView.centerXAnchor.constraint(equalTo: oscPlaybackBtnsView.centerXAnchor).isActive = true
+        miniPlayer.playbackBtnsWrapperView.centerYAnchor.constraint(equalTo: oscPlaybackBtnsView.centerYAnchor).isActive = true
       }
 
-      if !miniPlayer.volumeSliderView.subviews.contains(fragVolumeView) {
-        miniPlayer.volumeSliderView.addSubview(fragVolumeView)
-        fragVolumeView.centerYAnchor.constraint(equalTo: miniPlayer.volumeSliderView.centerYAnchor).isActive = true
+      if !miniPlayer.volumeSliderView.subviews.contains(oscVolumeView) {
+        miniPlayer.volumeSliderView.addSubview(oscVolumeView)
+        oscVolumeView.centerYAnchor.constraint(equalTo: miniPlayer.volumeSliderView.centerYAnchor).isActive = true
         volumeSlider.leadingAnchor.constraint(equalTo: miniPlayer.volumeSliderView.leadingAnchor, constant: 40).isActive = true
         miniPlayer.volumeSliderView.trailingAnchor.constraint(equalTo: volumeSlider.trailingAnchor, constant: 40).isActive = true
         muteButton.target = self
@@ -684,10 +684,10 @@ extension PlayerWindowController {
         controlBarFloating.view.appearance = oscAppearance
 
         let floatingUpperView = controlBarFloating.topRowView
-        if !floatingUpperView.views.contains(fragToolbarView) {
-          floatingUpperView.addView(fragToolbarView, in: .trailing)
-          floatingUpperView.setVisibilityPriority(.detachEarlier, for: fragToolbarView)
-          fragToolbarView.isHidden = false
+        if !floatingUpperView.views.contains(oscToolbarView) {
+          floatingUpperView.addView(oscToolbarView, in: .trailing)
+          floatingUpperView.setVisibilityPriority(.detachEarlier, for: oscToolbarView)
+          oscToolbarView.isHidden = false
         }
       }
 
@@ -897,8 +897,8 @@ extension PlayerWindowController {
       // Weaken constraints temporarily
       leftArrowBtn_CenterXOffsetConstraint.priority = .defaultLow
       rightArrowBtn_CenterXOffsetConstraint.priority = .defaultLow
-      fragPlaybackBtnsHeightConstraint.priority = .defaultLow
-      fragPlaybackBtnsWidthConstraint.priority = .defaultLow
+      oscPlaybackBtnsHeightConstraint.priority = .defaultLow
+      oscPlaybackBtnsWidthConstraint.priority = .defaultLow
 
       playSliderHeightConstraint.animateToConstant(newGeo.playSliderHeight)
 
@@ -908,19 +908,19 @@ extension PlayerWindowController {
 
       arrowBtnWidthConstraint.animateToConstant(newGeo.arrowIconWidth)
       playBtnHeightConstraint.animateToConstant(newGeo.playIconSize)
-      fragPlaybackBtnsWidthConstraint.animateToConstant(newGeo.totalPlayControlsWidth)
-      fragPlaybackBtnsHeightConstraint.animateToConstant(newGeo.fullIconHeight)
+      oscPlaybackBtnsWidthConstraint.animateToConstant(newGeo.totalPlayControlsWidth)
+      oscPlaybackBtnsHeightConstraint.animateToConstant(newGeo.fullIconHeight)
       leftArrowBtn_CenterXOffsetConstraint.animateToConstant(newGeo.leftArrowCenterXOffset)
       rightArrowBtn_CenterXOffsetConstraint.animateToConstant(newGeo.rightArrowCenterXOffset)
 
       // Finalize
       leftArrowBtn_CenterXOffsetConstraint.priority = .required
       rightArrowBtn_CenterXOffsetConstraint.priority = .required
-      fragPlaybackBtnsWidthConstraint.priority = .required
-      fragPlaybackBtnsHeightConstraint.priority = .required
+      oscPlaybackBtnsWidthConstraint.priority = .required
+      oscPlaybackBtnsHeightConstraint.priority = .required
 
       // Animate toolbar icons to full size now
-      for toolbarItem in fragToolbarView.views {
+      for toolbarItem in oscToolbarView.views {
         (toolbarItem as! OSCToolbarButton).setStyle(using: transition.outputLayout)
       }
       updateToolbarHStack(iconSpacing: newGeo.toolIconSpacing)
@@ -931,15 +931,15 @@ extension PlayerWindowController {
         // Wait until now to set up floating OSC views. Doing this in prev or next task while animating results in visibility bugs
         let topRowView = controlBarFloating.topRowView
         if transition.isWindowInitialLayout || !transition.inputLayout.hasFloatingOSC {
-          controlBarFloating.topRowView.addView(fragPlaybackBtnsView, in: .center)
+          controlBarFloating.topRowView.addView(oscPlaybackBtnsView, in: .center)
           // There sweems to be a race condition when adding to these StackViews.
           // Sometimes it still contains the old view, and then trying to add again will cause a crash.
           // Must check if it already contains the view before adding.
-          if !topRowView.views(in: .leading).contains(fragVolumeView) {
-            topRowView.addView(fragVolumeView, in: .leading)
-            fragVolumeView.isHidden = false
+          if !topRowView.views(in: .leading).contains(oscVolumeView) {
+            topRowView.addView(oscVolumeView, in: .leading)
+            oscVolumeView.isHidden = false
           }
-          topRowView.setVisibilityPriority(.detachEarly, for: fragVolumeView)
+          topRowView.setVisibilityPriority(.detachEarly, for: oscVolumeView)
 
           topRowView.setClippingResistancePriority(.defaultLow, for: .horizontal)
 
@@ -1486,7 +1486,7 @@ extension PlayerWindowController {
     let iconSize: CGFloat = zeroOut ? 0 : newGeo.toolIconSize
     let iconSpacing: CGFloat = zeroOut ? 0 : newGeo.toolIconSpacing
     if transition.outputLayout.hasControlBar {
-      fragToolbarView.views.forEach { fragToolbarView.removeView($0) }
+      oscToolbarView.views.forEach { oscToolbarView.removeView($0) }
 
       if newButtonTypes.count > 0 {
         log.verbose("\(transition.logPreamble(for: stage)) Updating OSC toolbar: iconSize=\(iconSize) iconSpacing=\(iconSpacing) barHeight=\(newGeo.barHeight) fullIconHeight=\(newGeo.fullIconHeight) btns=[\(newButtonTypes.map({$0.keyString}).joined(separator: ","))]")
@@ -1496,8 +1496,8 @@ extension PlayerWindowController {
           button.setStyle(buttonType: buttonType, iconSize: iconSize, iconSpacing: iconSpacing)
           button.setColors(for: oscColorScheme)
           button.action = #selector(self.toolBarButtonAction(_:))
-          fragToolbarView.addView(button, in: .trailing)
-          fragToolbarView.setVisibilityPriority(.detachOnlyIfNecessary, for: button)
+          oscToolbarView.addView(button, in: .trailing)
+          oscToolbarView.setVisibilityPriority(.detachOnlyIfNecessary, for: button)
 
           // Highlight buttons with modes
           switch buttonType {
@@ -1522,7 +1522,7 @@ extension PlayerWindowController {
     if needsButtonsUpdate {
       log.verbose("\(transition.logPreamble(for: stage)) Updating OSC toolbar: iconSize=\(newGeo.toolIconSize) iconSpacing=\(newGeo.toolIconSpacing) barHeight=\(newGeo.barHeight) fullIconHeight=\(newGeo.fullIconHeight) btns=[\(newButtonTypes.map({$0.keyString}).joined(separator: ","))]")
       let oscColorScheme = transition.outputLayout.oscColorScheme
-      for button in fragToolbarView.views.compactMap({ $0 as? OSCToolbarButton }) {
+      for button in oscToolbarView.views.compactMap({ $0 as? OSCToolbarButton }) {
         button.setStyle(iconSize: iconSize, iconSpacing: iconSpacing)
         button.setColors(for: oscColorScheme)
       }
@@ -1530,18 +1530,18 @@ extension PlayerWindowController {
 
     // Do not zero this out:
     updateToolbarHStack(iconSpacing: newGeo.toolIconSpacing)
-    log.verbose("\(transition.logPreamble(for: stage)) Toolbar spacing=\(fragToolbarView.spacing) edgeInsets=\(fragToolbarView.edgeInsets)")
+    log.verbose("\(transition.logPreamble(for: stage)) Toolbar spacing=\(oscToolbarView.spacing) edgeInsets=\(oscToolbarView.edgeInsets)")
   }
 
   // It's not possible to control the icon padding from inside the buttons in all cases.
   // Instead we can get the same effect with a little more work, by using the stack view's features.
   private func updateToolbarHStack(iconSpacing: CGFloat) {
     log.verbose("Updating toolbar hstack using spacing=\(iconSpacing)*2")
-    fragToolbarView.spacing = 2 * iconSpacing
+    oscToolbarView.spacing = 2 * iconSpacing
     let sideInset = (iconSpacing * 0.5).rounded()
-    fragToolbarView.edgeInsets = .init(top: iconSpacing, left: sideInset,
+    oscToolbarView.edgeInsets = .init(top: iconSpacing, left: sideInset,
                                        bottom: iconSpacing, right: sideInset)
-    fragToolbarView.needsUpdateConstraints = true
+    oscToolbarView.needsUpdateConstraints = true
   }
 
   // MARK: - Support Functions: Style

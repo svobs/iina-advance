@@ -102,7 +102,7 @@ class TwoRowBarOSCView: ClickThroughView {
     hStackView.spacing = oscGeo.hStackSpacing
 
     // Start building subviews list for hStackView
-    var viewsForHStack: [NSView] = [pwc.fragPlaybackBtnsView]
+    var viewsForHStack: [NSView] = [pwc.oscPlaybackBtnsView]
 
     // Choose either playSlider or playSliderAndTimeLabelsView based on pref
     let playSliderTypeView: NSView
@@ -165,11 +165,11 @@ class TwoRowBarOSCView: ClickThroughView {
     hStackViewTrailingConstraint.animateToConstant(oscGeo.trailingSpace_Row2)
 
     viewsForHStack.append(centralSpacerView)
-    viewsForHStack.append(pwc.fragVolumeView)
+    viewsForHStack.append(pwc.oscVolumeView)
     // Exclude toolbar if it has no items. Otherwise it will still be padded on both sides & will look bad
-    let hasToolbar = !pwc.fragToolbarView.subviews.isEmpty
+    let hasToolbar = !pwc.oscToolbarView.subviews.isEmpty
     if hasToolbar {
-      viewsForHStack.append(pwc.fragToolbarView)
+      viewsForHStack.append(pwc.oscToolbarView)
     }
 
     // - [Re-]add views to hStack
@@ -184,10 +184,10 @@ class TwoRowBarOSCView: ClickThroughView {
     // - Set visibility priorities
 
     if hasToolbar {
-      hStackView.setVisibilityPriority(.detachEarlier, for: pwc.fragToolbarView)
+      hStackView.setVisibilityPriority(.detachEarlier, for: pwc.oscToolbarView)
     }
 
-    hStackView.setVisibilityPriority(.detachEarly, for: pwc.fragVolumeView)
+    hStackView.setVisibilityPriority(.detachEarly, for: pwc.oscVolumeView)
 
     if viewsForHStack.contains(pwc.leftTimeLabel) {
       hStackView.setVisibilityPriority(.detachLessEarly, for: pwc.rightTimeLabel)
@@ -204,7 +204,7 @@ class TwoRowBarOSCView: ClickThroughView {
     hStackView_BottomMarginConstraint.priority = 1000
     hStackView_HeightConstraint.priority = 900
 
-    pwc.fragToolbarView.needsUpdateConstraints = true
+    pwc.oscToolbarView.needsUpdateConstraints = true
   }
 
   func relaxConstraints() {

@@ -26,6 +26,8 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
 
   // MARK: - View Controllers
 
+  lazy var liveText = LiveTextController(pwc: self)
+
   /// The quick setting sidebar (video, audio, subtitles).
   let quickSettingView = QuickSettingViewController()
 
@@ -434,8 +436,8 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
 
   // - OSC internal constraints
 
-  var fragPlaybackBtnsHeightConstraint: NSLayoutConstraint!
-  var fragPlaybackBtnsWidthConstraint: NSLayoutConstraint!
+  var oscPlaybackBtnsHeightConstraint: NSLayoutConstraint!
+  var oscPlaybackBtnsWidthConstraint: NSLayoutConstraint!
   var speedLabelBtmConstraint: NSLayoutConstraint!
 
   /// Size of each side of the (square) `playButton`
@@ -554,13 +556,13 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   // - OSC internal views
 
   /// Container for volume slider & mute button
-  var fragVolumeView = ClickThroughView()
+  var oscVolumeView = ClickThroughView()
   let muteButton = SymButton()
   @MainActor let volumeSlider = ScrollableSlider(customCell: VolumeSliderCell())
   @MainActor var volumeSliderCell: VolumeSliderCell { volumeSlider.cell as! VolumeSliderCell }
 
   /// Container for playback buttons
-  let fragPlaybackBtnsView = ClickThroughView()
+  let oscPlaybackBtnsView = ClickThroughView()
   /// Speed indicator label, when playing at speeds other than 1x
   let speedLabel = NSTextField()
   let playButton = SymButton()
@@ -568,7 +570,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   let rightArrowButton = SymButton()
 
   /// Toolbar Buttons container
-  let fragToolbarView = ClickThroughStackView()
+  let oscToolbarView = ClickThroughStackView()
 
   /// Container for legacy PlaySlider layout which shows time labels on left & right of slider.
   let playSliderAndTimeLabelsView = ClickThroughView()
@@ -745,6 +747,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   func updateTitleBarAndOSC() {
     titleBarAndOSCUpdateDebouncer.run { [self] in
       animationPipeline.submitInstantTask { [self] in
+        liveText.updateOverlayInsets()
         let oldLayout = currentLayout
         let newLayoutState = LayoutState.fromPrefs(fillingInFrom: oldLayout)
         let transition = buildLayoutTransition(named: "UpdateTitleBarAndOSC", from: oldLayout, to: newLayoutState)
@@ -2514,6 +2517,8 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
       }
     case .plugins:
       showSidebar(forTabGroup: .plugins)
+    case .liveText:
+      Preference.set(!Preference.bool(for: .enableLiveText), for: .enableLiveText)
     }
   }
 

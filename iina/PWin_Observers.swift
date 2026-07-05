@@ -398,6 +398,18 @@ extension PlayerWindowController {
         let videoGeo = geo.video
         quickSettingView.updateSegmentLabelsForVideoTab(using: videoGeo)
       }
+    case PK.enableLiveText:
+      if let newValue = newValue as? Bool {
+//        let buttons = oscToolbarView.subviews as! [NSButton]
+//        if let btn = buttons.first(where: { $0.tag == Preference.ToolBarButton.liveText.rawValue }) {
+//          btn.image = newValue ? Preference.ToolBarButton.liveText.alternateImage() : Preference.ToolBarButton.liveText.image()
+//        }
+        if newValue {
+          liveText.requestAnalysis()
+        } else {
+          liveText.clearAnalysis()
+        }
+      }
     default:
       return
     }

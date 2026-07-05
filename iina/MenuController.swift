@@ -79,6 +79,8 @@ class MenuController: NSObject, NSMenuDelegate {
   @IBOutlet weak var fullScreen: NSMenuItem!
   @IBOutlet weak var pictureInPicture: NSMenuItem!
   @IBOutlet weak var alwaysOnTop: NSMenuItem!
+  @IBOutlet weak var lockAspectRatio: NSMenuItem!
+  @IBOutlet weak var liveText: NSMenuItem!
   @IBOutlet weak var aspectMenu: NSMenu!
   @IBOutlet weak var cropMenu: NSMenu!
   @IBOutlet weak var rotationMenu: NSMenu!
@@ -245,6 +247,8 @@ class MenuController: NSObject, NSMenuDelegate {
     fullScreen.action = #selector(PlayerWindowController.menuToggleFullScreen(_:))
     pictureInPicture.action = #selector(PlayerWindowController.menuTogglePIP(_:))
     alwaysOnTop.action = #selector(PlayerWindowController.menuAlwaysOnTop(_:))
+    lockAspectRatio.action = #selector(PlayerWindowController.menuLockAspectRatio(_:))
+    liveText.action = #selector(PlayerWindowController.menuToggleLiveText(_:))
 
     // -- aspect
     let aspectRatioIdentifiers = [Aspect.defaultIdentifier] + Aspect.aspectsInMenu
@@ -479,6 +483,9 @@ class MenuController: NSObject, NSMenuDelegate {
     let isOnTop = player.pwc.isOnTop
     let isDelogo = player.info.delogoFilter != nil
     alwaysOnTop.state = isOnTop ? .on : .off
+    lockAspectRatio.state = Preference.unlockWindowAspectRatio ? .off : .on
+    lockAspectRatio.isEnabled = Preference.bool(for: .edgeToEdgeVideo)
+    liveText.state = Preference.isLiveTextEnabled ? .on : .off
     deinterlace.state = player.info.deinterlace ? .on : .off
     fullScreen.title = isInFullScreen ? StringConstants.exitFullScreen : StringConstants.fullScreen
     pictureInPicture?.title = isInPIP ? StringConstants.exitPIP : StringConstants.pip

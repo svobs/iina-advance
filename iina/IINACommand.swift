@@ -23,6 +23,7 @@ enum IINACommand: String {
   case toggleMusicMode = "toggle-music-mode"
   case flip = "toggle-flip"
   case mirror = "toggle-mirror"
+  case liveText = "live-text"
 
   case biggerWindow = "bigger-window"
   case smallerWindow = "smaller-window"

@@ -425,6 +425,27 @@ class GLVideoLayer: CAOpenGLLayer {
     }
   }
 
+  // MARK: - Snapshot
+
+  private let snapshotLock = Lock()
+  private var pendingSnapshotHandler: ((NSImage?) -> Void)?
+
+  /// Capture the next rendered frame as an `NSImage`. Forces a redraw so this works while paused.
+  func captureSnapshot() async -> NSImage? {
+    await withCheckedContinuation { continuation in
+      // Drop any previous in-flight request — only the latest caller wins.
+      let previous = snapshotLock.withLock { () -> ((NSImage?) -> Void)? in
+        let previous = pendingSnapshotHandler
+        pendingSnapshotHandler = { image in
+          continuation.resume(returning: image)
+        }
+        return previous
+      }
+      previous?(nil)
+      drawAsync()
+    }
+  }
+
   // MARK: - Core OpenGL Context and Pixel Format
 
   static let glVersions: [CGLOpenGLProfile] = [

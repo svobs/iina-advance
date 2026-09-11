@@ -1657,9 +1657,11 @@ final class PlayerCore: NSObject {
     }
 
     guard let pwc, pwc.loaded else { return }
+    // Avoid race condition in moments between playback & pause state changes
+    let hasPlayback = info.currentPlayback != nil
     DispatchQueue.main.async { [self] in
       pwc.updatePlayButtonAndSpeedUI(isPaused: paused)
-      if paused {
+      if paused || !hasPlayback {
         videoView.displayIdle()
       } else {  // resume
         videoView.displayActive()

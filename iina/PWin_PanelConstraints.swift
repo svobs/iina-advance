@@ -74,7 +74,9 @@ extension PlayerWindowController {
   // MARK: - Bars Layout
 
   func rebuildPanelConstraints(_ transition: LayoutTransition, stage: LayoutTransition.Stage) {
-    let contentView = window!.contentView!
+    guard let window, let contentView = window.contentView else {
+      Logger.fatal("rebuildPanelConstraints(): either window or window.contentView is nil!")
+    }
     let p = panelConstraints
     let log = Logger.addPreamble(transition.logPreamble(for: stage), toSubsystem: self.log)
     let stageGeo = transition.geometry(for: stage)

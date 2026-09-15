@@ -26,7 +26,7 @@ extension PlayerWindowController {
 
     /// For auto hiding UI after a timeout.
     /// Timer and animation APIs require Double, but we must support legacy prefs, which store as Float
-    let hideTimer = TimeoutTimer(timeout: max(TimeConstants.fadeableViewsTimeoutMin, Double(Preference.float(for: .controlBarAutoHideTimeout))))
+    let hideTimer = TimeoutTimer(timeout: max(TimeConstants.fadeableViewsTimeoutMin, Preference.double(for: .controlBarAutoHideTimeout)))
 
     @Atomic fileprivate(set) var showHideTicketCount: Int = 0
     /// Need to carry an extra bit of info for this

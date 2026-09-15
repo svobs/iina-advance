@@ -245,7 +245,8 @@ class PrefUIViewController: PreferenceViewController, PreferenceWindowEmbeddable
 
     notiHandler.addAllObservers()
     // Set up key-value observing for changes to this view's properties:
-    addObserver(self, forKeyPath: #keyPath(view.effectiveAppearance), options: [.old, .new], context: nil)
+    UserDefaults.standard.addObserver(self, forKeyPath: #keyPath(view.effectiveAppearance),
+                                      options: [.old, .new], context: nil)
 
     animationPipeline.submitInstantTask{ [self] in
       updateAllSectionsFromPrefs()

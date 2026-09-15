@@ -461,7 +461,7 @@ final class OSDState {
 
   static func osdTimeoutFromPrefs() -> Double {
     // Timer and animation APIs require Double, but we must support legacy prefs, which store as Float
-    return max(TimeConstants.osdTimeoutMin, Double(Preference.float(for: .osdAutoHideTimeout)))
+    return max(TimeConstants.osdTimeoutMin, Preference.double(for: .osdAutoHideTimeout))
   }
 
   fileprivate func getSliderBarHeight(forOSDTextSize osdTextSize: CGFloat) -> CGFloat {

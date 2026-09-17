@@ -143,11 +143,23 @@ class GLVideoLayer: CAOpenGLLayer {
 #if LOG_VIDEO_LAYER
     canDrawCountTotal += 1
 
-    if let ts = ts?.pointee {
-      NSLog("CAN_DRAW vidTS: \(ts.videoTime), hostTS: \(ts.hostTime), layerTime: \(t), queue: \(DispatchQueue.currentQueueLabel ?? "nil")")
+    // Safely log CVTimeStamp values from optional pointer(s)
+    let vidTSString: String
+    let hostTSString: String
+    // ts may be UnsafePointer<CVTimeStamp>? or UnsafePointer<UnsafePointer<CVTimeStamp>?>
+    if let directPtr = ts {
+      let tsVal = directPtr.pointee
+      vidTSString = String(tsVal.videoTime)
+      hostTSString = String(tsVal.hostTime)
+    } else if let ptrToPtr = (unsafeBitCast(ts, to: Optional<UnsafePointer<UnsafePointer<CVTimeStamp>?>>.self)), let inner = ptrToPtr.pointee {
+      let tsVal = inner.pointee
+      vidTSString = String(tsVal.videoTime)
+      hostTSString = String(tsVal.hostTime)
     } else {
-      NSLog("CAN_DRAW")
+      vidTSString = "nil"
+      hostTSString = "nil"
     }
+    NSLog("CAN_DRAW vidTS=\(vidTSString) layerTime=\(t) hostTS=\(hostTSString) queue=\(DispatchQueue.currentQueueLabel ?? "nil")")
     printStats()
 #endif
     // Prevent crash if trying to use forceRender when vid=0 (usually when toggling video on or off)
@@ -185,7 +197,24 @@ class GLVideoLayer: CAOpenGLLayer {
         drawCountTotal += 1
         printStats()
 
-        NSLog("DRAW fbo: \(fbo) vidTS: \(ts.videoTime) layerTime: \(t)\(ts == nil ? "" : ", hostTS: \(ts!.hostTime)")")
+        // Safely log CVTimeStamp values from optional pointer(s)
+        let vidTSString: String
+        let hostTSString: String
+        // ts may be UnsafePointer<CVTimeStamp>? or UnsafePointer<UnsafePointer<CVTimeStamp>?>
+        if let directPtr = ts {
+          let tsVal = directPtr.pointee
+          vidTSString = String(tsVal.videoTime)
+          hostTSString = String(tsVal.hostTime)
+        } else if let ptrToPtr = (unsafeBitCast(ts, to: Optional<UnsafePointer<UnsafePointer<CVTimeStamp>?>>.self)), let inner = ptrToPtr.pointee {
+          let tsVal = inner.pointee
+          vidTSString = String(tsVal.videoTime)
+          hostTSString = String(tsVal.hostTime)
+        } else {
+          vidTSString = "nil"
+          hostTSString = "nil"
+        }
+        NSLog("DRAW fbo: \(fbo) vidTS=\(vidTSString) layerTime=\(t) hostTS=\(hostTSString)")
+
 #endif
         var data = mpv_opengl_fbo(fbo: Int32(fbo),
                                   w: Int32(dims[2]),

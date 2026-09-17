@@ -65,9 +65,8 @@ class PlaybackInfo {
     let paused = _isPaused
     DispatchQueue.main.async { [self] in
       let oldValue = isPaused
-      isPaused = paused
-
-      if oldValue != isPaused {
+      if oldValue != paused {
+        isPaused = paused
         log.verbose("Playback is \(isPaused ? "PAUSED" : "PLAYING")")
         SleepPreventer.updateSleepPrevention()
       }

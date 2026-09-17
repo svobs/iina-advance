@@ -73,7 +73,7 @@ class JavascriptAPIHttp: JavascriptAPI, JavascriptAPIHttpExportable {
                      params: params ?? [:],
                      data: data ?? [:],
                      headers: headers ?? [:],
-                     asyncCompletionHandler:  { [unowned self] response in
+                     asyncCompletionHandler:  { [unowned self = self] response in
           if (response.ok) {
             do {
               try response.content?.write(to: URL(fileURLWithPath: destPath))

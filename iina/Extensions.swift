@@ -833,6 +833,9 @@ fileprivate let fmtDecimalNoGroupingMaxFractionDigits15: NumberFormatter = {
 }()
 
 extension FloatingPoint {
+  var degreesToRadians: Self { return self * .pi / 180 }
+  var radiansToDegrees: Self { return self * 180 / .pi }
+
   func clamped(to range: Range<Self>) -> Self {
     if self < range.lowerBound {
       return range.lowerBound
@@ -1191,7 +1194,7 @@ extension CGImage {
   func rotated(degrees: Int) -> CGImage {
     let imgRect = CGRect(origin: CGPointZero, size: CGSize(width: width, height: height))
 
-    let angleRadians = degToRad(CGFloat(degrees))
+    let angleRadians = CGFloat(degrees).degreesToRadians
     let imgRotateTransform = rotateTransformRectAroundCenter(rect: imgRect, angle: angleRadians)
     let rotatedImgFrame = CGRectApplyAffineTransform(imgRect, imgRotateTransform)
 
@@ -1202,10 +1205,6 @@ extension CGImage {
       cgContext.draw(self, in: imgRect)
     }
     return CGImage.buildBitmapImage(width: rotatedImgFrame.size.widthInt, height: rotatedImgFrame.size.heightInt, drawingCalls)
-  }
-
-  private func degToRad(_ degrees: CGFloat) -> CGFloat {
-    return degrees * CGFloat.pi / 180
   }
 
   /// `cornerRadius`: if greater than 0, round the corners by this radius

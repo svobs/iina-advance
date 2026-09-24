@@ -464,7 +464,7 @@ extension PlayerWindowController {
         var sumTF = CATransform3DMakeScale(xFlip, yFlip, 1)
 
         if currentGeo.video.totalRotation != 0 {
-          let rotationRadians = CGFloat.degToRad(CGFloat(-currentGeo.video.totalRotation))
+          let rotationRadians = CGFloat(-currentGeo.video.totalRotation).degreesToRadians
           let rotateTF = CATransform3DMakeRotation(rotationRadians, 0, 0, 1)
           sumTF = CATransform3DConcat(sumTF, rotateTF)
         }

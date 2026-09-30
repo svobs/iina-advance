@@ -1,16 +1,10 @@
 #!/bin/bash
 
-# universal | arm64 | x86_64
-ARCH="universal"
-# github | iina (use iina to get the binary included in the latest release)
-YT_DLP_SOURCE="github"
-PARALLEL_DOWNLOADS=5
 SKIP_LIBS=false
 SKIP_EXECUTABLES=false
 SKIP_PLUGINS=false
 
 RELEASE_DOWNLOAD_PATH="https://github.com/svobs/iina-advance/releases/download/v1.6/IINA-Advance-1.6.zip"
-YT_DLP_DOWNLOAD_PATH="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos"
 
 # Colors for output
 RED='\033[0;31m'
@@ -23,9 +17,6 @@ printUsageHelp() {
   echo
   echo -e "${BLUE}Usage:${NC}"
   echo -e "    ${GREEN}$0 [-h|--help]:${NC}           Displays this help message"
-  echo -e "    ${GREEN}$0 [--arch] <ARCH>:${NC}       Architecture to download dylibs for: universal | arm64 | x86_64"
-  echo -e "    ${GREEN}$0 [--yt-dlp-src] <SRC>:${NC}  Source to download youtube-dl from: github | iina"
-  echo -e "    ${GREEN}$0 [--parallel] <N>:${NC}      Number of parallel downloads (default: 5)"
   echo -e "    ${GREEN}$0 [--skip-libs]:${NC}         Skip downloading dylibs"
   echo -e "    ${GREEN}$0 [--skip-executables]:${NC}  Skip downloading executables (youtube-dl)"
   echo -e "    ${GREEN}$0 [--skip-plugins]:${NC}      Skip downloading official plugins"
@@ -58,60 +49,6 @@ while [[ $# -gt 0 ]]; do
   -h | --help)
     printUsageHelp
     exit 0
-    ;;
-  --arch)
-    if [[ -z "$2" || "$2" == -* ]]; then
-      echo -e "${RED}You need to specify an architecture when using --arch${NC}" >&2
-      printUsageHelp
-      exit 1
-    fi
-    ARCH=$2
-    shift 2
-    ;;
-  --arch=*)
-    ARCH=${1#*=}
-    if [[ -z "$ARCH" ]]; then
-      echo -e "${RED}You need to specify an architecture when using --arch${NC}" >&2
-      printUsageHelp
-      exit 1
-    fi
-    shift
-    ;;
-  --yt-dlp-src)
-    if [[ -z "$2" || "$2" == -* ]]; then
-      echo -e "${RED}You need to specify a source when using --yt-dlp-src${NC}" >&2
-      printUsageHelp
-      exit 1
-    fi
-    YT_DLP_SOURCE=$2
-    shift 2
-    ;;
-  --yt-dlp-src=*)
-    YT_DLP_SOURCE=${1#*=}
-    if [[ -z "$YT_DLP_SOURCE" ]]; then
-      echo -e "${RED}You need to specify a source when using --yt-dlp-src${NC}" >&2
-      printUsageHelp
-      exit 1
-    fi
-    shift
-    ;;
-  --parallel)
-    if [[ -z "$2" || "$2" == -* ]]; then
-      echo -e "${RED}You need to specify a number of parallel downloads when using --parallel${NC}" >&2
-      printUsageHelp
-      exit 1
-    fi
-    PARALLEL_DOWNLOADS=$2
-    shift 2
-    ;;
-  --parallel=*)
-    PARALLEL_DOWNLOADS=${1#*=}
-    if [[ -z "$PARALLEL_DOWNLOADS" ]]; then
-      echo -e "${RED}You need to specify a number of parallel downloads when using --parallel${NC}" >&2
-      printUsageHelp
-      exit 1
-    fi
-    shift
     ;;
   --skip-executables)
     SKIP_EXECUTABLES=true
@@ -146,30 +83,6 @@ if [[ $# -gt 0 ]]; then
   printUsageHelp
   exit 1
 fi
-
-case $YT_DLP_SOURCE in
-github)
-  YT_DLP_DOWNLOAD_PATH="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos"
-  ;;
-iina)
-  YT_DLP_DOWNLOAD_PATH="https://iina.io/dylibs/youtube-dl"
-  ;;
-*)
-  echo -e "${RED}Invalid youtube-dl source: $YT_DLP_SOURCE${NC}"
-  printUsageHelp
-  exit 1
-  ;;
-esac
-
-case $ARCH in
-universal | arm64 | x86_64)
-  ;;
-*)
-  echo -e "${RED}Invalid architecture: $ARCH${NC}"
-  printUsageHelp
-  exit 1
-  ;;
-esac
 
 SCRIPT_PATH="$(print_script_dir)"
 PROJ_ROOT_PATH="$(realpath ${SCRIPT_PATH}/..)"
@@ -206,7 +119,6 @@ else
 
   rm -r "$EXTRACTED_DIR_PATH/Contents/Frameworks/Sparkle.framework"
   mv "$EXTRACTED_DIR_PATH/Contents/Frameworks" "$LIB_PATH" && echo -e "${GREEN}Moved dylibs to $LIB_PATH${NC}"
-  printf "%s\n" "${files[@]}" | xargs -n 1 -P "$PARALLEL_DOWNLOADS" bash -c 'download_file "$@"' _
 fi
 
 if [[ "$SKIP_EXECUTABLES" == true ]]; then

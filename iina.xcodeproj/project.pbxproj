@@ -5519,7 +5519,6 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
@@ -5584,7 +5583,6 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
@@ -5669,7 +5667,6 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
@@ -5704,7 +5701,6 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2026\nMatt Svoboda, Collider LI, et al.\nReleased under GPLv3.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				KEEP_PRIVATE_EXTERNS = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",

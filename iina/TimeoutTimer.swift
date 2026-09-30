@@ -31,6 +31,7 @@ class TimeoutTimer {
   }
 
   func restart(withNewTimeout newTimeout: TimeInterval? = nil) {
+    Logger.log.trace("Timer: restarting")
     queue.async { [self] in
       cancel()
       
@@ -71,6 +72,7 @@ class TimeoutTimer {
   }
 
   @objc private func timeoutReached() {
+    Logger.log.trace("Timer: timeout reached")
     queue.async { [self] in
       cancel()
       if let action {

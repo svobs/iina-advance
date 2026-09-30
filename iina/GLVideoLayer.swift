@@ -389,7 +389,7 @@ class GLVideoLayer: CAOpenGLLayer {
     self.mpvRenderContext = nil
   }
 
-  /// Called repeated by DisplayLink callback
+  /// Called repeatedly by DisplayLink callback
   func mpvReportSwap() {
     guard !videoView.isUninited else { return }
     guard let mpvRenderContext = mpvRenderContext else { return }

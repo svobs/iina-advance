@@ -154,6 +154,7 @@ class InitialWindowController: WindowController, NSWindowDelegate {
       updateWindowAppearance()
     }
     updateWindowAppearance()
+    updateTrackingAreas()
 
     if isFirstLoad {
       let sw = Utility.Stopwatch()
@@ -220,7 +221,6 @@ class InitialWindowController: WindowController, NSWindowDelegate {
     recentFilesTableView.editableDelegate = self
     recentFilesTableView.dataSource = self
     recentFilesTableView.action = #selector(onMouseUpInTable)
-    updateTrackingAreas()
 
     observedPrefKeys.forEach { key in
       UserDefaults.standard.addObserver(self, forKeyPath: key.rawValue, options: .new, context: nil)

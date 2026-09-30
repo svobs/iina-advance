@@ -9,7 +9,7 @@ SKIP_LIBS=false
 SKIP_EXECUTABLES=false
 SKIP_PLUGINS=false
 
-DYLIBS_DOWNLOAD_PATH="https://iina.io/dylibs/${ARCH}"
+RELEASE_DOWNLOAD_PATH="https://github.com/svobs/iina-advance/releases/download/v1.6/IINA-Advance-1.6.zip"
 YT_DLP_DOWNLOAD_PATH="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos"
 
 # Colors for output
@@ -163,7 +163,6 @@ esac
 
 case $ARCH in
 universal | arm64 | x86_64)
-  DYLIBS_DOWNLOAD_PATH="https://iina.io/dylibs/${ARCH}"
   ;;
 *)
   echo -e "${RED}Invalid architecture: $ARCH${NC}"
@@ -181,7 +180,7 @@ LIB_PATH="$DEPS_PATH/lib"
 EXEC_PATH="$DEPS_PATH/executable"
 PLUGIN_PATH="$DEPS_PATH/plugins"
 
-export DYLIBS_DOWNLOAD_PATH
+export RELEASE_DOWNLOAD_PATH
 export LIB_PATH
 export YELLOW
 export GREEN
@@ -192,37 +191,36 @@ if [[ ! -d "$DEPS_PATH" ]]; then
   exit 1
 fi
 
-IFS=$'\n' read -r -d '' -a files < <(curl -s "${DYLIBS_DOWNLOAD_PATH}/filelist.txt" && printf '\0')
+EXTRACTED_DIR_PATH="$DEPS_PATH/IINA Advance.app"
+rm -rf "$EXTRACTED_DIR_PATH"
+
+ARCHIVE_NAME=$(basename "$RELEASE_DOWNLOAD_PATH")
+curl -L -o "${DEPS_PATH}/${ARCHIVE_NAME}" "${RELEASE_DOWNLOAD_PATH}" && echo -e "${GREEN}Downloaded ${ARCHIVE_NAME}${NC}"
+# Use -o to overwrite existing files without prompting
+unzip "${DEPS_PATH}/${ARCHIVE_NAME}" -d "$DEPS_PATH" -x "__MACOSX/*" && echo -e "${GREEN}Extracted ${ARCHIVE_NAME}${NC}"
 
 if [[ "$SKIP_LIBS" == true ]]; then
   echo -e "${YELLOW}Skipping lib downloads.${NC}"
 else
-  mkdir -p "$LIB_PATH"
+  rm -rf "$LIB_PATH"
 
-  echo -e "${BLUE}Starting downloads in parallel...${NC}"
-
-  # Function to download a single file
-  download_file() {
-    local file="$1"
-    echo -e "${YELLOW}Downloading ${file}...${NC}"
-    curl -s "${DYLIBS_DOWNLOAD_PATH}/${file}" -o "${LIB_PATH}/${file}" && echo -e "${GREEN}Downloaded ${file}${NC}"
-  }
-
-  # Export the function so it can be used by xargs
-  export -f download_file
-  # Process files in smaller batches using xargs
+  rm -r "$EXTRACTED_DIR_PATH/Contents/Frameworks/Sparkle.framework"
+  mv "$EXTRACTED_DIR_PATH/Contents/Frameworks" "$LIB_PATH" && echo -e "${GREEN}Moved dylibs to $LIB_PATH${NC}"
   printf "%s\n" "${files[@]}" | xargs -n 1 -P "$PARALLEL_DOWNLOADS" bash -c 'download_file "$@"' _
 fi
 
 if [[ "$SKIP_EXECUTABLES" == true ]]; then
   echo -e "${YELLOW}Skipping executable downloads.${NC}"
 else
-  YT_DLP_PATH="$EXEC_PATH/youtube-dl"
-  mkdir -p "$EXEC_PATH"
-  echo -e "${YELLOW}Downloading yt-dlp...${NC}"
-  curl -s -L "$YT_DLP_DOWNLOAD_PATH" -o "$YT_DLP_PATH" && echo -e "${GREEN}yt-dlp downloaded${NC}"
-  chmod +x "$YT_DLP_PATH"
+  rm -rf "$EXEC_PATH"
+  rm "$EXTRACTED_DIR_PATH/Contents/MacOS/iina"*
+  rm "$EXTRACTED_DIR_PATH/Contents/MacOS/IINA"*
+  mv "$EXTRACTED_DIR_PATH/Contents/MacOS" "$EXEC_PATH" && echo -e "${GREEN}Moved executable to $EXEC_PATH${NC}"
+  chmod +x "$EXEC_PATH"/* 2>/dev/null || true
 fi
+
+rm -rf "${DEPS_PATH}/${ARCHIVE_NAME}" && echo -e "${GREEN}Removed ${ARCHIVE_NAME}${NC}"
+rm -rf "$EXTRACTED_DIR_PATH" && echo -e "${GREEN}Removed extracted directory ${EXTRACTED_DIR_PATH}${NC}"
 
 if [[ "$SKIP_PLUGINS" == true ]]; then
   echo -e "${YELLOW}Skipping official plugin downloads.${NC}"

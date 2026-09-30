@@ -38,7 +38,7 @@ extension VideoView {
       }
     }
 
-    if let player = player {
+    if let player {
       // This kicks off an asynchronous task on the mpv queue
       player.syncTimeAndCacheUI()
     }
@@ -78,6 +78,7 @@ extension VideoView {
     }
 #endif
     checkResult(CVDisplayLinkStart(link), "CVDisplayLinkStart")
+    displayIdleStartTime = nil
     log.verbose("DisplayLink started")
   }
 
@@ -85,7 +86,7 @@ extension VideoView {
   func stopDisplayLink() {
     guard let link = link, CVDisplayLinkIsRunning(link) else { return }
     log.trace("DisplayLink stopping")
-    displayIdleStartTime = nil
+    displayIdleStartTime = 0  // very idle
     checkResult(CVDisplayLinkStop(link), "CVDisplayLinkStop")
     log.verbose("DisplayLink stopped")
   }
@@ -166,6 +167,9 @@ extension VideoView {
   @MainActor
   func displayIdle() {
     guard player.isInteractivePlayer else { return }
+
+    guard displayIdleStartTime == nil else { return }
+    
     // Because the display link is critical there is an internal setting that can be changed to
     // disable shutting down the display link should any problems with this energy saving feature
     // be discovered.

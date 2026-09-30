@@ -616,6 +616,7 @@ extension PlayerWindowController {
     // Fadeable views
     switch area {
     case .playerWindow:
+      log.trace("MouseEntered into playerWindow")
       if player.isInMiniPlayer {
         miniPlayer.loadIfNeeded()
         miniPlayer.showOrHideControls()
@@ -623,6 +624,7 @@ extension PlayerWindowController {
         showFadeableViewsForMouseLocation(mouseLocationInWindow)
       }
     default:
+      log.trace("MouseEntered: unhandled tracking area")
       break
     }
   }
@@ -639,12 +641,12 @@ extension PlayerWindowController {
     case .playerWindow:
       // reset after moved out of window
       isMomentumScrollingAllowed = false
-      
+      log.trace("MouseExited from playerWindow")
+
       // Cursor
       if !currentLayout.mode.mustShowCursorAlways {
         // Show cursor if not already shown
         // FIXME: only if mouse is not inside any window
-        log.trace("MouseExited from playerWindow: showing (normal) cursor")
         setCursorToNormalAlwaysShown()
       }
 
@@ -653,20 +655,20 @@ extension PlayerWindowController {
         miniPlayer.showOrHideControls()
       } else if Preference.bool(for: .hideFadeableViewsWhenOutsideWindow) {
         // Hide fadeable views if configured
-        log.verbose("MouseExited from playerWindow: hiding fadeableViews")
         hideFadeableViews()
       } else {
         // Closes loophole in case cursor hovered over OSC before exiting (in which case timer was destroyed)
         fadeableViews.hideTimer.restart()
       }
     default:
+      log.trace("MouseExited: unhandled tracking area")
       break
     }
   }
 
   override func mouseMoved(with event: NSEvent) {
     // Disable hover actions if first mouse is disabled & window not in focus:
-    guard let window, (Preference.bool(for: .videoViewAcceptsFirstMouse) || window.isKeyWindow) else { return }
+    guard let window, (window.isKeyWindow || Preference.bool(for: .videoViewAcceptsFirstMouse)) else { return }
 
     guard !isValidDragInProgress() else { return }
     mouseDidMoveInWindow()

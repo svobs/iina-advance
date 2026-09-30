@@ -78,8 +78,6 @@ extension MPVController {
 
       logError(mpv_request_log_messages(mpv, MPVLogLevel.warn.description))
 
-//      addEventCallbacks()
-
       logError(mpv_initialize(mpv))
 
       chkErr(setString(MPVOption.Video.gpuHwdecInterop, "auto", level: .verbose))

@@ -332,6 +332,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, SPUUpdaterDelegate {
     }
     
     startupHandler.doStartup()
+
+    // Log all notifications
+//    NotificationCenter.default.addObserver(self, selector: #selector(logNotification(_:)), name: nil, object: nil)
+  }
+
+  @objc func logNotification(_ notification: Notification) {
+    Logger.log.debug("NOTIFICATION: '\(notification.name.rawValue)'")// obj=\(notification.object.debugDescription)")
   }
 
   // MARK: - Window Notifications

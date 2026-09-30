@@ -49,7 +49,7 @@ final class PlayerCore: NSObject {
   // MARK: - Instance Fields
 
   let log: any Logger.Subsystem
-  var label: String
+  let label: String
   let isDemoPlayer: Bool
 
   /// If a set of windows was opened at the same time, each is assigned an index, so they can be arranged slightly offset from each another.
@@ -2025,6 +2025,7 @@ final class PlayerCore: NSObject {
 
   /// mpv `watch-later` + `saveToLastPlayedFile()` (above)
   func savePlaybackMetaBeforePlayerWillStop() {
+    assert(DispatchQueue.isExecutingIn(mpv.queue))
     guard !isDemoPlayer else { return }
     guard mpv.getFlag(MPVOption.WatchLater.savePositionOnQuit) else { return }
 
@@ -2424,9 +2425,14 @@ final class PlayerCore: NSObject {
   func syncTimeAndCacheUI() {
     uiTimeDebouncer.run { [self] in
       assert(DispatchQueue.isExecutingIn(mpv.queue))
-      guard let (timeInfo, cacheState, rangesDidChange) = updatePlaybackInfo() else { return }
-      let isPaused = info._isPaused
+      guard let (timeInfo, cacheState, rangesDidChange) = updatePlaybackInfo() else {
+        DispatchQueue.main.async { [self] in
+          videoView.displayIdle()
+        }
+        return
+      }
 
+      let isPaused = info._isPaused
       DispatchQueue.main.async { [self] in
         pwc.updateUIControls(timeInfo, cacheState, rangesDidChange: rangesDidChange, isPaused: isPaused)
       }

@@ -119,7 +119,13 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
     }
   }
   var isLiveResizingWidth: Bool? = nil
-  var isMagnifying = false
+  var isMagnifying = false {
+    didSet {
+      if oldValue != isMagnifying {
+        videoView.glLayer?.inLiveResize = !isMagnifying
+      }
+    }
+  }
   /// If there is an active video-zoom, we need to know if it is the result of a previous pinch gesture, or done through some external mechanism.
   var isZoomedViaGesture: Bool = false
 
@@ -854,7 +860,9 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
     refreshWindowOpenCloseAnimation()
 
     /// See `PWin_Input.swift` for handling of tracking area events.
-    updateTrackingAreas()
+    if !window.isMiniaturized {
+      updateTrackingAreas()
+    }
 
     // truncate middle for title
     if let attrTitle = titleTextField?.attributedStringValue.mutableCopy() as? NSMutableAttributedString, attrTitle.length > 0 {
@@ -924,7 +932,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
       // Need to call this here, or else when opening directly to fullscreen, window title is just "Window"
       updateTitle()
       window?.isExcludedFromWindowsMenu = false
-      videoView.enterAsynchronousMode()  // needed if restoring while paused
+      videoView.displayActive()  // needed if restoring while paused
 
       var animationTasks: [IINAAnimation.Task] = pendingVideoGeoUpdateTasks
       pendingVideoGeoUpdateTasks = []
@@ -1301,7 +1309,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   func windowDidChangeOcclusionState(_ notification: Notification) {
     log.verbose("WndDidChangeOcclusionState received")
     // In case OpenGL buffer was emptied while window was hidden:
-    videoView.enterAsynchronousMode()
+    videoView.displayActive()
   }
 
   func colorSpaceDidChange(_ notification: Notification) {
@@ -1569,6 +1577,8 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   }
 
   func windowWillMiniaturize(_ notification: Notification) {
+    log.verbose("PWin Will Miniaturize")
+    isWindowMiniturized = true
     if Preference.bool(for: .pauseWhenMinimized), !player.info.isPaused {
       isPausedDueToMiniaturization = true
       player.pause()
@@ -1578,7 +1588,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   func windowDidMiniaturize(_ notification: Notification) {
     animationPipeline.submitInstantTask { [self] in
       log.verbose("PWin Did Miniaturize")
-      isWindowMiniturized = true
+      removeTrackingAreas()
       if Preference.bool(for: .togglePipByMinimizingWindow) &&
           (!Preference.bool(for: .togglePipByMinimizingWindowForVideoOnly) ||  player.info.currentMediaAudioStatus == .notAudio)
           && !isWindowMiniaturizedDueToPip {
@@ -1592,6 +1602,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
     animationPipeline.submitInstantTask { [self] in
       log.verbose("PWin Did Deminiaturize")
       isWindowMiniturized = false
+      updateTrackingAreas()
       if Preference.bool(for: .pauseWhenMinimized) && isPausedDueToMiniaturization {
         player.resume()
         isPausedDueToMiniaturization = false

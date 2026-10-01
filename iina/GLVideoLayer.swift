@@ -31,7 +31,15 @@ class GLVideoLayer: CAOpenGLLayer {
   private var fbo: GLint = 1
 
   private var needsMPVRender = false
-  var asynchronousModeStartTime: TimeInterval?
+
+  var inLiveResize = false {
+    didSet {
+      if inLiveResize {
+        isAsynchronous = true
+      }
+      drawAsync()
+    }
+  }
 
   var lastRenderTime: TimeInterval = CFAbsoluteTimeGetCurrent()
 
@@ -73,6 +81,7 @@ class GLVideoLayer: CAOpenGLLayer {
   }
 #endif
 
+  @MainActor
   init(_ videoView: VideoView) {
     self.videoView = videoView
     (cglPixelFormat, bufferDepth) = GLVideoLayer.createPixelFormat(videoView.player)
@@ -95,8 +104,6 @@ class GLVideoLayer: CAOpenGLLayer {
     videoView = previousLayer.videoView
     super.init()
     isOpaque = true
-    asynchronousModeStartTime = previousLayer.asynchronousModeStartTime
-    isAsynchronous = previousLayer.isAsynchronous
     autoresizingMask = previousLayer.autoresizingMask
     contentsFormat = previousLayer.contentsFormat
   }
@@ -140,6 +147,9 @@ class GLVideoLayer: CAOpenGLLayer {
     guard lockAndSetOpenGLContext() else { return false }
     defer { unlockOpenGLContext() }
     guard !videoView.isUninited else { return false }
+    if !inLiveResize {
+      isAsynchronous = false
+    }
 #if LOG_VIDEO_LAYER
     canDrawCountTotal += 1
 
@@ -241,21 +251,6 @@ class GLVideoLayer: CAOpenGLLayer {
       }
     }
     glFlush()
-  }
-
-  /// We want `isAsynchronous = true` while executing any animation which causes the layer to resize.
-  /// But we don't want to leave this on full-time, because it will result in extra draw requests and may
-  /// throw off the timing of each draw.
-  @MainActor
-  func enterAsynchronousMode() {
-    asynchronousModeStartTime = CFAbsoluteTimeGetCurrent()
-    if !isAsynchronous {
-      videoView.player.log.verbose("Entering asynchronous mode")
-    }
-    /// Set this to `true` to enable video redraws to match the timing of the view redraw during animations.
-    /// This fixes a situation where the layer size may not match the size of its superview at each redraw,
-    /// which would cause noticable clipping or wobbling during animations.
-    isAsynchronous = true
   }
 
   /// Similar to `drawSync()`, but draws asynchronously by first enqueuing onto a `DispatchQueue`.

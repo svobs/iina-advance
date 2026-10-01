@@ -106,7 +106,7 @@ class CropSettingsViewController: CropBoxViewController {
     }
 
     // Start drawing again for the sake of animation
-    pwc.videoView.enterAsynchronousMode()
+    pwc.videoView.displayActive()
 
     let player = pwc.player
     // Remove saved crop (if any)

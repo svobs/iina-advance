@@ -219,13 +219,6 @@ class VideoView: NSView {
     videoLayer.shadowRadius = 3
   }
 
-  func enterAsynchronousMode() {
-    displayActive()
-#if !USE_GPU_NEXT
-    glLayer?.enterAsynchronousMode()
-#endif
-  }
-
   /// Returns `true` if screenScaleFactor changed
   @discardableResult
   func refreshContentsScale() -> Bool {

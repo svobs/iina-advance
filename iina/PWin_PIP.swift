@@ -161,7 +161,7 @@ extension PlayerWindowController: @MainActor PIPViewControllerDelegate {
         let taskDuration = Constants.AnimationDuration.enterPIPTask
         let tx = IINAAnimation.Transaction()
         tx.append(duration: taskDuration) { [self] in
-          videoView.enterAsynchronousMode()
+          videoView.displayActive()
           let currentGeo = currentLayout.mode == .musicMode ? musicModeGeoForCurrentFrame() : windowedGeoForCurrentFrame()
           applyPWinGeometry(currentGeo, .enteringPIP)
         }
@@ -228,7 +228,7 @@ extension PlayerWindowController: @MainActor PIPViewControllerDelegate {
       }
     }
 
-    videoView.enterAsynchronousMode()
+    videoView.displayActive()
     player.saveState()
 
     pip.isInTransition = false
@@ -371,7 +371,7 @@ extension PlayerWindowController: @MainActor PIPViewControllerDelegate {
       // are paused, because this causes a janky animation in either case but as
       // it's not necessary while the video is playing and significantly more
       // noticeable, we only redraw if we are paused.
-      videoView.enterAsynchronousMode()
+      videoView.displayActive()
 
       fadeableViews.hideTimer.restart()
 

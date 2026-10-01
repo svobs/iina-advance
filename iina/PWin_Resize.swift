@@ -32,11 +32,13 @@ extension PlayerWindowController {
     // This way the asynchrounous unprotected updates in `windowWillResize` will (hopefully) not interfere with other
     // animations.
     animationPipeline.enableRunning = false
-    videoView.enterAsynchronousMode()
+    videoView.glLayer?.inLiveResize = true
+    videoView.displayActive()
   }
 
   func windowDidEndLiveResize(_ notification: Notification) {
     log.trace("WndDidEndLiveResize")
+    videoView.glLayer?.inLiveResize = false
     // Kick-start the animation pipeline:
     animationPipeline.enableRunning = true
     animationPipeline.submitInstantTask{}
@@ -44,7 +46,7 @@ extension PlayerWindowController {
 
   func windowDidResize(_ notification: Notification) {
     // Trigger forced draws (plugs loophole for window resize when not covered by windowWillResize):
-    videoView.enterAsynchronousMode()
+    videoView.displayActive()
   }
 
   /// NSWindowDelegate: `windowWillResize`: pretty important. Called by AppKit when it wants to resize the window.
@@ -240,7 +242,7 @@ extension PlayerWindowController {
                                     _ transitionCategory: TransitionCategory = .none) {
 
     // Trigger forced draws so that mpv can [try its best to] redraw the video without distortion during window resize:
-    videoView.enterAsynchronousMode()
+    videoView.displayActive()
 
     // These may no longer be aligned correctly. Just hide them
     hideSeekPreviewImmediately()
@@ -519,7 +521,7 @@ extension PlayerWindowController {
     // TASK 1: Background prep
     tasks.append(.instantTask{ [self] in
       isApplyingPWinGeo = true            /// Try not to trigger `windowDidResize` while animating
-      videoView.enterAsynchronousMode()   /// Enable smooth video redraws while animating
+      videoView.displayActive()           /// Enable smooth video redraws while animating
 
       hideSeekPreviewImmediately()        /// Thumbnail location may become invalid during window resize; just hide it
 

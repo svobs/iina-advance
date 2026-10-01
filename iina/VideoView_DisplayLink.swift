@@ -18,23 +18,10 @@ extension VideoView {
 
       DispatchQueue.main.async { [self] in
         // DisplayLink idle timeout check
-        if let displayIdleStartTime {
-          if CFAbsoluteTimeGetCurrent() - displayIdleStartTime > TimeConstants.displayIdleTimeout {
-            stopDisplayLink()
-          }
+        if let displayIdleStartTime,
+           CFAbsoluteTimeGetCurrent() - displayIdleStartTime > TimeConstants.displayIdleTimeout {
+          stopDisplayLink()
         }
-
-#if !USE_GPU_NEXT
-        guard let glLayer else { return }
-        if glLayer.isAsynchronous, let asynchronousModeStartTime = glLayer.asynchronousModeStartTime {
-          if CFAbsoluteTimeGetCurrent() - asynchronousModeStartTime > TimeConstants.asynchronousModeTimeout {
-            player.log.verbose("Exiting asynchronous mode")
-            /// If this is set to `true` while the video is paused, there is some degree of busy-waiting as the
-            /// layer is polled at a high rate about whether it needs to draw. Disable this to save CPU while idle.
-            glLayer.isAsynchronous = false
-          }
-        }
-#endif
       }
     }
 

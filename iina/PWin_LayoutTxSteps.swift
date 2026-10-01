@@ -22,7 +22,6 @@ extension PlayerWindowController {
     isAnimatingLayoutTransition = true
     // When playback is paused the display link is stopped in order to avoid wasting energy on
     // needless processing. It must be running while transitioning to/from full screen mode.
-    videoView.enterAsynchronousMode()
     videoView.displayActive()
 
     /// Some methods where reference `currentLayout` get called as a side effect of the transition animations.
@@ -404,7 +403,7 @@ extension PlayerWindowController {
     }
 
     if transition.isOpeningViewport {
-      videoView.enterAsynchronousMode()
+      videoView.displayActive()
 
       // Show default album art if no video track selected
       if player.info.shouldShowDefaultArt == true {

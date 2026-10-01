@@ -336,7 +336,7 @@ extension MPVController {
       guard let pwc = player.pwc, pwc.loaded else { return }
       player.sendOSD(.videoZoom(zoom))
       DispatchQueue.main.async { [self] in
-        player.videoView.enterAsynchronousMode()
+        player.videoView.displayActive()
       }
 
     case MPVOption.Video.videoPanX:
@@ -344,7 +344,7 @@ extension MPVController {
       player.info.videoPanX = panX
       guard let pwc = player.pwc, pwc.loaded else { return }
       DispatchQueue.main.async { [self] in
-        player.videoView.enterAsynchronousMode()
+        player.videoView.displayActive()
       }
 
     case MPVOption.Video.videoPanY:
@@ -352,7 +352,7 @@ extension MPVController {
       player.info.videoPanY = panY
       guard let pwc = player.pwc, pwc.loaded else { return }
       DispatchQueue.main.async { [self] in
-        player.videoView.enterAsynchronousMode()
+        player.videoView.displayActive()
       }
 
     case MPVProperty.dwidth:

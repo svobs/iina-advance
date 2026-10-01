@@ -1040,7 +1040,7 @@ extension PlayerWindowController {
       Logger.fatal("ResizeSidebar: current mode unexpected: \(currentLayout.mode)")
     }
 
-    videoView.enterAsynchronousMode()
+    videoView.displayActive()
 
     let (newCursor, newGeo): (CursorType, PWinGeometry?)
 

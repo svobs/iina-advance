@@ -56,21 +56,6 @@ class LiveTextController {
     guard isShown else { return }
     clearAnalysisImpl()
   }
-
-  fileprivate func refreshUI() {
-    if isActive {
-      if !wasUIHiddenByLiveText {
-        pwc.hideFadeableViews()
-        wasUIHiddenByLiveText = true
-      }
-    } else if wasUIHiddenByLiveText {
-      wasUIHiddenByLiveText = false
-      let pointInWindow = pwc.mouseLocationInWindow
-      if pwc.isMouseInsideFadeableView(pointInWindow) {
-        pwc.showFadeableViewsForMouseLocation(pointInWindow)
-      }
-    }
-  }
 }
 
 
@@ -102,14 +87,14 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
         try Task.checkCancellation()
         let analysis = try await ImageAnalyzer().analyze(image, orientation: .up, configuration: .init([.text]))
         liveTextLog("Image analysis results acquired")
-        await MainActor.run {
+        try await MainActor.run {
+          try Task.checkCancellation()
           let overlay = self.setupLiveTextOverlay()
           overlay.analysis = analysis
           overlay.frame = videoView.bounds
           videoView.addSubview(overlay)
           overlay.padding(.all(0))
           liveTextLog("Image analysis overlay view inserted to video view")
-          self.refreshUI()
         }
       } catch is CancellationError {
         liveTextLog("Image analysis cancelled")
@@ -129,7 +114,6 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
     isMenuOpen = false
     isHighlighted = false
     liveTextLog("Image analysis invalidated and overlay view removed from video view")
-    refreshUI()
   }
 
   func overlayView(_ overlayView: ImageAnalysisOverlayView,
@@ -140,22 +124,18 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
 
   func overlayView(_ overlayView: ImageAnalysisOverlayView, willOpen menu: NSMenu) {
     isMenuOpen = true
-    refreshUI()
   }
 
   func overlayView(_ overlayView: ImageAnalysisOverlayView, didClose menu: NSMenu) {
     isMenuOpen = false
-    refreshUI()
   }
 
   func textSelectionDidChange(_ overlayView: ImageAnalysisOverlayView) {
     isSelected = overlayView.hasActiveTextSelection
-    refreshUI()
   }
 
   func overlayView(_ overlayView: ImageAnalysisOverlayView,
                    highlightSelectedItemsDidChange highlightSelectedItems: Bool) {
     isHighlighted = highlightSelectedItems
-    refreshUI()
   }
 }

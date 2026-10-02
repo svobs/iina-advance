@@ -336,8 +336,7 @@ extension PlayerWindowController {
 
     if let liveTextOverlayView = liveText.overlayView {
       let point = liveTextOverlayView.convert(event.locationInWindow, from: nil)
-      if liveTextOverlayView.hasText(at: point) ||
-          liveTextOverlayView.hasSupplementaryInterface(at: point) {
+      if liveTextOverlayView.hasSupplementaryInterface(at: point) {
         return
       }
     }
@@ -381,8 +380,7 @@ extension PlayerWindowController {
     log.trace("PWin MouseDragged @ \(event.locationInWindow) obj=\(currentDragObject?.idString ?? "nil")")
     if let liveTextOverlayView = liveText.overlayView {
       let point = liveTextOverlayView.convert(event.locationInWindow, from: nil)
-      if liveTextOverlayView.hasText(at: point) ||
-          liveTextOverlayView.hasSupplementaryInterface(at: point) {
+      if liveTextOverlayView.hasSupplementaryInterface(at: point) {
         return
       }
     }
@@ -397,8 +395,7 @@ extension PlayerWindowController {
     guard !isFullScreen else { return }
     if let liveTextOverlayView = liveText.overlayView {
       let point = liveTextOverlayView.convert(event.locationInWindow, from: nil)
-      if liveTextOverlayView.hasText(at: point) ||
-          liveTextOverlayView.hasSupplementaryInterface(at: point) {
+      if liveTextOverlayView.hasSupplementaryInterface(at: point) {
         return
       }
     }

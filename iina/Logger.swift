@@ -534,10 +534,12 @@ struct Logger {
     // Lock to avoid closing the log file while another thread is writing to it.
     fsLock.withLock {
       close(logFile, logFileHandle)
+      logFileHandle = nil
       /// Do not access `piiFileHandle` unless needed - will throw unnecessary error on app exit if log dir was deleted after launch
       /// (`logFileHandle` will not throw error becasue it was already opened?)
       if !piiDict.isEmpty {
         close(piiFile, piiFileHandle)
+        piiFileHandle = nil
       }
     }
   }

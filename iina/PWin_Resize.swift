@@ -70,6 +70,9 @@ extension PlayerWindowController {
       log.verbose("[WndWillResize] Denying req=\(requestedSize): isMagnifying=Y: Will stay at \(window.frame.size)")
       return window.frame.size
     }
+    // Need this to patch hole
+    videoView.displayActive()
+    
     guard !isInWindowResizeDenialPeriod() else {
       log.verbose("[WndWillResize] Denying req=\(requestedSize): still inside denial period. Will stay at \(window.frame.size)")
       pendingResizeForScreenChange = false  // should be safe to reset this now

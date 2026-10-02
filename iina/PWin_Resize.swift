@@ -33,12 +33,14 @@ extension PlayerWindowController {
     // animations.
     animationPipeline.enableRunning = false
     videoView.glLayer?.inLiveResize = true
+    liveText.clearAnalysis()
     videoView.displayActive()
   }
 
   func windowDidEndLiveResize(_ notification: Notification) {
     log.trace("WndDidEndLiveResize")
     videoView.glLayer?.inLiveResize = false
+    liveText.requestAnalysis()
     // Kick-start the animation pipeline:
     animationPipeline.enableRunning = true
     animationPipeline.submitInstantTask{}

@@ -515,7 +515,7 @@ extension PlayerWindowController {
     Preference.set(!unlock, for: .lockViewportToVideoSize)
   }
 
-  @objc func menuToggleLiveText(_ item: NSMenuItem) {
+  @objc func menuToggleLiveText(_ sender: AnyObject) {
     Preference.set(!Preference.bool(for: .enableLiveText), for: .enableLiveText)
   }
 

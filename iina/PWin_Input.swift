@@ -173,6 +173,8 @@ extension PlayerWindowController {
       menuFindOnlineSub(self)
     case .saveDownloadedSub:
       saveDownloadedSub(self)
+    case .liveText:
+      menuToggleLiveText(self)
     default:
       break
     }
@@ -328,9 +330,17 @@ extension PlayerWindowController {
     wasKeyWindowAtMouseDown = lastKeyWindowStatus
     mouseDownLocation = NSEvent.mouseLocation
     mouseDownLocationInWindow = event.locationInWindow
-#if ENABLE_CUSTOM_WINDOW_DRAG  // see `performWindowDrag` in PWin_Input.swift
+#if ENABLE_CUSTOM_WINDOW_DRAG  // see `performWindowDrag`
     windowFrameAtMouseDown = window!.frame
 #endif
+
+    if let liveTextOverlayView = liveText.overlayView {
+      let point = liveTextOverlayView.convert(event.locationInWindow, from: nil)
+      if liveTextOverlayView.hasText(at: point) ||
+          liveTextOverlayView.hasSupplementaryInterface(at: point) {
+        return
+      }
+    }
 
     if let currentDragObject {
       // Window will not receive mouseUp events from outside of window, so previous drag may not have finished.
@@ -355,8 +365,6 @@ extension PlayerWindowController {
       // Started resize if applicable. With either sidebar, this will always be dragging the playlist panel
       currentDragObject = playlistView.view
       return
-    } else {
-      dragWindowIfQualifying(from: event)
     }
 
     hideCursorTimer.restart()
@@ -369,55 +377,15 @@ extension PlayerWindowController {
     // PlayerWindowController didn't call super at all
   }
 
-  private func dragWindowIfQualifying(from event: NSEvent) {
-    guard !isFullScreen else { return }
-    if !isDragging, let mouseDownLocationInWindow {
-      /// Require that the user must drag the cursor at least a small distance for it to start a "drag" (`isDragging==true`)
-      /// The user's action will only be counted as a click if `isDragging==false` when `mouseUp` is called.
-      /// (Apple's trackpad in particular is very sensitive and tends to call `mouseDragged()` if there is even the slightest
-      /// roll of the finger during a click, and the distance of the "drag" may be less than `minimumInitialDragDistance`)
-      let dragDistance = mouseDownLocationInWindow.distance(to: event.locationInWindow)
-      guard dragDistance > Constants.Window.minInitialDragThreshold else { return }
-
-      log.verbose("PWin MouseDrag: minimum dragging distance was met (\(Double(dragDistance).twoDecimalPlaces)")
-      isDragging = true
-    }
-
-    performWindowDrag(with: event)
-  }
-
-  private func performWindowDrag(with event: NSEvent) {
-    guard let window else { return }
-
-#if ENABLE_CUSTOM_WINDOW_DRAG
-    // TODO: this mostly works except for some corner cases when dragging from one screen to another.
-    // TODO: Expand on this to add ability to keep video entirely on screen at all times.
-    guard let mouseDownLocation, let windowFrameAtMouseDown else { return }
-
-    let currentLocation = NSEvent.mouseLocation
-    // Adapted from: https://stackoverflow.com/a/1946223
-    let dX = (currentLocation.x - mouseDownLocation.x)
-    let dY = (currentLocation.y - mouseDownLocation.y)
-    log.verbose("PWin MouseDrag: \(dX), \(dY)")
-    var newOrigin = NSPoint(x: windowFrameAtMouseDown.origin.x + dX,
-                            y: windowFrameAtMouseDown.origin.y + dY)
-
-    // Don't let window get dragged up under the menu bar
-    let windowFrame = window.frame
-    let windowScreen = window.screen
-    if let screenFrame = windowScreen?.visibleFrame, newOrigin.y+windowFrame.size.height > screenFrame.origin.y+screenFrame.size.height {
-      newOrigin.y = screenFrame.origin.y + (screenFrame.size.height - windowFrame.size.height)
-    }
-    window.setFrameOrigin(newOrigin)
-#else
-    window.performDrag(with: event)
-#endif
-
-    informPluginMouseDragged(with: event)
-  }
-
   override func mouseDragged(with event: NSEvent) {
     log.trace("PWin MouseDragged @ \(event.locationInWindow) obj=\(currentDragObject?.idString ?? "nil")")
+    if let liveTextOverlayView = liveText.overlayView {
+      let point = liveTextOverlayView.convert(event.locationInWindow, from: nil)
+      if liveTextOverlayView.hasText(at: point) ||
+          liveTextOverlayView.hasSupplementaryInterface(at: point) {
+        return
+      }
+    }
 
     hideCursorTimer.cancel()
     if let currentDragObject {
@@ -425,13 +393,65 @@ extension PlayerWindowController {
       return
     }
 
-    dragWindowIfQualifying(from: event)
+    guard let window else { return }
+    guard !isFullScreen else { return }
+    if let liveTextOverlayView = liveText.overlayView {
+      let point = liveTextOverlayView.convert(event.locationInWindow, from: nil)
+      if liveTextOverlayView.hasText(at: point) ||
+          liveTextOverlayView.hasSupplementaryInterface(at: point) {
+        return
+      }
+    }
+
+    // *MUST* check that mouseDownLocationInWindow is non-nil (& reset to nil at mouseUp):
+    // when dragging starts from some subviews like liveText.overlayView, `mouseDragged` events can be received
+    // here without first receiving a `mouseDown`.
+    if let mouseDownLocationInWindow {
+      if !isDragging {
+        /// Require that the user must drag the cursor at least a small distance for it to start a "drag" (`isDragging==true`)
+        /// The user's action will only be counted as a click if `isDragging==false` when `mouseUp` is called.
+        /// (Apple's trackpad in particular is very sensitive and tends to call `mouseDragged()` if there is even the slightest
+        /// roll of the finger during a click, and the distance of the "drag" may be less than `minimumInitialDragDistance`)
+        let dragDistance = mouseDownLocationInWindow.distance(to: event.locationInWindow)
+        guard dragDistance > Constants.Window.minInitialDragThreshold else { return }
+
+        log.verbose("PWin MouseDrag: minimum dragging distance was met (\(Double(dragDistance).twoDecimalPlaces)")
+        isDragging = true
+      }
+
+#if ENABLE_CUSTOM_WINDOW_DRAG
+      // TODO: this mostly works except for some corner cases when dragging from one screen to another.
+      // TODO: Expand on this to add ability to keep video entirely on screen at all times.
+      guard let mouseDownLocation, let windowFrameAtMouseDown else { return }
+
+      let currentLocation = NSEvent.mouseLocation
+      // Adapted from: https://stackoverflow.com/a/1946223
+      let dX = (currentLocation.x - mouseDownLocation.x)
+      let dY = (currentLocation.y - mouseDownLocation.y)
+      log.verbose("PWin MouseDrag: \(dX), \(dY)")
+      var newOrigin = NSPoint(x: windowFrameAtMouseDown.origin.x + dX,
+                              y: windowFrameAtMouseDown.origin.y + dY)
+
+      // Don't let window get dragged up under the menu bar
+      let windowFrame = window.frame
+      let windowScreen = window.screen
+      if let screenFrame = windowScreen?.visibleFrame, newOrigin.y+windowFrame.size.height > screenFrame.origin.y+screenFrame.size.height {
+        newOrigin.y = screenFrame.origin.y + (screenFrame.size.height - windowFrame.size.height)
+      }
+      window.setFrameOrigin(newOrigin)
+#else
+      window.performDrag(with: event)
+#endif
+      informPluginMouseDragged(with: event)
+    }
   }
 
   override func mouseUp(with event: NSEvent) {
     guard event.eventNumber != lastMouseUpEventID else { return }
     lastMouseUpEventID = event.eventNumber
     log.verbose("PWin MouseUp @ \(event.locationInWindow) clickCount=\(event.clickCount) dragging=\(isDragging.yn) eventNum=\(event.eventNumber)")
+    // Make sure to clear this so that only clicks outside important views in window set this to non-nil
+    mouseDownLocationInWindow = nil
 
     // Always do these:
     hideCursorTimer.restart()
@@ -633,7 +653,7 @@ extension PlayerWindowController {
     guard !isValidDragInProgress() else { return }
     guard !isAnimatingLayoutTransition, !isApplyingPWinGeo else { return }
     guard let area = event.trackingArea?.userInfo?[TrackingArea.key] as? TrackingArea else {
-      log.warn("MouseExited: no data for tracking area!")
+      log.verbose("MouseExited: no data for tracking area")
       return
     }
 

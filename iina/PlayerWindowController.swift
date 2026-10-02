@@ -747,7 +747,6 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   func updateTitleBarAndOSC() {
     titleBarAndOSCUpdateDebouncer.run { [self] in
       animationPipeline.submitInstantTask { [self] in
-        liveText.updateOverlayInsets()
         let oldLayout = currentLayout
         let newLayoutState = LayoutState.fromPrefs(fillingInFrom: oldLayout)
         let transition = buildLayoutTransition(named: "UpdateTitleBarAndOSC", from: oldLayout, to: newLayoutState)

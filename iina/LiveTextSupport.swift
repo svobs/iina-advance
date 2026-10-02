@@ -20,7 +20,7 @@ fileprivate func liveTextLog(_ str: @autoclosure () -> String, level: Logger.Lev
 class LiveTextController {
   private weak var pwc: PlayerWindowController!
 
-  var overlayView: NSView?
+  var overlayView: ImageAnalysisOverlayView?
   var analysisTask: Task<Void, Never>?
 
   var isSelected: Bool = false
@@ -39,23 +39,25 @@ class LiveTextController {
   }
 
   func updateOverlayInsets() {
-    guard let view = overlayView as? ImageAnalysisOverlayView else { return }
+    guard let view = overlayView else { return }
     let isBottom = Preference.enum(for: .oscPosition) as Preference.OSCPosition == .bottom
     view.supplementaryInterfaceContentInsets = NSEdgeInsets(top: 8, left: 8, bottom: isBottom ? 48 : 8, right: 8)
   }
 
+  @MainActor
   func requestAnalysis() {
     guard Preference.isLiveTextEnabled,
           !pwc.isInInteractiveMode else { return }
     requestAnalysisImpl()
   }
 
+  @MainActor
   func clearAnalysis() {
     guard isShown else { return }
     clearAnalysisImpl()
   }
 
-  func refreshUI() {
+  fileprivate func refreshUI() {
     if isActive {
       if !wasUIHiddenByLiveText {
         pwc.hideFadeableViews()
@@ -63,18 +65,18 @@ class LiveTextController {
       }
     } else if wasUIHiddenByLiveText {
       wasUIHiddenByLiveText = false
-      if pwc.isMouseInWindow {
-        pwc.showFadeableViews(thenRestartFadeTimer: true)
+      let pointInWindow = pwc.mouseLocationInWindow
+      if pwc.isMouseInsideFadeableView(pointInWindow) {
+        pwc.showFadeableViewsForMouseLocation(pointInWindow)
       }
     }
   }
 }
 
 
-@available(macOS 13.0, *)
 extension LiveTextController: ImageAnalysisOverlayViewDelegate {
   @discardableResult
-  func setupLiveTextOverlay() -> ImageAnalysisOverlayView {
+  fileprivate func setupLiveTextOverlay() -> ImageAnalysisOverlayView {
     let view = ImageAnalysisOverlayView()
     view.preferredInteractionTypes = .automatic
     view.delegate = self
@@ -84,13 +86,12 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
     return view
   }
 
-  func requestAnalysisImpl() {
+  fileprivate func requestAnalysisImpl() {
     guard pwc.player.info.isPaused, Preference.isLiveTextEnabled else { return }
     liveTextLog("Image analysis requested")
-    analysisTask?.cancel()
+    clearAnalysisImpl()
 
     let videoView = pwc.videoView
-    let videoViewContainer = pwc.viewportView
     analysisTask = Task { [weak self] in
       guard let self else { return }
       do {
@@ -104,8 +105,8 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
         await MainActor.run {
           let overlay = self.setupLiveTextOverlay()
           overlay.analysis = analysis
-          overlay.frame = videoViewContainer.bounds
-          videoViewContainer.addSubview(overlay)
+          overlay.frame = videoView.bounds
+          videoView.addSubview(overlay)
           overlay.padding(.all(0))
           liveTextLog("Image analysis overlay view inserted to video view")
           self.refreshUI()
@@ -118,10 +119,10 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
     }
   }
 
-  func clearAnalysisImpl() {
+  fileprivate func clearAnalysisImpl() {
     analysisTask?.cancel()
     analysisTask = nil
-    (overlayView as? ImageAnalysisOverlayView)?.analysis = nil
+    overlayView?.analysis = nil
     overlayView?.removeFromSuperview()
     overlayView = nil
     isSelected = false
@@ -152,7 +153,8 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
     refreshUI()
   }
 
-  func overlayView(_ overlayView: ImageAnalysisOverlayView, highlightSelectedItemsDidChange highlightSelectedItems: Bool) {
+  func overlayView(_ overlayView: ImageAnalysisOverlayView,
+                   highlightSelectedItemsDidChange highlightSelectedItems: Bool) {
     isHighlighted = highlightSelectedItems
     refreshUI()
   }

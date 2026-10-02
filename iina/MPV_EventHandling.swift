@@ -230,7 +230,7 @@ extension MPVController {
           DispatchQueue.main.async {
             Utility.showAlert("screenshot.error_taking")
           }
-          break
+          return
         }
         player.screenshotCallback()
       } else if reply == MPVController.UserData.screenshotRaw {
@@ -244,7 +244,7 @@ extension MPVController {
           DispatchQueue.main.async {
             Utility.showAlert("screenshot.error_taking")
           }
-          break
+          return
         }
         guard var dataNode = UnsafeMutablePointer<mpv_node>(OpaquePointer(event.pointee.data))?.pointee else {
           player.log.error("No data for screenshot-raw response!")

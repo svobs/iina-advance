@@ -1666,6 +1666,11 @@ final class PlayerCore: NSObject {
       } else {  // resume
         videoView.displayActive()
       }
+      if paused {
+        pwc.liveText.requestAnalysis()
+      } else {
+        pwc.liveText.clearAnalysis()
+      }
       if let pos = info.playbackTime.positionSec, let dur = info.playbackTime.durationSec {
         let osdMsg: OSDMessage = paused ? .pause(posSec: pos, durSec: dur) :
           .resume(posSec: pos, durSec: dur)
@@ -2121,6 +2126,7 @@ final class PlayerCore: NSObject {
         // TableView whole table reload is very expensive. No need to reload entire playlist; just the two changed rows:
         pwc.playlistView.refreshNowPlayingIndex(thenScrollToVisible: true)
 
+        pwc.liveText.clearAnalysis()
         MediaPlayerIntegration.shared.update()
       }
     }
@@ -2451,6 +2457,9 @@ final class PlayerCore: NSObject {
 
     DispatchQueue.main.async { [self] in
       info.isSeeking = false
+
+      pwc.liveText.clearAnalysis()
+      pwc.liveText.requestAnalysis()
 
       // When playback is paused the display link may be shutdown in order to not waste energy.
       // The display link will be restarted while seeking. If playback is paused shut it down again.

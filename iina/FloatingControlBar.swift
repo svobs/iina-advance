@@ -251,7 +251,6 @@ final class FloatingControlBarGlassEffectView: ClickThroughGlassEffectView, Drag
     guard let pwc, let geometry = buildFloatingGeometry() else { return }
 
     pwc.log.verbose("FloatingOSC mouseDown")
-    view.window?.isMovableByWindowBackground = false
     mousePosRelatedToView = view.convert(event.locationInWindow, from: nil)
     mouseDownLocationInWindow = event.locationInWindow
     let originInViewport = pwc.viewportView.convert(view.frame.origin, from: nil)

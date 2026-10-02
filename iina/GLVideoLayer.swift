@@ -251,6 +251,19 @@ class GLVideoLayer: CAOpenGLLayer {
       }
     }
     glFlush()
+
+    if let handler = popPendingSnapshotHandler() {
+      let image = framebufferSnapshot(width: Int(dims[2]), height: Int(dims[3]))
+      handler(image)
+    }
+  }
+
+  private func popPendingSnapshotHandler() -> ((NSImage?) -> Void)? {
+    snapshotLock.withLock { () -> ((NSImage?) -> Void)? in
+      let handler = pendingSnapshotHandler
+      pendingSnapshotHandler = nil
+      return handler
+    }
   }
 
   /// Similar to `drawSync()`, but draws asynchronously by first enqueuing onto a `DispatchQueue`.
@@ -444,6 +457,58 @@ class GLVideoLayer: CAOpenGLLayer {
       previous?(nil)
       drawAsync()
     }
+  }
+
+  private func framebufferSnapshot(width: Int, height: Int) -> NSImage? {
+    let bytesPerRow = width * 4
+    var pixels = Data(count: height * bytesPerRow)
+
+    // Save and restore the read framebuffer binding so we don't disturb AppKit/mpv state.
+    var prevReadFBO: GLint = 0
+    glGetIntegerv(GLenum(GL_READ_FRAMEBUFFER_BINDING), &prevReadFBO)
+    defer { glBindFramebuffer(GLenum(GL_READ_FRAMEBUFFER), GLuint(prevReadFBO)) }
+
+    // The layer renders into an FBO (captured as `fbo`), not the default framebuffer,
+    // so we must bind that FBO as the read target and use GL_COLOR_ATTACHMENT0 — not GL_BACK.
+    glBindFramebuffer(GLenum(GL_READ_FRAMEBUFFER), GLuint(fbo))
+    glReadBuffer(GLenum(GL_COLOR_ATTACHMENT0))
+    glPixelStorei(GLenum(GL_PACK_ALIGNMENT), 1)
+
+    pixels.withUnsafeMutableBytes { buf in
+      guard let base = buf.baseAddress else { return }
+      glReadPixels(0, 0, GLsizei(width), GLsizei(height),
+                   GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), base)
+
+      // OpenGL origin is bottom-left; CGImage expects top-left. Flip rows in place.
+      var temp = [UInt8](repeating: 0, count: bytesPerRow)
+      temp.withUnsafeMutableBufferPointer { tempBuf in
+        let tmp = UnsafeMutableRawPointer(tempBuf.baseAddress!)
+        for i in 0..<(height / 2) {
+          let top = base.advanced(by: i * bytesPerRow)
+          let bot = base.advanced(by: (height - 1 - i) * bytesPerRow)
+          memcpy(tmp, top, bytesPerRow)
+          memcpy(top, bot, bytesPerRow)
+          memcpy(bot, tmp, bytesPerRow)
+        }
+      }
+    }
+
+    guard let provider = CGDataProvider(data: pixels as CFData) else { return nil }
+    guard let cgImage = CGImage(
+      width: width,
+      height: height,
+      bitsPerComponent: 8,
+      bitsPerPixel: 32,
+      bytesPerRow: bytesPerRow,
+      space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+      provider: provider,
+      decode: nil,
+      shouldInterpolate: false,
+      intent: .defaultIntent
+    ) else { return nil }
+
+    return NSImage(cgImage: cgImage, size: NSSize(width: width, height: height))
   }
 
   // MARK: - Core OpenGL Context and Pixel Format

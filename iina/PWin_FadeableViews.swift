@@ -126,7 +126,7 @@ extension PlayerWindowController {
   func showFadeableViews(thenRestartFadeTimer restartFadeTimer: Bool = true,
                          duration: CGFloat = Constants.AnimationDuration.standard,
                          forceShowTopBar: Bool = false) {
-    guard !player.disableUI && !isInInteractiveMode else { return }
+    guard !player.disableUI, !isInInteractiveMode, !liveText.isActive else { return }
 
     /// Default `showTopBarTrigger` setting to `.windowHover` if advanced settings not enabled
     let wantsTopBarVisible = forceShowTopBar || (!Preference.isAdvancedEnabled || Preference.enum(for: .showTopBarTrigger) == Preference.ShowTopBarTrigger.windowHover)

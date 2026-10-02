@@ -63,15 +63,14 @@ extension PlayerWindowController {
       pip.showOrHidePipOverlayView()
     }
 
-    if transition.outputLayout.isInteractiveMode || transition.outputLayout.isFullScreen {
-      // Disable; can cause problems in interactive mode. Set this ASAP because there is sometimes a small delay
-      window.isMovableByWindowBackground = false
-    }
-
     if let customTitleBar, transition.isEnteringFullScreen || transition.isTogglingLegacyStyle {
       // Workaround: for some reason, rebuildPanelConstraints() causes custom title bar's title text to lose centering. Just get rid of it now.
       customTitleBar.removeAndCleanUp()
       self.customTitleBar = nil
+    }
+
+    if transition.inputLayout.mode != transition.outputLayout.mode {
+      liveText.clearAnalysis()
     }
 
     // Skip for initial layout: not all panels have been init'd yet.
@@ -1244,6 +1243,13 @@ extension PlayerWindowController {
         transition.outputGeometry.mode.isWindowed || transition.isTogglingFullScreen || transition.isTogglingMusicMode {
       log.verbose(" Calling sendWindowScaleToMPV for output mode=\(currentLayout.mode)")
       sendWindowScaleToMPV(basedOn: transition.outputGeometry)
+    }
+
+    liveText.updateOverlayInsets()
+    
+    if transition.inputLayout.mode != transition.outputLayout.mode {
+      // Get it back after clearing analysis at start of transition
+      liveText.requestAnalysis()
     }
 
     // abort any queued screen updates

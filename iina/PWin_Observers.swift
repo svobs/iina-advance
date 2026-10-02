@@ -404,10 +404,12 @@ extension PlayerWindowController {
 //        if let btn = buttons.first(where: { $0.tag == Preference.ToolBarButton.liveText.rawValue }) {
 //          btn.image = newValue ? Preference.ToolBarButton.liveText.alternateImage() : Preference.ToolBarButton.liveText.image()
 //        }
-        if newValue {
-          liveText.requestAnalysis()
-        } else {
-          liveText.clearAnalysis()
+        animationPipeline.submitInstantTask { [self] in
+          if newValue {
+            liveText.requestAnalysis()
+          } else {
+            liveText.clearAnalysis()
+          }
         }
       }
     default:

@@ -111,7 +111,7 @@ extension PlayerWindowController {
     p.bottomBarTopOffsetFromCVTop.weaken()
     p.vpBtmOffsetFromTopOfBottomBar.weaken()
     p.bottomBarBtmOffsetFromVPBtm.weaken()
-    topBar.titleBarHeightConstraint.priority = .minimum
+    topBar.titleBarHeightConstraint?.priority = .minimum
     p.bottomBarBtmOffsetFromCVTop.weaken()
     p.cvBtmOffsetFromBottomBarBtm.weaken()
     p.vpBtmOffsetFromCVTop.weaken()
@@ -150,10 +150,10 @@ extension PlayerWindowController {
         titleHeight = stageLayout.titleBarHeight
       }
       log.verbose("Updating titleBarHeight=\(Int(titleHeight))")
-      topBar.titleBarHeightConstraint.animateToConstant(titleHeight)
+      topBar.titleBarHeightConstraint?.animateToConstant(titleHeight)
 
       // Not sure why when we make this `.required`, we get a bogus constraint violation
-      topBar.titleBarHeightConstraint.priorityInt = 999
+      topBar.titleBarHeightConstraint?.priorityInt = 999
     }
 
     let isAnimatingViewportOpen = transition.isOpeningViewport && !stage.isFinalStage  // Music Mode: opening video
@@ -738,6 +738,10 @@ extension PlayerWindowController {
     }
 
     possibleSubviews.append(viewportView)
+//    
+//    if let liveTextOverlayview = liveText.overlayView {
+//      possibleSubviews.append(liveTextOverlayview)
+//    }
 
     if layout.bottomBarPlacement == .insideViewport {
       possibleSubviews.append(bottomBar.view)

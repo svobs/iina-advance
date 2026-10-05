@@ -10,6 +10,7 @@
 		1326717E20852D0D000FA7E2 /* SubChooseViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1326718020852D0D000FA7E2 /* SubChooseViewController.xib */; };
 		3412DB8E2C2FC64C00BBC142 /* Equalizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412DB8D2C2FC64800BBC142 /* Equalizations.swift */; };
 		348F71962DE2A819006C587D /* MPVCommandWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F71952DE2A814006C587D /* MPVCommandWrappers.swift */; };
+		34C4D19C2FC58482006B829F /* LiveTextSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4D19B2FC58482006B829F /* LiveTextSupport.swift */; };
 		34F294C02C0B68B300F14962 /* Contribution.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 34F294BF2C0B68B300F14962 /* Contribution.rtf */; };
 		34F8B6F62C6C7B0100AE4B16 /* PrefPluginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F8B6F52C6C7B0100AE4B16 /* PrefPluginViewController.xib */; };
 		34FD798E291C76A600963EDE /* LogWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FD798D291C76A600963EDE /* LogWindowController.swift */; };
@@ -193,7 +194,6 @@
 		D13E807E2C026A2700537954 /* PWin_GeoSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13E807D2C026A2700537954 /* PWin_GeoSet.swift */; };
 		D140E81C285A0BEF00067094 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D140E81B285A0BEF00067094 /* LinkedList.swift */; };
 		D1491F882CEF544400DB0A06 /* SeekPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1491F872CEF543900DB0A06 /* SeekPreview.swift */; };
-    34C4D19C2FC58482006B829F /* LiveTextSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4D19B2FC58482006B829F /* LiveTextSupport.swift */; };
 		D14BC64F2FAD31990059E900 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5DC2FAD31990059E900 /* libarchive.13.dylib */; };
 		D14BC6502FAD31990059E900 /* libbrotlicommon.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5E52FAD31990059E900 /* libbrotlicommon.1.dylib */; };
 		D14BC6512FAD31990059E900 /* libgraphite2.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5FD2FAD31990059E900 /* libgraphite2.3.dylib */; };
@@ -409,6 +409,12 @@
 		D1D87E0629320F7C00737886 /* UndoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D87E0529320F7C00737886 /* UndoHelper.swift */; };
 		D1DC673128ED682100C419CB /* RemainingRemovalTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1DC673028ED682100C419CB /* RemainingRemovalTracker.swift */; };
 		D1E1446C29E3971C005DCEA3 /* IINAAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E1446B29E3971C005DCEA3 /* IINAAnimation.swift */; };
+		D1E2D4723071B365003CEDC2 /* libMoltenVK.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E2D4713071B365003CEDC2 /* libMoltenVK.dylib */; };
+		D1E2D4733071B402003CEDC2 /* libMoltenVK.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D1E2D4713071B365003CEDC2 /* libMoltenVK.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D1E2D47530724651003CEDC2 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E2D47430724651003CEDC2 /* Metal.framework */; };
+		D1E2D47730724D67003CEDC2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E2D47630724D67003CEDC2 /* IOKit.framework */; };
+		D1E2D47930724D8D003CEDC2 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1E2D47830724D8D003CEDC2 /* IOSurface.framework */; };
+		D1E2D47D30731DA7003CEDC2 /* MoltenVK_icd.json in Resources */ = {isa = PBXBuildFile; fileRef = D1E2D47B30731D9E003CEDC2 /* MoltenVK_icd.json */; };
 		D1E407B92CC1CA8B002A2F9B /* TableDragDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E407B82CC1CA73002A2F9B /* TableDragDelegate.swift */; };
 		D1E407BB2CC392F9002A2F9B /* PWin_FadeableViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E407BA2CC392EC002A2F9B /* PWin_FadeableViews.swift */; };
 		D1E407BD2CC39549002A2F9B /* PWin_Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E407BC2CC39544002A2F9B /* PWin_Input.swift */; };
@@ -651,6 +657,7 @@
 				D14BC71A2FAD322A0059E900 /* libgmp.10.dylib in Copy Dylibs */,
 				D14BC6C82FAD31AC0059E900 /* libzstd.1.5.7.dylib in Copy Dylibs */,
 				D14BC7122FAD32200059E900 /* libidn2.0.dylib in Copy Dylibs */,
+				D1E2D4733071B402003CEDC2 /* libMoltenVK.dylib in Copy Dylibs */,
 				D14BC7052FAD320C0059E900 /* libmpv.2.dylib in Copy Dylibs */,
 				D14BC71D2FAD322E0059E900 /* libfreetype.6.dylib in Copy Dylibs */,
 				D14BC70E2FAD32180059E900 /* libjxl_threads.0.11.dylib in Copy Dylibs */,
@@ -1136,7 +1143,7 @@
 		34B1FDAF2C70484A00FB93A4 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/PrefPluginViewController.strings; sourceTree = "<group>"; };
 		34B1FDB02C70484B00FB93A4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/PrefPluginViewController.strings; sourceTree = "<group>"; };
 		34B1FDB12C70484B00FB93A4 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/PrefPluginViewController.strings; sourceTree = "<group>"; };
-    34C4D19B2FC58482006B829F /* LiveTextSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTextSupport.swift; sourceTree = "<group>"; };
+		34C4D19B2FC58482006B829F /* LiveTextSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTextSupport.swift; sourceTree = "<group>"; };
 		34F294492C0A1BDE00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		34F2944B2C0A1BDE00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/QuickSettingViewController.strings; sourceTree = "<group>"; };
 		34F2944C2C0A1BDE00F14962 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/PlaylistViewController.strings; sourceTree = "<group>"; };
@@ -2018,8 +2025,8 @@
 		D192C7D72E8CF2B800CC537A /* OptionalConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalConstraint.swift; sourceTree = "<group>"; };
 		D19690CB2B56770F002B0458 /* MPVLogLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVLogLevel.swift; sourceTree = "<group>"; };
 		D19AF88328A3CBCE009B598C /* InputConfFileCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputConfFileCache.swift; sourceTree = "<group>"; };
-		D19CF1D63019489200B56A1F /* libglslang.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglslang.16.dylib; path = deps/lib/libglslang.16.dylib; sourceTree = "<group>"; };
-		D19CF1D8301948AE00B56A1F /* libSPIRV.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSPIRV.16.dylib; path = deps/lib/libSPIRV.16.dylib; sourceTree = "<group>"; };
+		D19CF1D63019489200B56A1F /* libglslang.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglslang.16.dylib; path = deps/lib/libglslang.16.dylib; sourceTree = "<absolute>"; };
+		D19CF1D8301948AE00B56A1F /* libSPIRV.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSPIRV.16.dylib; path = deps/lib/libSPIRV.16.dylib; sourceTree = "<absolute>"; };
 		D19CFD8F2E5885AB00746611 /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
 		D19CFD912E59076A00746611 /* PWin_PanelConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PWin_PanelConstraints.swift; sourceTree = "<group>"; };
 		D19F9DA928645C860054CC45 /* EditableTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableTableView.swift; sourceTree = "<group>"; };
@@ -2066,6 +2073,11 @@
 		D1D87E0529320F7C00737886 /* UndoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoHelper.swift; sourceTree = "<group>"; };
 		D1DC673028ED682100C419CB /* RemainingRemovalTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemainingRemovalTracker.swift; sourceTree = "<group>"; };
 		D1E1446B29E3971C005DCEA3 /* IINAAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IINAAnimation.swift; sourceTree = "<group>"; };
+		D1E2D4713071B365003CEDC2 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = deps/lib/libMoltenVK.dylib; sourceTree = "<absolute>"; };
+		D1E2D47430724651003CEDC2 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		D1E2D47630724D67003CEDC2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		D1E2D47830724D8D003CEDC2 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		D1E2D47B30731D9E003CEDC2 /* MoltenVK_icd.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MoltenVK_icd.json; sourceTree = "<group>"; };
 		D1E407B82CC1CA73002A2F9B /* TableDragDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableDragDelegate.swift; sourceTree = "<group>"; };
 		D1E407BA2CC392EC002A2F9B /* PWin_FadeableViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PWin_FadeableViews.swift; sourceTree = "<group>"; };
 		D1E407BC2CC39544002A2F9B /* PWin_Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PWin_Input.swift; sourceTree = "<group>"; };
@@ -2393,6 +2405,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1E2D47930724D8D003CEDC2 /* IOSurface.framework in Frameworks */,
+				D1E2D47730724D67003CEDC2 /* IOKit.framework in Frameworks */,
+				D1E2D47530724651003CEDC2 /* Metal.framework in Frameworks */,
 				496B19921E2968530035AF10 /* PIP.framework in Frameworks */,
 				8403CEA72007CBD400645516 /* MediaPlayer.framework in Frameworks */,
 				B4E4470125CE3F930069F06E /* Sparkle in Frameworks */,
@@ -2433,6 +2448,7 @@
 				D14BC68B2FAD31990059E900 /* libpcre2-8.0.dylib in Frameworks */,
 				D14BC68C2FAD31990059E900 /* libavfilter.11.dylib in Frameworks */,
 				D14BC68E2FAD31990059E900 /* libcrypto.3.dylib in Frameworks */,
+				D1E2D4723071B365003CEDC2 /* libMoltenVK.dylib in Frameworks */,
 				D14BC6902FAD31990059E900 /* libavformat.62.dylib in Frameworks */,
 				D14BC6922FAD31990059E900 /* libswresample.6.dylib in Frameworks */,
 				D14BC6942FAD31990059E900 /* libtheoradec.2.dylib in Frameworks */,
@@ -2643,6 +2659,9 @@
 		848290731D95978100C3C76C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D1E2D47830724D8D003CEDC2 /* IOSurface.framework */,
+				D1E2D47630724D67003CEDC2 /* IOKit.framework */,
+				D1E2D47430724651003CEDC2 /* Metal.framework */,
 				49542974216C34950058F680 /* Cocoa.framework */,
 				5196819929EC963F00B05D55 /* CoreDisplay.framework */,
 				8403CEA62007CBD300645516 /* MediaPlayer.framework */,
@@ -2685,6 +2704,7 @@
 				D14BC60A2FAD31990059E900 /* libluajit-5.1.2.dylib */,
 				D14BC60B2FAD31990059E900 /* liblz4.1.dylib */,
 				D14BC60D2FAD31990059E900 /* libmbedcrypto.16.dylib */,
+				D1E2D4713071B365003CEDC2 /* libMoltenVK.dylib */,
 				D14BC6102FAD31990059E900 /* libmpv.2.dylib */,
 				D14BC6112FAD31990059E900 /* libmujs.dylib */,
 				D14BC6132FAD31990059E900 /* libnettle.8.dylib */,
@@ -2731,6 +2751,7 @@
 				E393669923BDD1850070D626 /* IINA Advance.entitlements */,
 				C78987311E34EF170005769F /* InfoPlist.strings */,
 				84E745D71DFDE8C100588DED /* config */,
+				D1E2D47B30731D9E003CEDC2 /* MoltenVK_icd.json */,
 				84EB1EDB1D2F51D3004FA5A1 /* Assets.xcassets */,
 				84EB1EE01D2F51D3004FA5A1 /* Info.plist */,
 				845AC09E1E1AE6C10080B614 /* Localizable.strings */,
@@ -3299,7 +3320,7 @@
 				D1491F872CEF543900DB0A06 /* SeekPreview.swift */,
 				846352571EEEE11A0043F0CC /* ThumbnailPeekView.swift */,
 				D1D29A272ADE2E8000D8660F /* CustomTitleBar.swift */,
-        34C4D19B2FC58482006B829F /* LiveTextSupport.swift */,
+				34C4D19B2FC58482006B829F /* LiveTextSupport.swift */,
 			);
 			name = PlayerWindow;
 			sourceTree = "<group>";
@@ -3679,6 +3700,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1E2D47D30731DA7003CEDC2 /* MoltenVK_icd.json in Resources */,
 				8400D5E71E1AB337006785F5 /* PrefKeyBindingViewController.xib in Resources */,
 				E3DBD23F218EF4F100B3AFBF /* AboutWindowContributorAvatarItem.xib in Resources */,
 				C789872F1E34EF170005769F /* InfoPlist.strings in Resources */,
@@ -3904,9 +3926,9 @@
 				D140E81C285A0BEF00067094 /* LinkedList.swift in Sources */,
 				D1D87E02292B2AEE00737886 /* BiDictionary.swift in Sources */,
 				519872FF26879B9B00F84BCC /* AccessibilityPreferences.swift in Sources */,
-        34C4D19C2FC58482006B829F /* LiveTextSupport.swift in Sources */,
 				E34BC2AC2C27DAE900A94680 /* SettingsHelper.swift in Sources */,
 				E38EA5AC2F3088F300FB51CE /* SettingsLocalizationKeysUtils.swift in Sources */,
+				34C4D19C2FC58482006B829F /* LiveTextSupport.swift in Sources */,
 				842904E21F0EC01600478376 /* AutoFileMatcher.swift in Sources */,
 				D1C741122CB6503400522FA7 /* PWin_Enums.swift in Sources */,
 				D1FD62AE2CBF6FBA00FFCF21 /* NotificationHandler.swift in Sources */,
@@ -5526,7 +5548,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
-					"$(PROJECT_DIR)",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iina-advance";
@@ -5590,7 +5611,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
-					"$(PROJECT_DIR)",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iina-advance";
@@ -5674,7 +5694,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
-					"$(PROJECT_DIR)",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iina-advance";
@@ -5708,7 +5727,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
-					"$(PROJECT_DIR)",
 				);
 				OTHER_CODE_SIGN_FLAGS = "--deep --timestamp";
 				OTHER_SWIFT_FLAGS = "";

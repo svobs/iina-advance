@@ -4,7 +4,8 @@ SKIP_LIBS=false
 SKIP_EXECUTABLES=false
 SKIP_PLUGINS=false
 
-RELEASE_DOWNLOAD_PATH="https://github.com/svobs/iina-advance/releases/download/v1.6/IINA-Advance-1.6.zip"
+DEPS_DOWNLOAD_PATH="https://github.com/svobs/iina-advance/releases/download/v1.6.1/iinaa-deps-1.7.zip"
+DEPS_IS_APP=false
 
 # Colors for output
 RED='\033[0;31m'
@@ -93,7 +94,7 @@ LIB_PATH="$DEPS_PATH/lib"
 EXEC_PATH="$DEPS_PATH/executable"
 PLUGIN_PATH="$DEPS_PATH/plugins"
 
-export RELEASE_DOWNLOAD_PATH
+export DEPS_DOWNLOAD_PATH
 export LIB_PATH
 export YELLOW
 export GREEN
@@ -104,11 +105,15 @@ if [[ ! -d "$DEPS_PATH" ]]; then
   exit 1
 fi
 
-EXTRACTED_DIR_PATH="$DEPS_PATH/IINA Advance.app"
+  if [[ "$DEPS_IS_APP" == true ]]; then
+    EXTRACTED_DIR_PATH="$DEPS_PATH/IINA Advance.app"
+  else
+    EXTRACTED_DIR_PATH="$DEPS_PATH/iinaa-deps-1.7"
+  fi
 rm -rf "$EXTRACTED_DIR_PATH"
 
-ARCHIVE_NAME=$(basename "$RELEASE_DOWNLOAD_PATH")
-curl -L -o "${DEPS_PATH}/${ARCHIVE_NAME}" "${RELEASE_DOWNLOAD_PATH}" && echo -e "${GREEN}Downloaded ${ARCHIVE_NAME}${NC}"
+ARCHIVE_NAME=$(basename "$DEPS_DOWNLOAD_PATH")
+curl -L -o "${DEPS_PATH}/${ARCHIVE_NAME}" "${DEPS_DOWNLOAD_PATH}" && echo -e "${GREEN}Downloaded ${ARCHIVE_NAME}${NC}"
 # Use -o to overwrite existing files without prompting
 unzip "${DEPS_PATH}/${ARCHIVE_NAME}" -d "$DEPS_PATH" -x "__MACOSX/*" && echo -e "${GREEN}Extracted ${ARCHIVE_NAME}${NC}"
 
@@ -117,17 +122,25 @@ if [[ "$SKIP_LIBS" == true ]]; then
 else
   rm -rf "$LIB_PATH"
 
-  rm -r "$EXTRACTED_DIR_PATH/Contents/Frameworks/Sparkle.framework"
-  mv "$EXTRACTED_DIR_PATH/Contents/Frameworks" "$LIB_PATH" && echo -e "${GREEN}Moved dylibs to $LIB_PATH${NC}"
+  if [[ "$DEPS_IS_APP" == true ]]; then
+    rm -r "$EXTRACTED_DIR_PATH/Contents/Frameworks/Sparkle.framework"
+    mv "$EXTRACTED_DIR_PATH/Contents/Frameworks" "$LIB_PATH" && echo -e "${GREEN}Moved dylibs to $LIB_PATH${NC}"
+  else
+    mv "$EXTRACTED_DIR_PATH/lib" "$LIB_PATH" && echo -e "${GREEN}Moved dylibs to $LIB_PATH${NC}"
+  fi
 fi
 
 if [[ "$SKIP_EXECUTABLES" == true ]]; then
   echo -e "${YELLOW}Skipping executable downloads.${NC}"
 else
   rm -rf "$EXEC_PATH"
-  rm "$EXTRACTED_DIR_PATH/Contents/MacOS/iina"*
-  rm "$EXTRACTED_DIR_PATH/Contents/MacOS/IINA"*
-  mv "$EXTRACTED_DIR_PATH/Contents/MacOS" "$EXEC_PATH" && echo -e "${GREEN}Moved executable to $EXEC_PATH${NC}"
+  if [[ "$DEPS_IS_APP" == true ]]; then
+    rm "$EXTRACTED_DIR_PATH/Contents/MacOS/iina"*
+    rm "$EXTRACTED_DIR_PATH/Contents/MacOS/IINA"*
+    mv "$EXTRACTED_DIR_PATH/Contents/MacOS" "$EXEC_PATH" && echo -e "${GREEN}Moved executable to $EXEC_PATH${NC}"
+  else
+    mv "$EXTRACTED_DIR_PATH/executable" "$EXEC_PATH" && echo -e "${GREEN}Moved executable to $EXEC_PATH${NC}"
+  fi
   chmod +x "$EXEC_PATH"/* 2>/dev/null || true
 fi
 

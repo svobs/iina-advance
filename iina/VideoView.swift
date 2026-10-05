@@ -28,7 +28,7 @@ class VideoView: NSView {
 
 #if USE_GPU_NEXT
   /// The Metal layer, if using MoltenVK with proper init
-  var metalLayer: CAMetalLayer? { layer as? CAMetalLayer }
+  var metalLayer: MetalVideoLayer? { layer as? MetalVideoLayer }
 #else
   /// The GLVideoLayer layer, if using OpenGL with proper init
   var glLayer: GLVideoLayer? { layer as? GLVideoLayer }

@@ -80,7 +80,12 @@ extension LiveTextController: ImageAnalysisOverlayViewDelegate {
     analysisTask = Task { [weak self] in
       guard let self else { return }
       do {
-        guard let image = await videoView.glLayer?.captureSnapshot() else {
+#if USE_GPU_NEXT
+        let image: NSImage? = await videoView.metalLayer?.captureSnapshot()
+#else
+        let image: NSImage? = await videoView.glLayer?.captureSnapshot()
+#endif
+        guard let image else {
           liveTextLog("Failed to capture frame for image analysis", level: .warning)
           return
         }

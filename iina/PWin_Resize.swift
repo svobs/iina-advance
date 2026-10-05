@@ -32,14 +32,18 @@ extension PlayerWindowController {
     // This way the asynchrounous unprotected updates in `windowWillResize` will (hopefully) not interfere with other
     // animations.
     animationPipeline.enableRunning = false
+#if !USE_GPU_NEXT
     videoView.glLayer?.inLiveResize = true
+#endif
     liveText.clearAnalysis()
     videoView.displayActive()
   }
 
   func windowDidEndLiveResize(_ notification: Notification) {
     log.trace("WndDidEndLiveResize")
+#if !USE_GPU_NEXT
     videoView.glLayer?.inLiveResize = false
+#endif
     liveText.requestAnalysis()
     // Kick-start the animation pipeline:
     animationPipeline.enableRunning = true
@@ -72,7 +76,7 @@ extension PlayerWindowController {
     }
     // Need this to patch hole
     videoView.displayActive()
-    
+
     guard !isInWindowResizeDenialPeriod() else {
       log.verbose("[WndWillResize] Denying req=\(requestedSize): still inside denial period. Will stay at \(window.frame.size)")
       pendingResizeForScreenChange = false  // should be safe to reset this now

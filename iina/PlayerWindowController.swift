@@ -38,8 +38,7 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
 
   /// The music player panel.
   ///
-  /// This is only shown while in music mode, and will be a subview of `bottomBar.view`. It contains a "mini" OSC, and if configured, the
-  /// playlist.
+  /// This is only shown while in music mode, and will be a subview of `bottomBar.view`. It contains a "mini" OSC, and if configured, the  playlist.
   var miniPlayer: MiniPlayerViewController!
 
   /** The control view for interactive mode. */
@@ -123,9 +122,11 @@ final class PlayerWindowController: WindowController, NSWindowDelegate {
   var isLiveResizingWidth: Bool? = nil
   var isMagnifying = false {
     didSet {
+#if !USE_GPU_NEXT
       if oldValue != isMagnifying {
         videoView.glLayer?.inLiveResize = !isMagnifying
       }
+#endif
     }
   }
   /// If there is an active video-zoom, we need to know if it is the result of a previous pinch gesture, or done through some external mechanism.

@@ -99,7 +99,6 @@
               withSsh = false; # SFTP protocol support
               withVidStab = false; # Video stabilization filter, requires Linux
               withVmaf = false; # Video quality measurement tool, not useful for IINA
-              withVulkan = false; # IINA can't use gpu-next yet
               withZmq = false; # ZeroMQ messaging library for FFmpeg streaming; not used by mpv or IINA
               withZvbi = false; # Teletext support, not useful for IINA
 
@@ -146,7 +145,7 @@
               openalSupport = false;
               rubberbandSupport = true;
               vapoursynthSupport = false;
-              vulkanSupport = false;
+              vulkanSupport = true;
               zimgSupport = true;
 
               # Disable Linux-only bits
@@ -164,6 +163,13 @@
             }).overrideAttrs
               (
                 finalAttrs: previousAttrs: {
+                /*version = "git-unstable";
+                src = pkgs.fetchFromGitHub {
+                  owner = "sparky3387";
+                  repo = "mpv";
+                  rev = "master";
+                  hash = "sha256-LAicqT7R832vIFULi+cyDi+XHKNK+03p8ncf5GHVEh4=";
+                };*/
                   # Disable the building of man pages to speed up the build.
                   mesonFlags = previousAttrs.mesonFlags ++ [
                     "-Dmanpage-build=disabled"
@@ -282,6 +288,7 @@
                   pkgs.libwebp # WebP image de/encoder
                   pkgs.luajit # Lua Just-In-Time compiler. Required by mpv
                   pkgs.lz4 # LZ4 compression. Used by libarchive
+                  pkgs.moltenvk # Vulkan support for macOS. Required by libplacebo
                   pkgs.mujs # JavaScript engine. Needed for mpv's JS support
                   pkgs.nettle # GnuTLS dependency (cryptographic algorithms)
                   pkgs.pcre2 # (Per-compatible) Regular expression pattern matching
@@ -398,7 +405,7 @@
                 # reproducibility, as the same git revision can be associated with an arbitrary number of branches.
                 # Just use a placeholder for now:
                 git_branch="<nix-build>"
-                echo "Git bramch: $git_branch, revision: $git_rev"
+                echo "Git branch: $git_branch, revision: $git_rev"
                 export HOME=$PWD/.home
                 export CFFIXED_USER_HOME="$HOME"
                 export __XPC_CFFIXED_USER_HOME="$HOME"

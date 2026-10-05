@@ -205,6 +205,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, SPUUpdaterDelegate {
       log.debug("Derived mpv properties from args: \(cli.mpvArguments)")
     }
 
+    let icdPath = Bundle.main.resourcePath?.appending("/MoltenVK_icd.json")
+    guard let icdPath, FileManager.default.fileExists(atPath: icdPath) else {
+      Logger.fatal("Failed to find MoltenVK_icd.json!")
+    }
+    if (setenv("VK_ICD_FILENAMES", icdPath, 1) != 0) {
+      Logger.fatal("Failed to set VK_ICD_FILENAMES")
+    }
+
     // Start asynchronously gathering and caching information about the hardware decoding
     // capabilities of this Mac.
     HardwareDecodeCapabilities.shared.checkCapabilities()

@@ -552,8 +552,7 @@ extension MPVController {
         chkErr(setString(MPVOption.Window.keepaspect, no, level: .verbose))
       }
 
-      /// Targets > iina > search for "Other Swift Flags" (under "Swift Compiler: Custom Flags"):
-      /// Add `-DUSE_GPU_NEXT`
+      /// Targets > iina > search for "Other Swift Flags" (under "Swift Compiler: Custom Flags"), add `-DUSE_GPU_NEXT`.
 #if USE_GPU_NEXT
       log.verbose("Using gpu-next + Vulkan rendering")
       let widPtr = UnsafeMutablePointer<Int64>.allocate(capacity: 1)
@@ -582,12 +581,14 @@ extension MPVController {
       }
     }
 
+#if !USE_GPU_NEXT
     if player.isInteractivePlayer {
       // `force-window=immediate` makes audio-only subtitle rendering work with `vo=libmpv`,
       // but setting it before render initialization can race the VO thread against IINA's
       // render context setup. Switch to `immediate` only after the render context exists.
       setString(MPVOption.Window.forceWindow, "immediate", level: .verbose)
     }
+#endif
 
     player.updateCursorAutohideState()
   }

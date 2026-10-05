@@ -31,4 +31,10 @@ class MetalVideoLayer: CAMetalLayer {
     pixelFormat = .rgba16Float
     backgroundColor = NSColor.black.cgColor
   }
+
+  /// Capture the next rendered frame as an `NSImage`. Forces a redraw so this works while paused.
+  func captureSnapshot() async -> NSImage? {
+    // TODO: implement this
+    return nil
+  }
 }

@@ -135,6 +135,10 @@ extension VideoView {
     if hasTimeout {
       displayIdleStartTime = CFAbsoluteTimeGetCurrent()
     }
+#if !USE_GPU_NEXT
+    // Need to explicitly trigger redraw
+    layer?.needsDisplay()
+#endif
   }
 
   /// Reduces energy consumption when the display link does not need to be running.

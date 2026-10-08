@@ -37,6 +37,7 @@
               find "$app" -type f -print0 | xargs -0 chmod u+rw
               find "$app/Contents/MacOS" -type f -perm -111 -print0 | xargs -0 chmod u+rw
 
+              /usr/bin/codesign --remove-signature "$app"
               /usr/bin/codesign --force --deep --sign - "$app"
             '';
           };
@@ -51,8 +52,9 @@
 
           # Pull system's xcode in
           xcode = pkgs.runCommand "system-xcode" { } ''
+            export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
             mkdir -p "$out/bin"
-            ln -sf /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild "$out/bin/xcodebuild"
+            ln -sf "$DEVELOPER_DIR/usr/bin/xcodebuild" "$out/bin/xcodebuild"
           '';
 
           ### Package Overrides ###
@@ -93,7 +95,6 @@
               withOpenapv = false; # APV video encoder, not very useful for IINA
               withOpenmpt = false; # Tracker music files decoder (various formats), not included in IINA historically
               withOpus = false; # Opus audio codec, not included in IINA historically
-              withPlacebo = true;
               withRist = true; # RIST protocol support
               withSrt = false; # Secure Reliable Transport (SRT) protocol, not useful for IINA
               withSsh = false; # SFTP protocol support
@@ -163,13 +164,15 @@
             }).overrideAttrs
               (
                 finalAttrs: previousAttrs: {
-                /*version = "git-unstable";
-                src = pkgs.fetchFromGitHub {
-                  owner = "sparky3387";
-                  repo = "mpv";
-                  rev = "master";
-                  hash = "sha256-LAicqT7R832vIFULi+cyDi+XHKNK+03p8ncf5GHVEh4=";
-                };*/
+                  /*
+                    version = "git-unstable";
+                    src = pkgs.fetchFromGitHub {
+                      owner = "sparky3387";
+                      repo = "mpv";
+                      rev = "master";
+                      hash = "sha256-LAicqT7R832vIFULi+cyDi+XHKNK+03p8ncf5GHVEh4=";
+                    };
+                  */
                   # Disable the building of man pages to speed up the build.
                   mesonFlags = previousAttrs.mesonFlags ++ [
                     "-Dmanpage-build=disabled"
@@ -340,7 +343,7 @@
               export CFFIXED_USER_HOME="$HOME"
               export __XPC_CFFIXED_USER_HOME="$HOME"
               export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"
-              export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+              export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
 
               APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
               export PATH="${pkgs.findutils}/bin:$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
@@ -348,10 +351,15 @@
               export TOOLCHAINS=XcodeDefault
               export SDKROOT=macosx
 
-              if [ "$systemName" == "aarch64-darwin" ]; then
+              echo "[${systemName}] 🔧 Setting up SPM dependencies"
+              if [ ${systemName} == "aarch64-darwin" ]; then
+                echo "[${systemName}] System is arm64, building for arm64 (SPM)"
                 export XCODE_BUILD_DESTINATION='platform=macOS,arch=arm64'
+                ARCH="arm64"
               else
+                echo "[${systemName}] System is x86_64, building for x86_64 (SPM)"
                 export XCODE_BUILD_DESTINATION='platform=macOS,arch=x86_64'
+                ARCH="x86_64"
               fi
 
               mkdir -p .spm .spm-cache build
@@ -367,8 +375,7 @@
                 -disablePackageRepositoryCache \
                 -IDEPackageSupportDisableManifestSandbox=YES \
                 -IDEPackageSupportDisablePluginExecutionSandbox=YES \
-                ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
-                SWIFT_ENABLE_EXPLICIT_MODULES=NO
+                ARCHS=$ARCH ONLY_ACTIVE_ARCH=YES
             '';
 
             # Copy everything — keep full structure (SPM state, caches, workspace, etc.)
@@ -379,27 +386,96 @@
           }; # END spmDeps
 
           packages = {
-
-            iina = pkgs.stdenv.mkDerivation {
-              pname = "iina";
+            # Generates deps/lib & deps/executable (for a single architecture)l
+            deps = pkgs.stdenv.mkDerivation {
+              pname = "iina-single-arch-deps";
               version = "${self.shortRev or self.dirtyShortRev}";
-
-              src = pkgs.nix-gitignore.gitignoreSource [ "flake.nix" "flake.lock" ] ./../..;
-
-              strictDeps = true;
+              src = null;
+              dontUnpack = true;
+              dontFixup = true;
 
               nativeBuildInputs = [
+                libTool
                 pkgs.coreutils
                 pkgs.findutils
-                xcode
-                libTool
                 pkgs.rsync
-                pkgs.gnused
                 spmDeps
               ];
 
               buildPhase = ''
-                echo "[${systemName}] 🔧 Setting up build environment for ${appName}"
+                echo "[${systemName}] 📦 Copying external deps"
+                mkdir -p deps
+
+                # Be careful to rename the directory to "lib" when copying
+                cp -RLv "${depsLib}/" deps/lib
+                mkdir -p deps/executable
+
+                echo "[${systemName}] 📦 Copying SPM deps"
+                rsync -a "${spmDeps}/" ./
+                chmod -R u+rwx,g+rx,o+rx .
+
+                echo "[${systemName}] 📦 Canonicalizing libs"
+                ${libTool}/bin/iina-lib-tool --canonicalize --prune "./deps/lib" "./deps/executable"
+              '';
+
+              installPhase = ''
+                mkdir -p $out
+                cp -R . "$out/"
+              '';
+
+            }; # END iina
+
+            # --- IINA Universal Application ---
+            iina-universal = pkgs.stdenv.mkDerivation {
+              pname = "iina-universal";
+              version = "${self.shortRev or self.dirtyShortRev}";
+              src = pkgs.nix-gitignore.gitignoreSource [ "other\ndeps\n" ] ./../..;
+              strictDeps = true;
+              dontFixup = true;
+
+              nativeBuildInputs = [
+                libTool
+                pkgs.rsync
+                pkgs.coreutils
+                pkgs.findutils
+                pkgs.gnused
+                xcode
+              ];
+
+              buildPhase = ''
+                echo "📦 Copying header files"
+                mkdir -p deps
+                # Make sure to name this directory properly when copying
+                cp -vRL "${depsInclude}" deps/include
+
+                export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
+                APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+                # For nixos-26.05+: need to explicitly use the GNU findutils version of find, as the system find (from macOS) does not support -print0
+                # and will fail with "find: -print0: unknown primary or operator" in fixup phase
+                export PATH="${pkgs.findutils}/bin:$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
+
+                echo "📦 Combining universal libs"
+                # Merge each lib in archroot1 with its counterpart in archroot0, creating universal binaries in archroot0
+                archroot0=.
+                archroot1="${builtins.elemAt self.singleArchDeps 1}/"
+
+                ${pkgs.rsync}/bin/rsync -a "${builtins.elemAt self.singleArchDeps 0}/" "$archroot0/"
+                chmod -R u+w "$archroot0"
+                echo "📦 Copying libs"
+
+                ${libTool}/bin/iina-lib-tool --canonicalize --merge-architectures "./deps/lib" "./deps/executable" \
+                  --archroot0 "$archroot0" --archroot1 "$archroot1"
+
+                # Rewrite SwiftPM workspace-state.json to fix absolute paths
+                if [ -f .spm/workspace-state.json ]; then
+                  old_prefix=$(grep -Eo "/nix/var/nix/builds/nix-[^/]+/source" .spm/workspace-state.json | head -n1)
+                  echo "Patching workspace-state.json: replacing $old_prefix → $PWD"
+                  sed -i -E "s|$old_prefix|$PWD|g" .spm/workspace-state.json
+                fi
+
+                echo "🔧 Setting up build environment for ${appName}"
+                chmod -R u+rwx,g+rx,o+rx .
+
                 git_rev="${self.rev or self.dirtyRev}"
                 # Nix flakes cannot currently access branch info. Doing so may violate the stated goal of maximum
                 # reproducibility, as the same git revision can be associated with an arbitrary number of branches.
@@ -410,18 +486,8 @@
                 export CFFIXED_USER_HOME="$HOME"
                 export __XPC_CFFIXED_USER_HOME="$HOME"
                 export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"
-                export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-
-                APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
-                # For nixos-26.05+: need to explicitly use the GNU findutils version of find, as the system find (from macOS) does not support -print0
-                # and will fail with "find: -print0: unknown primary or operator" in fixup phase
-                export PATH="${pkgs.findutils}/bin:$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
-
-                if [ "$systemName" == "aarch64-darwin" ]; then
-                  export XCODE_BUILD_DESTINATION='platform=macOS,arch=arm64'
-                else
-                  export XCODE_BUILD_DESTINATION='platform=macOS,arch=x86_64'
-                fi
+                export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
+                export XCODE_BUILD_DESTINATION='platform=macOS'
 
                 unset CC CXX LD AR RANLIB NM STRIP OBJCOPY \
                   CFLAGS CXXFLAGS LDFLAGS SDKROOT CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH LIBRARY_PATH \
@@ -431,38 +497,17 @@
                 export SDKROOT=macosx
 
                 echo "Using $TOOLCHAINS toolchain"
-                echo "Using $SDKROOT sdk"
+                echo "Using SDK: $SDKROOT"
+                PLUGINS_DIR="$DEVELOPER_DIR/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins"
 
-                echo "[${systemName}] 📦 Copying external deps"
-                mkdir -p deps
-                rm -rf deps/include deps/lib
-
-                mkdir -p deps/include deps/lib deps/executable
-                cp -RL "${depsInclude}/" deps/include
-                cp -RLv "${depsLib}/" deps/lib
-
-                echo "[${systemName}] 📦 Copying SPM deps"
-                rsync -a "${spmDeps}/" ./
-                chmod -R u+rwx,g+rx,o+rx .
-
-                echo "[${systemName}] 📦 Canonicalizing libs"
-                ${libTool}/bin/iina-lib-tool --canonicalize --prune "./deps/lib" "./deps/executable"
-
-                # Rewrite SwiftPM workspace-state.json to fix absolute paths
-                if [ -f .spm/workspace-state.json ]; then
-                  old_prefix=$(grep -Eo "/nix/var/nix/builds/nix-[^/]+/source" .spm/workspace-state.json | head -n1)
-                  echo "Patching workspace-state.json: replacing $old_prefix → $PWD"
-                  sed -i -E "s|$old_prefix|$PWD|g" .spm/workspace-state.json
-                fi
-
-                # Build IINA Advance (single-arch)
-                echo "[${systemName}] 🔨 Building ${appName}"
+                # Build IINA Advance (universal)
+                echo "🔨 Building ${appName}"
                 xcodebuild \
                   -workspace iina.xcodeproj/project.xcworkspace \
                   -scheme iina \
                   -destination "$XCODE_BUILD_DESTINATION" \
                   -configuration Release \
-                  -sdk macosx \
+                  -sdk $SDKROOT \
                   -skipPackagePluginValidation \
                   -derivedDataPath "$PWD/build" \
                   -clonedSourcePackagesDirPath "$PWD/.spm" \
@@ -472,32 +517,18 @@
                   -onlyUsePackageVersionsFromResolvedFile \
                   -IDEPackageSupportDisableManifestSandbox=YES \
                   -IDEPackageSupportDisablePluginExecutionSandbox=YES \
-                  ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
-                  SWIFT_ENABLE_EXPLICIT_MODULES=NO \
-                  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
-              '';
+                  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+                  OTHER_SWIFT_FLAGS="$OTHER_SWIFT_FLAGS -enable-experimental-feature Lifetimes -load-plugin-library $PLUGINS_DIR/libAppIntentsMacros.dylib -load-plugin-library $PLUGINS_DIR/libFinanceMacros.dylib -load-plugin-library $PLUGINS_DIR/libFoundationMacros.dylib -load-plugin-library $PLUGINS_DIR/libFoundationModelsMacros.dylib -load-plugin-library $PLUGINS_DIR/libMMIOMacros.dylib -load-plugin-library $PLUGINS_DIR/libObservationMacros.dylib -load-plugin-library $PLUGINS_DIR/libPreviewsMacros.dylib -load-plugin-library $PLUGINS_DIR/libStateReportingMacros.dylib -load-plugin-library $PLUGINS_DIR/libSwiftMacros.dylib -load-plugin-library $PLUGINS_DIR/libSwiftUIMacros.dylib -load-plugin-library $PLUGINS_DIR/libSwiftDataMacros.dylib -load-plugin-library $PLUGINS_DIR/libStateReportingMacros.dylib"
+                # Workaround for Xcode Tools bug with MacOS 27 SDK: add explicit `-load-plugin-library`s.
+                # See https://github.com/drumih/turbo-fieldfare/issues/185
 
-              installPhase = ''
                 mkdir -p "$out/Applications"
                 cp -R "build/Build/Products/Release/${appName}.app" "$out/Applications/"
-              '';
 
-              preFixup = ''
-                export PATH=${pkgs.coreutils}/bin:${pkgs.findutils}/bin:$PATH
-              '';
-
-              postFixup = ''
                 app="$out/Applications/${appName}.app"
-                macos="$app/Contents/MacOS"
-                frameworks="$app/Contents/Frameworks"
                 plist="$app/Contents/Info.plist"
 
-                mkdir -p "$frameworks"
-
-                echo "[${systemName}] 📦 Deep-bundling dynamic dependencies into ${appName}.app"
-                ${libTool}/bin/iina-lib-tool --canonicalize "$frameworks" "$macos"
-
-                echo "[${systemName}] ✏️ Setting up environment variables"
+                echo "✏️ Setting up environment variables"
 
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict'                                       "$plist" 2>/dev/null || true
                 /usr/libexec/PlistBuddy -c 'Add :LSEnvironment:IINA_EXECUTABLE string "@executable_path"'  "$plist" 2>/dev/null || true
@@ -505,56 +536,18 @@
                 # Overwrite Git info from build (which were set to placeholders because Xcode script could not determine them at build time)
                 /usr/libexec/PlistBuddy -c "Set :com.iina-advance.build.commit        $git_rev"            "$plist"
                 /usr/libexec/PlistBuddy -c "Set :com.iina-advance.build.branch        $git_branch"         "$plist"
-              '';
-            }; # END iina
-
-            # --- IINA Universal ---
-            iina-universal = pkgs.stdenv.mkDerivation {
-              pname = "iina-universal";
-              version = "${self.shortRev or self.dirtyShortRev}";
-
-              nativeBuildInputs = [
-                libTool
-                pkgs.rsync
-                pkgs.coreutils
-                pkgs.findutils
-              ];
-
-              buildCommand = ''
-                app="$out/Applications/${appName}.app"
-                frameworks="$app/Contents/Frameworks"
-
-                export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-                APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
-                export PATH="$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
-
-                echo "📦 Combining universal ${appName}.app"
-
-                mkdir -p "$out/Applications"
-                # copy the contents of the source app into the target dir
-                ${pkgs.rsync}/bin/rsync -a "${builtins.elemAt self.archApps 0}/Applications/${appName}.app/" "$app/"
-                chmod -R u+w "$app"
-
-                archroot0="${builtins.elemAt self.archApps 0}/Applications/${appName}.app"
-                archroot1="${builtins.elemAt self.archApps 1}/Applications/${appName}.app"
-
-                ${libTool}/bin/iina-lib-tool --merge-architectures --canonicalize "$frameworks" "$app/Contents/MacOS" \
-                  --archroot0 "$archroot0" --archroot1 "$archroot1"
 
                 echo "🔏 Re-signing ${appName}.app..."
                 ${resign}/bin/iina-resign "$app"
 
-                echo "[${systemName}] 📦 Copying include dir"
-                mkdir -p "$out/include"
-                cp -RL ${depsInclude}/. $out/include
+                echo "📦 Copying includes to output dir"
+                mkdir -p "$out"
+                cp -RL deps/include $out/include
 
                 app_real=$(realpath "$app" 2>/dev/null || echo "$app")
                 echo "✅✅ Done! Universal ${appName}.app is ready at $app_real"
               '';
 
-              preFixup = ''
-                export PATH=${pkgs.coreutils}/bin:${pkgs.findutils}/bin:$PATH
-              '';
             }; # END iina-universal
 
             default = packages.iina-universal;
@@ -568,6 +561,6 @@
       inherit systemNames;
       formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt-tree;
       packages = nixpkgs.lib.genAttrs systemNames (systemName: (perSystemPackages.${systemName}));
-      archApps = builtins.map (systemName: self.packages.${systemName}.iina) systemNames;
+      singleArchDeps = builtins.map (systemName: self.packages.${systemName}.deps) systemNames;
     };
 }

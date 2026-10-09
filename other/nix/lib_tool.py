@@ -92,10 +92,11 @@ IDS_TO_IGNORE: set[str] = {
 # For a list of system-provided libs, see:
 # `ls /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib`
 # This is a dict of {base_id -> (compatibility_version, lib_path)}
+# (Use compat_version == '' to signify ANY version)
 USR_LIB_ITEMS: dict[str, tuple[str, str]] = {
   'libbz2': ('2', '/usr/lib/libbz2.dylib'),
   'libcharset': ('1', '/usr/lib/libcharset.1.dylib'),
-  'libexpat': ('14', '/usr/lib/libexpat.1.dylib'),
+  'libexpat': ('', '/usr/lib/libexpat.1.dylib'),
   'libffi': ('9', '/usr/lib/libffi.dylib'),
   'libiconv': ('7', '/usr/lib/libiconv.2.dylib'),
   'liblzma': ('14', '/usr/lib/liblzma.5.dylib'),
@@ -399,7 +400,7 @@ class LibMetaDB:
         subprocess.run(['lipo', '-create', '-arch', 'arm64', arm64, '-arch', 'x86_64', x86_64, '-output', tmpfile])
 
       dst_path = os.path.join(dst_dir, basename)
-      shutil.copy2(tmpfile, dst_path)
+      shutil.move(tmpfile, dst_path)
 
     # Merge lib dirs
     libs0 = os.path.join(archroot0, DEPS_LIB_RELPATH)
@@ -573,7 +574,7 @@ class CanonicalNameDB:
       # First check for built-in system libraries which are also provided by Nix, but we want to point them to the
       # system versions instead of the Nix versions to avoid packaging issues & to save space.
       usr_lib_entry = USR_LIB_ITEMS.get(base_id, None)
-      if usr_lib_entry and compat_version == usr_lib_entry[0]:
+      if usr_lib_entry and (usr_lib_entry[0] == '' or compat_version == usr_lib_entry[0]):
         replacement_path = usr_lib_entry[1]
       else:
         sub_canonical_name = self.__get_canonical_name(base_id, compat_version)

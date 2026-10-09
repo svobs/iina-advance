@@ -105,17 +105,22 @@ if [[ ! -d "$DEPS_PATH" ]]; then
   exit 1
 fi
 
-  if [[ "$DEPS_IS_APP" == true ]]; then
-    EXTRACTED_DIR_PATH="$DEPS_PATH/IINA Advance.app"
-  else
-    EXTRACTED_DIR_PATH="$DEPS_PATH/iinaa-deps-1.7"
-  fi
+ARCHIVE_NAME=$(basename "$DEPS_DOWNLOAD_PATH")
+
+if [[ "$DEPS_IS_APP" == true ]]; then
+  EXTRACTED_DIR_PATH="$DEPS_PATH/IINA Advance.app"
+else
+  EXTRACTED_DIR_PATH="$DEPS_PATH/${ARCHIVE_NAME%.zip}"
+fi
 rm -rf "$EXTRACTED_DIR_PATH"
 
-ARCHIVE_NAME=$(basename "$DEPS_DOWNLOAD_PATH")
 curl -L -o "${DEPS_PATH}/${ARCHIVE_NAME}" "${DEPS_DOWNLOAD_PATH}" && echo -e "${GREEN}Downloaded ${ARCHIVE_NAME}${NC}"
 # Use -o to overwrite existing files without prompting
-unzip "${DEPS_PATH}/${ARCHIVE_NAME}" -d "$DEPS_PATH" -x "__MACOSX/*" && echo -e "${GREEN}Extracted ${ARCHIVE_NAME}${NC}"
+if [[ "$DEPS_IS_APP" == true ]]; then
+  unzip "${DEPS_PATH}/${ARCHIVE_NAME}" -d "$DEPS_PATH" -x "__MACOSX/*" && echo -e "${GREEN}Extracted ${ARCHIVE_NAME}${NC}"
+else
+  unzip "${DEPS_PATH}/${ARCHIVE_NAME}" -d "$DEPS_PATH" && echo -e "${GREEN}Extracted ${ARCHIVE_NAME}${NC}"
+fi
 
 if [[ "$SKIP_LIBS" == true ]]; then
   echo -e "${YELLOW}Skipping lib downloads.${NC}"
@@ -128,6 +133,7 @@ else
   else
     mv "$EXTRACTED_DIR_PATH/lib" "$LIB_PATH" && echo -e "${GREEN}Moved dylibs to $LIB_PATH${NC}"
   fi
+
 fi
 
 if [[ "$SKIP_EXECUTABLES" == true ]]; then

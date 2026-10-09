@@ -59,35 +59,149 @@
 
           ### Package Overrides ###
 
+          # Upgrade from 1.5.3 to 1.5.4.
+          dav1d = pkgs.dav1d.overrideAttrs (
+            finalAttrs: previousAttrs: {
+              version = "1.5.4";
+              src = pkgs.fetchFromGitHub {
+                owner = "videolan";
+                repo = "dav1d";
+                rev = finalAttrs.version;
+                hash = "sha256-L3a9MmPWJlxmRa19glWDLvkXHev5oiM5/fxtKOBPMxI=";
+              };
+            }
+          );
+
+          # Upgrade from 2.17.1 to 2.18.3.
+          fontconfig = pkgs.fontconfig.overrideAttrs (
+            finalAttrs: previousAttrs: {
+              version = "2.18.3";
+              src = pkgs.fetchurl {
+                url = "https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/${finalAttrs.version}/fontconfig-${finalAttrs.version}.tar.xz";
+                hash = "sha256-T3tVSjjN94wDP2ZsiHHzdJ4UoJT2Wgf2MMke0LQ9NeM=";
+              };
+              doCheck = false; # Skip tests to speed up build
+            }
+          );
+
+          # Upgrade from 0.17.4 to 0.17.5.
+          libass =
+            (pkgs.libass.override {
+              fontconfigSupport = true;
+              inherit fontconfig;
+            }).overrideAttrs
+              (
+                finalAttrs: previousAttrs: {
+                  version = "0.17.5";
+                  src = pkgs.fetchurl {
+                    url = "https://github.com/libass/libass/releases/download/${finalAttrs.version}/libass-${finalAttrs.version}.tar.xz";
+                    hash = "sha256-LcolwODIN93wC1IBGz+CysHk3dOtAYIngGsMIoiGSsw=";
+                  };
+                  enableParallelBuilding = true;
+                }
+              );
+
+          # Use a newer version of fontconfig.
+          libbluray =
+            (pkgs.libbluray.override {
+              inherit fontconfig;
+            }).overrideAttrs
+              (
+                finalAttrs: previousAttrs: {
+                  version = "1.4.1";
+                  src = pkgs.fetchurl {
+                    url = "https://get.videolan.org/libbluray/${finalAttrs.version}/libbluray-${finalAttrs.version}.tar.xz";
+                    hash = "sha256-drXcQAl/KNyk67AJyY7VEyGyknRT91zHLPdKzQm59Ek=";
+                  };
+                  enableParallelBuilding = true;
+                  nativeBuildInputs = [
+                    pkgs.meson
+                    pkgs.ninja
+                    pkgs.pkg-config
+                  ];
+                  mesonFlags = [
+                    "-Dbdj_jar=disabled" # No Java support
+                  ];
+                }
+              );
+
           libhwy = pkgs.libhwy.overrideAttrs (old: {
             cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DBUILD_SHARED_LIBS=ON" ];
           });
 
+          # Upgrade from 0.11.2 to 0.12.
+          libjxl = pkgs.libjxl.overrideAttrs (
+            finalAttrs: previousAttrs: {
+              version = "0.12";
+              src = pkgs.fetchFromGitHub {
+                owner = "libjxl";
+                repo = "libjxl";
+                tag = "v${finalAttrs.version}";
+                hash = "sha256-R69tMaqvbf3x/Uyh/OXTPICP7rS/4TXPiY2nFYKaotE=";
+                # There are various submodules in `third_party/`.
+                fetchSubmodules = true;
+              };
+              doCheck = false; # Skip tests to speed up build
+            }
+          );
+
+          # Upgrade from 3.1.2 to 4.2.0.
+          svt-av1 = pkgs.svt-av1.overrideAttrs (
+            finalAttrs: previousAttrs: {
+              version = "4.2.0";
+              src = pkgs.fetchFromGitLab {
+                owner = "AOMediaCodec";
+                repo = "SVT-AV1";
+                rev = "v${finalAttrs.version}";
+                hash = "sha256-UF2g+QIlXOqtlp11QHqundyKHo0g7xIuQB0kg4vN8oY=";
+              };
+            }
+          );
+
+          # Upgrade from 8.1.2 to 9.0.2.
           ffmpeg =
             (pkgs.ffmpeg-headless.override {
+              version = "9.0.2";
+              hash = "sha256-/c6cVfMSF6JJxCuJs58bxBlmBXDJ+jbnC4pELB97Qb0=";
+
               withDebug = false; # Build using debug options
               withStripping = true; # Strip symbols from the resulting binaries to reduce size
               withSmallDeps = true;
 
               withAss = true; # (Advanced) SubStation Alpha subtitle rendering
+              inherit libass;
+
               withBluray = true;
+              inherit libbluray;
+
+              withBs2b = true; # Bass to Binaural audio filter (uncommon)
+
               withDav1d = true; # AV1 decoder (focused on speed and correctness)
+              inherit dav1d;
+
               withFontconfig = true;
+              inherit fontconfig;
+
               withFreetype = true;
-              withHarfbuzz = true;
-              withJxl = true;
+
               withGnutls = true;
-              withOpenjpeg = true; # JPEG 2000 de/encoder
-              withRubberband = true;
+
+              withHarfbuzz = true;
+
+              withJxl = true;
+              inherit libjxl;
+
               withSoxr = true;
+
               withSvtav1 = true; # SVT-AV1 encoder, used for screenshots in AVIF format
+              inherit svt-av1;
+
               withTheora = true; # Theora video codec
               withVorbis = true; # Vorbis audio codec
 
               withX264 = false; # H.264 video encoder, not super useful for IINA (& adds >4 MB to app size)
               withX265 = false; # H.265 video encoder, not super useful for IINA (& adds >31 MB to app size)
               withAom = false; # AV1 video encoder, IINA prefers SVT-AV1 (better performance)
-              withBs2b = false; # Bass to Binaural audio filter (uncommon)
               withCaca = false; # ASCII art video output, not useful for IINA
               withDvdnav = false;
               withDvdread = false;
@@ -105,6 +219,7 @@
 
               # Unlikely to ever enable these
               withOpencl = false; # Vulkan predecessor, not supported on modern macOS
+              withOpenjpeg = false; # JPEG 2000 de/encoder
               withVdpau = false; # nVidia HW acceleration, not supported on modern macOS
               withXlib = false; # X11 support, no longer supported on modern OSes
               withXcb = false; # X11
@@ -125,16 +240,27 @@
               buildQtFaststart = false;
 
             }).overrideAttrs
-              (old: {
-                # Skip tests to speed up build
-                doCheck = false;
-              });
+              (
+                finalAttrs: previousAttrs: {
+                  # The postproc configure flag was removed in FFmpeg 8.
+                  configureFlags = builtins.filter (
+                    x:
+                    # The libcelt configure flag was removed in FFmpeg 9.
+                    x != "--disable-libcelt"
+                    # The libshaderc configure flag was removed in FFmpeg 9.
+                    && x != "--disable-libshaderc"
+                  ) previousAttrs.configureFlags;
+                  # Skip tests to speed up build
+                  doCheck = false;
+                }
+              ); # END ffmpeg
 
           # Override mpv with desired features support
           mpv =
             (pkgs.mpv-unwrapped.override {
               inherit ffmpeg;
-              lua = pkgs.luajit;
+              inherit libass;
+              inherit libbluray;
 
               archiveSupport = true;
               bs2bSupport = false;
@@ -252,20 +378,23 @@
                   }) (builtins.attrNames (builtins.readDir libdir))
                 )
                 [
+                  dav1d # AV1 video decoder
                   ffmpeg
+                  fontconfig # Font configuration library
+                  pkgs.freetype # FreeType font rendering engine
+                  pkgs.harfbuzz # Text shaping engine. Used by avdevice, avfilter, ass
+                  libass # ASS subtitle renderer
+                  libbluray # Blu-ray support
                   libhwy
+                  libjxl # JPEG-XL support
                   mpv
                   pkgs.brotli # Brotli compression. Used for ass, fontconfig, bluray, & more
-                  pkgs.dav1d # AV1 video decoder
-                  pkgs.fontconfig # Font configuration library
-                  pkgs.freetype # FreeType font rendering engine
                   pkgs.fribidi # Hebrew and Arabic support
                   pkgs.gettext # Internationalization library
                   pkgs.glib # GTK GLib utility library. Required by harfbuzz
                   pkgs.gmp # Provides arbitrary precision arithmetic. Required by several libs
                   pkgs.gnutls # TLS support, needed for network streams
                   pkgs.graphite2 # Compiles Graphite-enabled fonts. Used by harfbuzz
-                  pkgs.harfbuzz # Text shaping engine. Used by avdevice, avfilter, ass
                   pkgs.haskellPackages.character-ps
                   pkgs.haskellPackages.indexed-traversable
                   pkgs.haskellPackages.integer-conversion
@@ -275,12 +404,9 @@
                   pkgs.haskellPackages.witherable
                   pkgs.lcms2 # Little CMS color management lib. Required by placebo, jxl
                   pkgs.libarchive # Archive support
-                  pkgs.libass # ASS subtitle renderer
                   pkgs.libb2 # BLAKE2 hashing library
-                  pkgs.libbluray # Blu-ray support
                   pkgs.libidn2 # Converts between ASCII & UTF domain names. Used by gnutls
                   pkgs.libjpeg_turbo # Needed to provide libjpeg
-                  pkgs.libjxl # JPEG-XL support
                   pkgs.libplacebo # Required by mpv
                   pkgs.libpng # PNG image format support
                   pkgs.libsamplerate # Sample Rate Converter for audio

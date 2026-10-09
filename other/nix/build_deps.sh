@@ -55,6 +55,11 @@ printUsageHelp() {
   echo
 }
 
+exitFromError() {
+  afplay /System/Library/Sounds/Sosumi.aiff
+  exit 1
+}
+
 NIX_EXE="$(which nix)"
 set -euo pipefail
 SCRIPT_DIR="$(print_script_dir)"
@@ -82,7 +87,7 @@ while [[ $# -gt 0 ]]; do
       NIX_BUILD=false
     else
       printUsageHelp
-      exit 1
+      exitFromError
     fi
     shift
     ;;
@@ -98,7 +103,7 @@ while [[ $# -gt 0 ]]; do
       DEBUG_NIX=false
     else
       printUsageHelp
-      exit 1
+      exitFromError
     fi
     shift
     ;;
@@ -114,7 +119,7 @@ while [[ $# -gt 0 ]]; do
       REPLACE_LIBS=false
     else
       printUsageHelp
-      exit 1
+      exitFromError
     fi
     shift
     ;;
@@ -130,7 +135,7 @@ while [[ $# -gt 0 ]]; do
       REPLACE_EXECUTABLES=false
     else
       printUsageHelp
-      exit 1
+      exitFromError
     fi
     shift
     ;;
@@ -146,26 +151,26 @@ while [[ $# -gt 0 ]]; do
       REPLACE_INCLUDES=false
     else
       printUsageHelp
-      exit 1
+      exitFromError
     fi
     shift
     ;;
   -*)
     echo -e "${RED}Unknown option: $1${NC}" >&2
     printUsageHelp
-    exit 1
+    exitFromError
     ;;
   *)
     echo -e "${RED}Unexpected argument: $1${NC}" >&2
     printUsageHelp
-    exit 1
+    exitFromError
     ;;
   esac
 done
 if [[ $# -gt 0 ]]; then
   echo -e "${RED}Unexpected argument: $1${NC}" >&2
   printUsageHelp
-  exit 1
+  exitFromError
 fi
 
 
@@ -175,14 +180,14 @@ if [[ "$NIX_BUILD" = true ]]; then
     echo -e "${RED}ERROR: Could not find 'nix' command. Please ensure Nix $MIN_NIX_VERSION or higher is installed.${NC}" >&2
     echo -e "Recommended: install Determinate Nix for MacOS: https://docs.determinate.systems/" >&2
     echo -e "Aborting build." >&2
-    exit 1
+    exitFromError
   fi
 
   if [[ ! -f $NIX_DIR/flake.nix ]]; then
     echo -e "${RED}ERROR: Could not find 'flake.nix' (expected location: $NIX_DIR/flake.nix).${NC}" >&2
     echo -e "${RED}Please ensure it is present and this script is located in the same directory.${NC}" >&2
     echo -e "Aborting build." >&2
-    exit 1
+    exitFromError
   fi
 
   echo "Changing current dir to: $NIX_DIR"
@@ -196,7 +201,7 @@ if [[ "$NIX_BUILD" = true ]]; then
       echo -e "${RED}ERROR: Found reference(s) to '/nix/store/' in project.pbxproj!${NC}" >&2
       echo -e "${RED}Ensure all framework references in the project files use relative paths which begin with 'deps/lib/'${NC}" >&2
       echo -e "Aborting build." >&2
-      exit 1
+      exitFromError
     fi
     "$NIX_EXE" $NIX_ARGS --keep-failed
   else

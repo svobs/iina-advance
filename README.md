@@ -16,25 +16,26 @@ Stable binaries with detailed release notes can be found on the <a href="https:/
 
 A main goal of IINA Advance is to retain as many of IINA's features and options as possible, while adding new useful features or expanding existing ones. If you find something which looks missing or broken, please [report an issue](https://github.com/svobs/iina-advance/issues).
 
-
 ---
-## Improvements from upstream IINA
 
-* Can restore all its open windows and state when reopening the app.
-* A revamped, more animated on-screen controller for a more responsive feel and fresh appearance, with more customization options such as the ability to change its size.
-* The ability (when configured) to increase the window size in an arbitrary way instead of being confined to the video's aspect ratio.
-* A new "custom" window mode which supports sharp corners, and seamless integration with the "custom full screen" mode.
-* Can show a sidebar on the left side, instead of or in addition to the right sidebar.
-* A new "inside vs. outside" layout paradigm, where the sidebars, "top", & "bottom" panels, can individually be configured to be displayed either as:
-  *  "Inside": shown as a traditional overlay on top of the video, with options to control how they will be hidden again.
-  *  "Outside": the panel does not overlap the video. Top and/or bottom panels do not auto-hide when in this mode.
-* Smooth animations wherever possible when switching between various modes (such as to/from music mode), and window handling in general, made possible by a new window layout system.
-* Improved & optimized thumbnail handling with more options, including the ability to show thumbnails of any size.
-* A massive rewrite of the key bindings handling system, which supports bindings being set by Lua scripts, as well as mpv "key sequences". The Key Bindings editor is enhanced with color coding & status icons, + detection of conflicting bindings, as well as supporting copy/paste, undo/redo, & drag & drop.
+## Enhancements over upstream IINA
+
+*Note: the recent UI overhaul in IINA v1.5 will be merged soon ;)*
+<p align="center">
+<img height="343" src="other/sample-screencap.gif">
+</p>
+
+* Adds ability to keep open windows & other UI state when reopening the app.
+* Adds a "custom" window mode which supports sharp corners, and seamless integration with the "custom full screen" mode.
+* New OSC color schemes & options such as the ability to change its height, and enhanced OSD with icon.
+* An "inside vs. outside" layout paradigm, where the sidebars, "top", & "bottom" panels, can individually be configured to be displayed either as:
+  * "Inside": shown as a traditional overlay on top of the video, with options to control how they will be hidden again.
+  * "Outside": the panel does not overlap the video. Top and/or bottom panels do not auto-hide when in this mode.
+* A much more advanced key bindings system which adds support for multi-key "key sequences" & bindings from Lua scripts, with an enhanced Key Bindings editor featuring color coding & status icons, conflict detection, drag & drop, cut/copy/paste & undo/redo.
 * Tons of bug fixes and other enhancements under the hood.
 
-
 ## (Optional) How to copy history & settings from upstream IINA
+
 At present, IINA Advance retains IINA's history database format and shares most of the same settings as IINA, so each should be able to use the other's files without harm. However, because the two apps have different bundle IDs, they store their support files in separate locations and do not share them.
 
 For those who have been using IINA previously and want to copy over its settings, history, and other state, copy each location in the first column below to the location in the second column:
@@ -42,80 +43,95 @@ For those who have been using IINA previously and want to copy over its settings
 |                       | IINA                                                 | IINA Advance                                      |
 |-----------------------|------------------------------------------------------|---------------------------------------------------|
 | Primary settings file | `~/Library/Preferences/com.colliderli.iina.plist`    | `~/Library/Preferences/com.iina-advance.plist`    |
-| Other support files   | `~/Library/Application Support/com.colliderli.iina` | `~/Library/Application Support/com.iina-advance` |
-
+| Other support files   | `~/Library/Application Support/com.colliderli.iina`  | `~/Library/Application Support/com.iina-advance`  |
 
 ## Building
-*(unchanged from the upstream IINA project)*
 
-IINA uses mpv for media playback. To build IINA, you can either fetch copies of these libraries we have already built (using the instructions below) or build them yourself by skipping to [these instructions](#building-mpv-manually).
+IINA uses mpv for media playback, which in turn relies on FFmpeg & other dependencies. To build IINA, you must first populate the contents of `deps/lib` with these libraries. You can either fetch copies of these libraries we have already built (using the instructions below) or build them yourself by skipping down to *Option 2: build dependencies manually*.
 
-### Using the pre-compiled libraries
+### Option 1: download the pre-compiled dependencies
 
-1. Download pre-compiled libraries by running
+1. Download pre-compiled libraries & the latest set of default plugins by running
 
-```console
-./other/download_libs.sh
-```
+  ```console
+  ./other/download_libs.sh
+  ```
 
-> [!TIP]
-> - Change the URL in the shell script if you want to download arch-specific binaries. By default, it will download the universal ones. You can download other binaries from `https://iina.io/dylibs/${ARCH}/filelist.txt` where `ARCH` can be `universal`, `arm64` and `x86_64`.
-> - If you want to build an older IINA version, make sure to download the corresponding dylibs. For example, `https://iina.io/dylibs/1.2.0/universal/filelist.txt`.
-
+  This will repopulate `deps/lib`, `deps/executable`, and `deps/plugins`.  Note that as of v1.6, this now downlaods a completely different set of libs than those from upstream IINA.
 2. Open iina.xcodeproj in the [latest public version of Xcode](https://apps.apple.com/app/xcode/id497799835). *IINA may not build if you use any other version.*
-
 3. Build the project.
 
-### Building mpv manually
+### Option 2: build dependencies manually
 
-1. Build your own copy of mpv. If you're using a package manager to manage dependencies, the steps below outline the process.
+All of the required libs for IINA Advance are built using the [Nix Package Manager](https://en.wikipedia.org/wiki/Nix_(package_manager)). (Unlike the upstream IINA project, HomeBrew is not used at all). For those who want to dive right in, examine the build script `other/nix/build_deps.sh`. For step-by-step instructions, continue reading.
 
-	#### With Homebrew
+> NOTE: The Nix build **must** be run on a Mac with an Apple Silicon chip.
 
-	Use our tap as it passes in the correct flags to mpv's configure script:
+#### Install Determinate Nix
 
-	```console
-	brew tap iina/homebrew-mpv-iina
-	brew install --HEAD mpv-iina
-	```
+Nix must first be installed, and the Nix [daemon](https://manual.determinate.systems/command-ref/new-cli/nix3-daemon.html) must be running to build. Although any flavor of Nix should work, [Determinate Nix](https://determinate.systems/nix/) was used for development and is recommended. To install this tool use the [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer). Follow the instructions on that page to download and install.
 
-	#### With MacPorts
+> **Clean Uninstall**: Determinate Nix also provides the ability to easily perform a clean uninstall. To do this on an installed system, run via a terminal: `/nix/nix-installer uninstall`, and enter the admin password if prompted.
 
-	Pass in these flags when installing:
+#### Install Xcode Command Line Tools
 
-	```console
-	port install mpv +uchardet -bundle -rubberband configure.args="--enable-libmpv-shared --enable-lua --enable-libarchive --enable-libbluray --disable-swift --disable-rubberband"
-	```
+1. Make sure you are using the [latest public version of Xcode](https://itunes.apple.com/us/app/xcode/id497799835). IINA may build with another version but this is not guaranteed.
+2. Then make sure the Xcode Command Line Tools are installed. Run in a terminal:
 
-2. Copy the corresponding mpv and FFmpeg header files into `deps/include/`, replacing the current ones. You can find them on GitHub [(e.g. mpv)](https://github.com/mpv-player/mpv/tree/master/libmpv), but it's recommended to copy them from the Homebrew or MacPorts installation. Always make sure the header files have the same version of the dylibs.
+```shell-script
+xcode-select --install
+```
 
-3. Run `other/parse_doc.rb`. This script will fetch the latest mpv documentation and generate `MPVOption.swift`, `MPVCommand.swift` and `MPVProperty.swift`. Copy them from `other/` to `iina/`, replacing the current files. This is only needed when updating libmpv. Note that if the API changes, the player source code may also need to be changed.
+3. If multiple Xcode versions are installed, select the one you want to use with:
 
-4. Run `other/change_lib_dependencies.rb`. This script will deploy the dependent libraries into `deps/lib`. If you're using a package manager to manage dependencies, invoke it like so:
+```shell-script
+sudo xcode-select -s /Applications/Xcode.app
+```
 
-	#### With Homebrew
+4. Run the first-launch setup to install required system components, check for newer components and install any updates:
 
-	```console
-	other/change_lib_dependencies.rb "$(brew --prefix)" "$(brew --prefix mpv-iina)/lib/libmpv.dylib"
-	```
+```shell-script
+xcodebuild -runFirstLaunch -checkForNewerComponents
+```
 
-	#### With MacPorts
+#### Run the Build Script
 
-	```console
-	port contents mpv | grep '\.dylib$' | xargs other/change_lib_dependencies.rb /opt/local
-	```
+To run the Nix build, execute the `build_deps.sh` script from IINA’s cloned repository:
 
-5. Open `iina.xcodeproj` in the [latest public version of Xcode](https://apps.apple.com/app/xcode/id497799835). *IINA may not build if you use any other version.*
+```shell-script
+./other/nix/build_deps.sh
+```
 
-6. Remove all references to `.dylib` files from the Frameworks group in the sidebar and add all the `.dylib` files in `deps/lib` to that group by clicking  "Add Files to iina..." in the context menu.
+> [!NOTE]
+> The first time the Nix build is run it will take a long time. Portions of the build are done in parallel and will use all of the cores available on the Mac. If using a laptop it is desirable to run the build when connected to an electrical outlet.
 
-7. Add all the imported `.dylib` files into the "Copy Dylibs" phase under "Build Phases" tab of the iina target.
+The script produces [universal binaries](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary) for the libraries & copies them into `devs/lib`. It also produces headers for FFmpeg & mpv libraries and copies them into `devs/include/…`. These headers are needed because the describe the interfaces used by IINA Advance's code to make direct calls into these project's libraries. Because this is a tight coupling (and because the files are small) the header files are checked into this git repository. Unless `flake.nix` has been modified to build a different version of FFmpeg or mpv the header files should match and `git status` should not show any changes to the header files.
 
-8. Make sure the necessary `.dylib` files are present in the "Link Binary With Libraries" phase under "Build Phases". Xcode should have already added all dylibs under this section.
+> [!IMPORTANT]
+> IINA **MUST** be built with headers that match the version of FFmpeg and mpv being used. If built with the wrong headers, the app may _seem_ to work, but the FFmpeg project is known to change headers in ways that can cause malfunction or crashes. Features that directly use FFmpeg libraries, such as OSC thumbnails, are more likely to exhibit problems.
 
-9. Build the project.
+The Nix build creates a `result` directory under the `other/nix` directory. In the `result` directory you will find the header files as well as an `IINA Advance.app.app`. The Nix build generates an `IINA Advance.app` to confirm IINA Advance can be built with the generated libraries and associated header files. The creation of these files is an intermediate step in the build. The final result of the Nix build is the libraries and header files that have been copied to directories under `deps` for use when building IINA Advance using Xcode.
+
+## Upgrading Dependencies
+
+This section discusses what is involved in changing the Nix build to generate the libraries from newer versions of their associated projects.
+
+1. The Nix build is controlled by the file `other/nix/flake.nix`. Changing the build requires editing this file and then re-running a Nix build with the `--debug` flag so that the build directory is preserved (e.g., `./other/nix/build_deps.sh --debug`. See *Option 2: build dependencies manually*, above). By preserving the build directory, the files in it can be examined to help diagnose build failures.
+
+2. If changing the version of mpv, run `other/parse_doc.rb`. This script will fetch the latest mpv documentation and generate `MPVOption.swift`, `MPVCommand.swift` and `MPVProperty.swift`. Copy them from `other/` to `iina/`, replacing the current files. This is only needed when updating libmpv. Note that if the API changes, the player source code may also need to be changed.
+
+3. Open `iina.xcodeproj` in the [latest public version of Xcode](https://apps.apple.com/app/xcode/id497799835). *IINA may not build if you use any other version.*
+
+4. Add or rename the references to `.dylib` files in the Frameworks group in the sidebar as needed to match the contents of `deps/lib`.
+
+5. Add any `.dylib` files which were added from the previous step into the "Copy Dylibs" phase under "Build Phases" tab of the iina target.
+
+6. Make sure the necessary `.dylib` files are present in the "Link Binary With Libraries" phase under "Build Phases". Xcode should have already added all dylibs under this section, but it sometimes does not.
+
+7. Build the project.
 
 ## Contributing
+
 *(Working to expand this section)*
 
 Fixes and improvements to IINA Advance are more than welcome. For now, please feel free to file an issue, feature request, or submit a PR at the [GitHub page](https://github.com/svobs/iina-advance)
@@ -150,9 +166,9 @@ Fixes and improvements to IINA Advance are more than welcome. For now, please fe
 
 
 > 💡 **Want to build your own plugin?**
-> 
+>
 > Explore the existing plugins listed here to learn how they work. If you create a new plugin or improve an existing one, feel free to contribute back by adding it to this list via a pull request.
 
 > 🚀 **Interested in creating an IINA plugin?**
-> 
+>
 > Start by exploring the existing plugins here to understand patterns and best practices. Once you’ve built your own plugin, please contribute back by adding it to this README so others can discover and use it.

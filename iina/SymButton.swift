@@ -200,7 +200,7 @@ class SymButton: NSImageView, @MainActor NSAccessibilityButton, DraggableObject 
   func setGlowForTitleBar(enabled: Bool) {
     if enabled {
       guard shadow == nil else { return }
-      addShadow(blurRadiusConstant: 0.5, xOffsetConstant: 0, yOffsetConstant: 0, color: .controlAccentColor)
+      addShadow(blurRadiusConstant: 0.3, xOffsetConstant: 0, yOffsetConstant: 0, color: .controlAccentColor)
     } else {
       shadow = nil
     }

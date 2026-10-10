@@ -2236,16 +2236,16 @@ extension NSView {
       switch scheme {
       case .clearGradient:
         radiusMultiplier = 0.02
-        radiusConstant = 0.8
+        radiusConstant = 0.5
         x = 0
         y = 0
       case .clearGlass:
         radiusMultiplier = 0.02
-        radiusConstant = 0.8
+        radiusConstant = 0.5
         x = 0
         y = 0
       case .tintedGlass:
-        radiusMultiplier = 0.015
+        radiusMultiplier = 0.01
         radiusConstant = 0.2
         x = 0
         y = 0
@@ -2257,16 +2257,16 @@ extension NSView {
       switch scheme {
       case .clearGradient:
         radiusMultiplier = 0.02
-        radiusConstant = 1.0
+        radiusConstant = 0.5
         x = 0
         y = 0
       case .clearGlass:
         radiusMultiplier = 0.02
-        radiusConstant = 1.0
+        radiusConstant = 0.5
         x = 0
         y = 0
       case .tintedGlass:
-        radiusMultiplier = 0.015
+        radiusMultiplier = 0.01
         radiusConstant = 0.2
         x = 0
         y = 0
@@ -2281,7 +2281,7 @@ extension NSView {
         radiusConstant = 2
       case .clearGlass:
         radiusMultiplier = 0
-        radiusConstant = 2
+        radiusConstant = 1
       case .tintedGlass:
         radiusMultiplier = 0
         radiusConstant = 0.3
@@ -2298,7 +2298,7 @@ extension NSView {
         radiusConstant = 3.0
       case .clearGlass:
         radiusMultiplier = 0
-        radiusConstant = 3.0
+        radiusConstant = 2.0
       case .tintedGlass:
         radiusMultiplier = 0
         radiusConstant = 0.5

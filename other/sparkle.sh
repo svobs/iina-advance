@@ -20,11 +20,31 @@ NEW_VERSION_APP_PATH="$1"
 # Latest marketing version (e.g., "1.4.3"
 NEW_VERSION="$2"
 
-## Less frequently updated vars ##
+MAX_VERSIONS=10
 
-# TODO: support running this script from any dir instead 
-WORKING_DIR="."
-SPARKLE_HOME="$WORKING_DIR/Sparkle-2.6.4"
+print_script_dir() {
+  local SOURCE_PATH="${BASH_SOURCE[0]}"
+  local SYMLINK_DIR
+  local SCRIPT_DIR
+  # Resolve symlinks recursively
+  while [ -L "$SOURCE_PATH" ]; do
+    # Get symlink directory
+    SYMLINK_DIR="$( cd -P "$( dirname "$SOURCE_PATH" )" >/dev/null 2>&1 && pwd )"
+    # Resolve symlink target (relative or absolute)
+    SOURCE_PATH="$(readlink "$SOURCE_PATH")"
+    # Check if candidate path is relative or absolute
+    if [[ $SOURCE_PATH != /* ]]; then
+      # Candidate path is relative, resolve to full path
+      SOURCE_PATH=$SYMLINK_DIR/$SOURCE_PATH
+    fi
+  done
+  # Get final script directory path from fully resolved source path
+  SCRIPT_DIR="$(cd -P "$( dirname "$SOURCE_PATH" )" >/dev/null 2>&1 && pwd)"
+  echo "$SCRIPT_DIR"
+}
+
+SCRIPT_PATH="$(print_script_dir)"
+SPARKLE_HOME="$(realpath ${SCRIPT_PATH}/Sparkle-2.6.4)"
 
 # This is the Sparkle Appcast director
 # 1. May already contain files (backup before running!):
@@ -34,15 +54,13 @@ SPARKLE_HOME="$WORKING_DIR/Sparkle-2.6.4"
 #   - Delta updates ("IINA-Advance-{N}-{M}.delta")
 # 2. Prior to running this script, place the .html for the latest version in this dir
 #    (should be named "IINA-Advance-${NEW_VERSION}.html").
-APPCAST_DIR="$WORKING_DIR/AppCast"
+APPCAST_DIR="$(realpath ${SCRIPT_PATH}/AppCast)"
 
-ZIP_PATH="$WORKING_DIR/IINA-Advance-$NEW_VERSION.zip"
-MAX_VERSIONS=10
+ZIP_PATH="$APPCAST_DIR/IINA-Advance-$NEW_VERSION.zip"
 
 # Creates Mac-friendly zip archive
 ditto -c -k --sequesterRsrc --keepParent "$NEW_VERSION_APP_PATH" "$ZIP_PATH"
 
-mv "$ZIP_PATH" "$APPCAST_DIR/"
 "$SPARKLE_HOME/bin/generate_appcast" --maximum-versions $MAX_VERSIONS \
 		--maximum-deltas $MAX_VERSIONS \
 		"$APPCAST_DIR"

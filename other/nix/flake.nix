@@ -26,7 +26,6 @@
           resign = pkgs.writeShellApplication {
             name = "iina-resign";
             runtimeInputs = [
-              pkgs.findutils
               pkgs.coreutils
             ];
             text = ''
@@ -461,18 +460,16 @@
 
             nativeBuildInputs = [
               xcode
-              pkgs.findutils
             ];
 
             buildPhase = ''
-              export HOME=$PWD/.home
-              export CFFIXED_USER_HOME="$HOME"
-              export __XPC_CFFIXED_USER_HOME="$HOME"
-              export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"
               export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
-
               APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
-              export PATH="${pkgs.findutils}/bin:$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
+              export PATH="$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
+              export HOME=$PWD/.home  # Override home directory to isolate Xcode build from the host system
+              export CFFIXED_USER_HOME="$HOME". # Another home variable to override
+              export __XPC_CFFIXED_USER_HOME="$HOME" # Another home variable to override, for tests
+              export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"  # Overrides Derived Data directory
 
               export TOOLCHAINS=XcodeDefault
               export SDKROOT=macosx
@@ -523,8 +520,6 @@
               nativeBuildInputs = [
                 libTool
                 pkgs.coreutils
-                pkgs.findutils
-                pkgs.rsync
                 spmDeps
               ];
 
@@ -537,7 +532,7 @@
                 mkdir -p deps/executable
 
                 echo "[${systemName}] 📦 Copying SPM deps"
-                rsync -a "${spmDeps}/" ./
+                cp -RLv "${spmDeps}"/* ./
                 chmod -R u+rwx,g+rx,o+rx .
 
                 echo "[${systemName}] 📦 Canonicalizing libs"
@@ -561,9 +556,7 @@
 
               nativeBuildInputs = [
                 libTool
-                pkgs.rsync
                 pkgs.coreutils
-                pkgs.findutils
                 pkgs.gnused
                 xcode
               ];
@@ -574,18 +567,12 @@
                 # Make sure to name this directory properly when copying
                 cp -vRL "${depsInclude}" deps/include
 
-                export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
-                APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
-                # For nixos-26.05+: need to explicitly use the GNU findutils version of find, as the system find (from macOS) does not support -print0
-                # and will fail with "find: -print0: unknown primary or operator" in fixup phase
-                export PATH="${pkgs.findutils}/bin:$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
-
                 echo "📦 Combining universal libs"
                 # Merge each lib in archroot1 with its counterpart in archroot0, creating universal binaries in archroot0
                 archroot0=.
                 archroot1="${builtins.elemAt self.singleArchDeps 1}/"
 
-                ${pkgs.rsync}/bin/rsync -a "${builtins.elemAt self.singleArchDeps 0}/" "$archroot0/"
+                cp -RLv "${builtins.elemAt self.singleArchDeps 0}/"* "$archroot0/"
                 chmod -R u+w "$archroot0"
                 echo "📦 Copying libs"
 
@@ -594,12 +581,11 @@
 
                 # Rewrite SwiftPM workspace-state.json to fix absolute paths
                 if [ -f .spm/workspace-state.json ]; then
-                  old_prefix=$(grep -Eo "/nix/var/nix/builds/nix-[^/]+/source" .spm/workspace-state.json | head -n1)
-                  echo "Patching workspace-state.json: replacing $old_prefix → $PWD"
-                  sed -i -E "s|$old_prefix|$PWD|g" .spm/workspace-state.json
+                  old_prefix=$(grep -Eo "/nix/store/[^/]+/spm" .spm/workspace-state.json | head -n1)
+                  echo "Patching workspace-state.json: replacing $old_prefix → $PWD/spm"
+                  ${pkgs.gnused}/bin/sed -i -E "s|$old_prefix|$PWD/spm|g" .spm/workspace-state.json
                 fi
 
-                echo "🔧 Setting up build environment for ${appName}"
                 chmod -R u+rwx,g+rx,o+rx .
 
                 git_rev="${self.rev or self.dirtyRev}"
@@ -608,12 +594,18 @@
                 # Just use a placeholder for now:
                 git_branch="<nix-build>"
                 echo "Git branch: $git_branch, revision: $git_rev"
-                export HOME=$PWD/.home
-                export CFFIXED_USER_HOME="$HOME"
-                export __XPC_CFFIXED_USER_HOME="$HOME"
-                export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"
+
+                echo "🔧 Setting up build environment for ${appName}"
+
                 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer";
+                APPLE_BIN="$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+                export PATH="$APPLE_BIN:$DEVELOPER_DIR/usr/bin:/usr/bin:/bin:$PATH"
+                export HOME=$PWD/.home  # Override home directory to isolate Xcode build from the host system
+                export CFFIXED_USER_HOME="$HOME". # Another home variable to override
+                export __XPC_CFFIXED_USER_HOME="$HOME" # Another home variable to override, for tests
+                export TMPDIR="$PWD/.tmp"; mkdir -p "$TMPDIR"  # Overrides Derived Data directory
                 export XCODE_BUILD_DESTINATION='platform=macOS'
+                PLUGINS_DIR="$DEVELOPER_DIR/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins"
 
                 unset CC CXX LD AR RANLIB NM STRIP OBJCOPY \
                   CFLAGS CXXFLAGS LDFLAGS SDKROOT CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH LIBRARY_PATH \
@@ -621,10 +613,8 @@
 
                 export TOOLCHAINS=XcodeDefault
                 export SDKROOT=macosx
-
                 echo "Using $TOOLCHAINS toolchain"
                 echo "Using SDK: $SDKROOT"
-                PLUGINS_DIR="$DEVELOPER_DIR/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins"
 
                 # Build IINA Advance (universal)
                 echo "🔨 Building ${appName}"

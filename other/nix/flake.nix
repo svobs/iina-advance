@@ -430,7 +430,6 @@
                   pkgs.zstd # Needed by libarchive
 
                   # Indirect libs
-                  pkgs.libcxx # C standard library
                   pkgs.libdovi # Dolby Vision, needed by libplacebo
                   pkgs.libvorbis # Vorbis audio codec
                   pkgs.openjpeg # JPEG 2000 de/encoder
@@ -485,27 +484,22 @@
                 ARCH="x86_64"
               fi
 
-              mkdir -p .spm .spm-cache build
+              mkdir -p $out/.spm $out/.spm-cache $out/build
 
               xcodebuild \
                 -workspace iina.xcodeproj/project.xcworkspace \
                 -scheme iina \
                 -destination "$XCODE_BUILD_DESTINATION" \
                 -resolvePackageDependencies \
-                -derivedDataPath "$PWD/build" \
-                -clonedSourcePackagesDirPath "$PWD/.spm" \
-                -packageCachePath "$PWD/.spm-cache" \
+                -derivedDataPath "$out/build" \
+                -clonedSourcePackagesDirPath "$out/.spm" \
+                -packageCachePath "$out/.spm-cache" \
                 -disablePackageRepositoryCache \
                 -IDEPackageSupportDisableManifestSandbox=YES \
                 -IDEPackageSupportDisablePluginExecutionSandbox=YES \
                 ARCHS=$ARCH ONLY_ACTIVE_ARCH=YES
             '';
 
-            # Copy everything — keep full structure (SPM state, caches, workspace, etc.)
-            installPhase = ''
-              mkdir -p $out
-              cp -R . $out/
-            '';
           }; # END spmDeps
 
           packages = {
@@ -532,7 +526,8 @@
                 mkdir -p deps/executable
 
                 echo "[${systemName}] 📦 Copying SPM deps"
-                cp -RLv "${spmDeps}"/* ./
+                cp -Rv "${spmDeps}"/* .
+                cp -Rv "${spmDeps}"/.* .
                 chmod -R u+rwx,g+rx,o+rx .
 
                 echo "[${systemName}] 📦 Canonicalizing libs"
@@ -541,7 +536,9 @@
 
               installPhase = ''
                 mkdir -p $out
-                cp -R . "$out/"
+                # Note: Do not use -L. Need to preserve relative symlinks for later xcodebuild to resolve correctly.
+                cp -Rv . "$out"
+                cp -Rv .* "$out"
               '';
 
             }; # END iina
@@ -562,31 +559,32 @@
               ];
 
               buildPhase = ''
-                echo "📦 Copying header files"
+                echo "📦 Copying header files to deps/include"
                 mkdir -p deps
                 # Make sure to name this directory properly when copying
-                cp -vRL "${depsInclude}" deps/include
+                cp -Rv "${depsInclude}" deps/include
 
                 echo "📦 Combining universal libs"
                 # Merge each lib in archroot1 with its counterpart in archroot0, creating universal binaries in archroot0
-                archroot0=.
-                archroot1="${builtins.elemAt self.singleArchDeps 1}/"
+                archroot0=$PWD
+                archroot1="${builtins.elemAt self.singleArchDeps 1}"
 
-                cp -RLv "${builtins.elemAt self.singleArchDeps 0}/"* "$archroot0/"
-                chmod -R u+w "$archroot0"
                 echo "📦 Copying libs"
+                cp -Rv "${builtins.elemAt self.singleArchDeps 0}/"* "$archroot0"
+                cp -Rv "${builtins.elemAt self.singleArchDeps 0}/."* "$archroot0"
+                chmod -R u+w "$archroot0"
 
-                ${libTool}/bin/iina-lib-tool --canonicalize --merge-architectures "./deps/lib" "./deps/executable" \
+                ${libTool}/bin/iina-lib-tool --merge-architectures "./deps/lib" "./deps/executable" \
                   --archroot0 "$archroot0" --archroot1 "$archroot1"
+
+                chmod -R u+rwx,g+rx,o+rx . ./.*
 
                 # Rewrite SwiftPM workspace-state.json to fix absolute paths
                 if [ -f .spm/workspace-state.json ]; then
-                  old_prefix=$(grep -Eo "/nix/store/[^/]+/spm" .spm/workspace-state.json | head -n1)
-                  echo "Patching workspace-state.json: replacing $old_prefix → $PWD/spm"
-                  ${pkgs.gnused}/bin/sed -i -E "s|$old_prefix|$PWD/spm|g" .spm/workspace-state.json
+                  old_prefix=$(grep -Eo '/nix/.*/\.spm/' .spm/workspace-state.json | head -n1)
+                  echo "Patching workspace-state.json: replacing $old_prefix → $PWD/.spm/"
+                  ${pkgs.gnused}/bin/sed -i -E "s|$old_prefix|$PWD/.spm/|g" .spm/workspace-state.json
                 fi
-
-                chmod -R u+rwx,g+rx,o+rx .
 
                 git_rev="${self.rev or self.dirtyRev}"
                 # Nix flakes cannot currently access branch info. Doing so may violate the stated goal of maximum
@@ -634,6 +632,7 @@
                   -IDEPackageSupportDisableManifestSandbox=YES \
                   -IDEPackageSupportDisablePluginExecutionSandbox=YES \
                   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+                  ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
                   OTHER_SWIFT_FLAGS="$OTHER_SWIFT_FLAGS -enable-experimental-feature Lifetimes -load-plugin-library $PLUGINS_DIR/libAppIntentsMacros.dylib -load-plugin-library $PLUGINS_DIR/libFinanceMacros.dylib -load-plugin-library $PLUGINS_DIR/libFoundationMacros.dylib -load-plugin-library $PLUGINS_DIR/libFoundationModelsMacros.dylib -load-plugin-library $PLUGINS_DIR/libMMIOMacros.dylib -load-plugin-library $PLUGINS_DIR/libObservationMacros.dylib -load-plugin-library $PLUGINS_DIR/libPreviewsMacros.dylib -load-plugin-library $PLUGINS_DIR/libStateReportingMacros.dylib -load-plugin-library $PLUGINS_DIR/libSwiftMacros.dylib -load-plugin-library $PLUGINS_DIR/libSwiftUIMacros.dylib -load-plugin-library $PLUGINS_DIR/libSwiftDataMacros.dylib -load-plugin-library $PLUGINS_DIR/libStateReportingMacros.dylib"
                 # Workaround for Xcode Tools bug with MacOS 27 SDK: add explicit `-load-plugin-library`s.
                 # See https://github.com/drumih/turbo-fieldfare/issues/185
@@ -658,7 +657,7 @@
 
                 echo "📦 Copying includes to output dir"
                 mkdir -p "$out"
-                cp -RL deps/include $out/include
+                cp -RLv deps/include $out/include
 
                 app_real=$(realpath "$app" 2>/dev/null || echo "$app")
                 echo "✅✅ Done! Universal ${appName}.app is ready at $app_real"

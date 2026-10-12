@@ -6129,8 +6129,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dambertmunoz/dm-swift-concurrency-custom-executors";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = revision;
+				revision = 4cb25f82b4f7f7b4e0f89bd3782fe74cd40e40fc;
 			};
 		};
 		D13912622F29547200540624 /* XCRemoteSwiftPackageReference "swift-collections" */ = {

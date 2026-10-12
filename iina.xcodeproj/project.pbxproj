@@ -202,12 +202,10 @@
 		D14BC6562FAD31990059E900 /* libvulkan.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC63C2FAD31990059E900 /* libvulkan.1.dylib */; };
 		D14BC6572FAD31990059E900 /* libfontconfig.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5F72FAD31990059E900 /* libfontconfig.1.dylib */; };
 		D14BC6592FAD31990059E900 /* libvorbisenc.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC63A2FAD31990059E900 /* libvorbisenc.2.dylib */; };
-		D14BC65B2FAD31990059E900 /* libhogweed.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5FF2FAD31990059E900 /* libhogweed.6.dylib */; };
 		D14BC65C2FAD31990059E900 /* libtasn1.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6302FAD31990059E900 /* libtasn1.6.dylib */; };
 		D14BC65E2FAD31990059E900 /* libswscale.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC62F2FAD31990059E900 /* libswscale.10.dylib */; };
 		D14BC65F2FAD31990059E900 /* liblcms2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6092FAD31990059E900 /* liblcms2.2.dylib */; };
 		D14BC6622FAD31990059E900 /* libdovi.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5F12FAD31990059E900 /* libdovi.3.dylib */; };
-		D14BC6632FAD31990059E900 /* libp11-kit.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC61C2FAD31990059E900 /* libp11-kit.0.dylib */; };
 		D14BC6652FAD31990059E900 /* libwebpmux.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC63E2FAD31990059E900 /* libwebpmux.3.dylib */; };
 		D14BC66A2FAD31990059E900 /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6042FAD31990059E900 /* libintl.8.dylib */; };
 		D14BC66B2FAD31990059E900 /* libsnappy.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6262FAD31990059E900 /* libsnappy.1.dylib */; };
@@ -216,7 +214,7 @@
 		D14BC6712FAD31990059E900 /* libavdevice.63.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5DF2FAD31990059E900 /* libavdevice.63.dylib */; };
 		D14BC6722FAD31990059E900 /* libopenjp2.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6192FAD31990059E900 /* libopenjp2.7.dylib */; };
 		D14BC6732FAD31990059E900 /* libjxl_cms.0.12.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6062FAD31990059E900 /* libjxl_cms.0.12.dylib */; };
-		D14BC6742FAD31990059E900 /* libgnutls.30.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5FC2FAD31990059E900 /* libgnutls.30.dylib */; };
+		D14BC6742FAD31990059E900 /* libssl.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5FC2FAD31990059E900 /* libssl.4.dylib */; };
 		D14BC6752FAD31990059E900 /* libharfbuzz.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5FE2FAD31990059E900 /* libharfbuzz.0.dylib */; };
 		D14BC6762FAD31990059E900 /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5FA2FAD31990059E900 /* libglib-2.0.0.dylib */; };
 		D14BC67A2FAD31990059E900 /* libbrotlienc.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5E72FAD31990059E900 /* libbrotlienc.1.dylib */; };
@@ -228,7 +226,7 @@
 		D14BC6892FAD31990059E900 /* libidn2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6032FAD31990059E900 /* libidn2.0.dylib */; };
 		D14BC68B2FAD31990059E900 /* libpcre2-8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC61D2FAD31990059E900 /* libpcre2-8.0.dylib */; };
 		D14BC68C2FAD31990059E900 /* libavfilter.12.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5E02FAD31990059E900 /* libavfilter.12.dylib */; };
-		D14BC68E2FAD31990059E900 /* libcrypto.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5EF2FAD31990059E900 /* libcrypto.3.dylib */; };
+		D14BC68E2FAD31990059E900 /* libcrypto.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5EF2FAD31990059E900 /* libcrypto.4.dylib */; };
 		D14BC6902FAD31990059E900 /* libavformat.63.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5E12FAD31990059E900 /* libavformat.63.dylib */; };
 		D14BC6922FAD31990059E900 /* libswresample.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC62E2FAD31990059E900 /* libswresample.7.dylib */; };
 		D14BC6942FAD31990059E900 /* libtheoradec.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6312FAD31990059E900 /* libtheoradec.2.dylib */; };
@@ -250,7 +248,6 @@
 		D14BC6AF2FAD31990059E900 /* libunibreak.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6342FAD31990059E900 /* libunibreak.6.dylib */; };
 		D14BC6B02FAD31990059E900 /* libvorbisfile.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC63B2FAD31990059E900 /* libvorbisfile.3.dylib */; };
 		D14BC6B12FAD31990059E900 /* libunistring.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6352FAD31990059E900 /* libunistring.5.dylib */; };
-		D14BC6B22FAD31990059E900 /* libnettle.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6132FAD31990059E900 /* libnettle.8.dylib */; };
 		D14BC6B32FAD31990059E900 /* libsoxr.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC6282FAD31990059E900 /* libsoxr.0.dylib */; };
 		D14BC6B52FAD31990059E900 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC5F82FAD31990059E900 /* libfreetype.6.dylib */; };
 		D14BC6B62FAD31990059E900 /* libluajit-5.1.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D14BC60A2FAD31990059E900 /* libluajit-5.1.2.dylib */; };
@@ -295,10 +292,8 @@
 		D14BC6F62FAD31F40059E900 /* libpng16.16.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC61F2FAD31990059E900 /* libpng16.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC6F72FAD31F50059E900 /* libplacebo.360.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC61E2FAD31990059E900 /* libplacebo.360.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC6F82FAD31F70059E900 /* libpcre2-8.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC61D2FAD31990059E900 /* libpcre2-8.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		D14BC6F92FAD31F90059E900 /* libp11-kit.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC61C2FAD31990059E900 /* libp11-kit.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC6FC2FAD31FD0059E900 /* libopenjp2.7.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6192FAD31990059E900 /* libopenjp2.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7002FAD32040059E900 /* libogg.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6152FAD31990059E900 /* libogg.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		D14BC7022FAD32070059E900 /* libnettle.8.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6132FAD31990059E900 /* libnettle.8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7042FAD320A0059E900 /* libmujs.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6112FAD31990059E900 /* libmujs.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7052FAD320C0059E900 /* libmpv.2.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6102FAD31990059E900 /* libmpv.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7082FAD32100059E900 /* libmbedcrypto.16.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC60D2FAD31990059E900 /* libmbedcrypto.16.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -313,10 +308,9 @@
 		D14BC7122FAD32200059E900 /* libidn2.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6032FAD31990059E900 /* libidn2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7132FAD32210059E900 /* libiconv.2.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6022FAD31990059E900 /* libiconv.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7152FAD32230059E900 /* libhwy.1.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC6002FAD31990059E900 /* libhwy.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		D14BC7162FAD32240059E900 /* libhogweed.6.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FF2FAD31990059E900 /* libhogweed.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7172FAD32260059E900 /* libharfbuzz.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FE2FAD31990059E900 /* libharfbuzz.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7182FAD32270059E900 /* libgraphite2.3.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FD2FAD31990059E900 /* libgraphite2.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		D14BC7192FAD32280059E900 /* libgnutls.30.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FC2FAD31990059E900 /* libgnutls.30.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D14BC7192FAD32280059E900 /* libssl.4.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FC2FAD31990059E900 /* libssl.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC71A2FAD322A0059E900 /* libgmp.10.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FB2FAD31990059E900 /* libgmp.10.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC71B2FAD322B0059E900 /* libfribidi.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5F92FAD31990059E900 /* libfribidi.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC71C2FAD322D0059E900 /* libglib-2.0.0.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5FA2FAD31990059E900 /* libglib-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -324,7 +318,7 @@
 		D14BC71E2FAD32300059E900 /* libfontconfig.1.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5F72FAD31990059E900 /* libfontconfig.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7242FAD32380059E900 /* libdovi.3.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5F12FAD31990059E900 /* libdovi.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7252FAD32390059E900 /* libdav1d.7.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5F02FAD31990059E900 /* libdav1d.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		D14BC7262FAD323A0059E900 /* libcrypto.3.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5EF2FAD31990059E900 /* libcrypto.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D14BC7262FAD323A0059E900 /* libcrypto.4.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5EF2FAD31990059E900 /* libcrypto.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC7272FAD323C0059E900 /* libcjson.1.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5EE2FAD31990059E900 /* libcjson.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC72E2FAD32460059E900 /* libbrotlienc.1.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5E72FAD31990059E900 /* libbrotlienc.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D14BC72F2FAD32480059E900 /* libbrotlidec.1.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = D14BC5E62FAD31990059E900 /* libbrotlidec.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -630,11 +624,11 @@
 				D14BC72F2FAD32480059E900 /* libbrotlidec.1.dylib in Copy Dylibs */,
 				D14BC7322FAD324B0059E900 /* libb2.1.dylib in Copy Dylibs */,
 				D14BC7272FAD323C0059E900 /* libcjson.1.dylib in Copy Dylibs */,
-				D14BC7262FAD323A0059E900 /* libcrypto.3.dylib in Copy Dylibs */,
+				D14BC7262FAD323A0059E900 /* libcrypto.4.dylib in Copy Dylibs */,
 				D14BC7252FAD32390059E900 /* libdav1d.7.dylib in Copy Dylibs */,
 				D14BC7242FAD32380059E900 /* libdovi.3.dylib in Copy Dylibs */,
 				D14BC71E2FAD32300059E900 /* libfontconfig.1.dylib in Copy Dylibs */,
-				D14BC7192FAD32280059E900 /* libgnutls.30.dylib in Copy Dylibs */,
+				D14BC7192FAD32280059E900 /* libssl.4.dylib in Copy Dylibs */,
 				D14BC71A2FAD322A0059E900 /* libgmp.10.dylib in Copy Dylibs */,
 				D14BC70F2FAD32190059E900 /* libjxl_cms.0.12.dylib in Copy Dylibs */,
 				D14BC70D2FAD32170059E900 /* libjxl.0.12.dylib in Copy Dylibs */,
@@ -647,7 +641,6 @@
 				D14BC7112FAD321E0059E900 /* libintl.8.dylib in Copy Dylibs */,
 				D14BC71B2FAD322B0059E900 /* libfribidi.0.dylib in Copy Dylibs */,
 				D14BC7182FAD32270059E900 /* libgraphite2.3.dylib in Copy Dylibs */,
-				D14BC7162FAD32240059E900 /* libhogweed.6.dylib in Copy Dylibs */,
 				D14BC7172FAD32260059E900 /* libharfbuzz.0.dylib in Copy Dylibs */,
 				D19CF1DB301948D000B56A1F /* libglslang.16.dylib in Copy Dylibs */,
 				D14BC71D2FAD322E0059E900 /* libfreetype.6.dylib in Copy Dylibs */,
@@ -660,9 +653,7 @@
 				D14BC7052FAD320C0059E900 /* libmpv.2.dylib in Copy Dylibs */,
 				D14BC7042FAD320A0059E900 /* libmujs.dylib in Copy Dylibs */,
 				D1E2D4733071B402003CEDC2 /* libMoltenVK.dylib in Copy Dylibs */,
-				D14BC7022FAD32070059E900 /* libnettle.8.dylib in Copy Dylibs */,
 				D14BC7002FAD32040059E900 /* libogg.0.dylib in Copy Dylibs */,
-				D14BC6F92FAD31F90059E900 /* libp11-kit.0.dylib in Copy Dylibs */,
 				D14BC6F62FAD31F40059E900 /* libpng16.16.dylib in Copy Dylibs */,
 				D14BC6F82FAD31F70059E900 /* libpcre2-8.0.dylib in Copy Dylibs */,
 				D14BC6F72FAD31F50059E900 /* libplacebo.360.dylib in Copy Dylibs */,
@@ -1845,7 +1836,7 @@
 		D14BC5E62FAD31990059E900 /* libbrotlidec.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbrotlidec.1.dylib; path = deps/lib/libbrotlidec.1.dylib; sourceTree = "<absolute>"; };
 		D14BC5E72FAD31990059E900 /* libbrotlienc.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbrotlienc.1.dylib; path = deps/lib/libbrotlienc.1.dylib; sourceTree = "<absolute>"; };
 		D14BC5EE2FAD31990059E900 /* libcjson.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcjson.1.dylib; path = deps/lib/libcjson.1.dylib; sourceTree = "<absolute>"; };
-		D14BC5EF2FAD31990059E900 /* libcrypto.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.3.dylib; path = deps/lib/libcrypto.3.dylib; sourceTree = "<absolute>"; };
+		D14BC5EF2FAD31990059E900 /* libcrypto.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.4.dylib; path = deps/lib/libcrypto.4.dylib; sourceTree = "<absolute>"; };
 		D14BC5F02FAD31990059E900 /* libdav1d.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdav1d.7.dylib; path = deps/lib/libdav1d.7.dylib; sourceTree = "<absolute>"; };
 		D14BC5F12FAD31990059E900 /* libdovi.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdovi.3.dylib; path = deps/lib/libdovi.3.dylib; sourceTree = "<absolute>"; };
 		D14BC5F72FAD31990059E900 /* libfontconfig.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfontconfig.1.dylib; path = deps/lib/libfontconfig.1.dylib; sourceTree = "<absolute>"; };
@@ -1853,10 +1844,9 @@
 		D14BC5F92FAD31990059E900 /* libfribidi.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfribidi.0.dylib; path = deps/lib/libfribidi.0.dylib; sourceTree = "<absolute>"; };
 		D14BC5FA2FAD31990059E900 /* libglib-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.0.dylib"; path = "deps/lib/libglib-2.0.0.dylib"; sourceTree = "<absolute>"; };
 		D14BC5FB2FAD31990059E900 /* libgmp.10.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgmp.10.dylib; path = deps/lib/libgmp.10.dylib; sourceTree = "<absolute>"; };
-		D14BC5FC2FAD31990059E900 /* libgnutls.30.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgnutls.30.dylib; path = deps/lib/libgnutls.30.dylib; sourceTree = "<absolute>"; };
+		D14BC5FC2FAD31990059E900 /* libssl.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.4.dylib; path = deps/lib/libssl.4.dylib; sourceTree = "<absolute>"; };
 		D14BC5FD2FAD31990059E900 /* libgraphite2.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgraphite2.3.dylib; path = deps/lib/libgraphite2.3.dylib; sourceTree = "<absolute>"; };
 		D14BC5FE2FAD31990059E900 /* libharfbuzz.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libharfbuzz.0.dylib; path = deps/lib/libharfbuzz.0.dylib; sourceTree = "<absolute>"; };
-		D14BC5FF2FAD31990059E900 /* libhogweed.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhogweed.6.dylib; path = deps/lib/libhogweed.6.dylib; sourceTree = "<absolute>"; };
 		D14BC6002FAD31990059E900 /* libhwy.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhwy.1.dylib; path = deps/lib/libhwy.1.dylib; sourceTree = "<absolute>"; };
 		D14BC6022FAD31990059E900 /* libiconv.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.2.dylib; path = deps/lib/libiconv.2.dylib; sourceTree = "<absolute>"; };
 		D14BC6032FAD31990059E900 /* libidn2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libidn2.0.dylib; path = deps/lib/libidn2.0.dylib; sourceTree = "<absolute>"; };
@@ -1871,10 +1861,8 @@
 		D14BC60D2FAD31990059E900 /* libmbedcrypto.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmbedcrypto.16.dylib; path = deps/lib/libmbedcrypto.16.dylib; sourceTree = "<absolute>"; };
 		D14BC6102FAD31990059E900 /* libmpv.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmpv.2.dylib; path = deps/lib/libmpv.2.dylib; sourceTree = "<absolute>"; };
 		D14BC6112FAD31990059E900 /* libmujs.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmujs.dylib; path = deps/lib/libmujs.dylib; sourceTree = "<absolute>"; };
-		D14BC6132FAD31990059E900 /* libnettle.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnettle.8.dylib; path = deps/lib/libnettle.8.dylib; sourceTree = "<absolute>"; };
 		D14BC6152FAD31990059E900 /* libogg.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libogg.0.dylib; path = deps/lib/libogg.0.dylib; sourceTree = "<absolute>"; };
 		D14BC6192FAD31990059E900 /* libopenjp2.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopenjp2.7.dylib; path = deps/lib/libopenjp2.7.dylib; sourceTree = "<absolute>"; };
-		D14BC61C2FAD31990059E900 /* libp11-kit.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libp11-kit.0.dylib"; path = "deps/lib/libp11-kit.0.dylib"; sourceTree = "<absolute>"; };
 		D14BC61D2FAD31990059E900 /* libpcre2-8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpcre2-8.0.dylib"; path = "deps/lib/libpcre2-8.0.dylib"; sourceTree = "<absolute>"; };
 		D14BC61E2FAD31990059E900 /* libplacebo.360.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libplacebo.360.dylib; path = deps/lib/libplacebo.360.dylib; sourceTree = "<absolute>"; };
 		D14BC61F2FAD31990059E900 /* libpng16.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpng16.16.dylib; path = deps/lib/libpng16.16.dylib; sourceTree = "<absolute>"; };
@@ -2436,7 +2424,7 @@
 				D14BC67B2FAD31990059E900 /* libbrotlidec.1.dylib in Frameworks */,
 				D17653AC3078DD8100028889 /* libbs2b.0.dylib in Frameworks */,
 				D19AD6F43078F04B0098F9B0 /* libcjson.1.dylib in Frameworks */,
-				D14BC68E2FAD31990059E900 /* libcrypto.3.dylib in Frameworks */,
+				D14BC68E2FAD31990059E900 /* libcrypto.4.dylib in Frameworks */,
 				D14BC69D2FAD31990059E900 /* libdav1d.7.dylib in Frameworks */,
 				D14BC6622FAD31990059E900 /* libdovi.3.dylib in Frameworks */,
 				D14BC6572FAD31990059E900 /* libfontconfig.1.dylib in Frameworks */,
@@ -2444,11 +2432,10 @@
 				D14BC6BC2FAD31990059E900 /* libfribidi.0.dylib in Frameworks */,
 				D14BC6762FAD31990059E900 /* libglib-2.0.0.dylib in Frameworks */,
 				D14BC6872FAD31990059E900 /* libgmp.10.dylib in Frameworks */,
-				D14BC6742FAD31990059E900 /* libgnutls.30.dylib in Frameworks */,
+				D14BC6742FAD31990059E900 /* libssl.4.dylib in Frameworks */,
 				D14BC6512FAD31990059E900 /* libgraphite2.3.dylib in Frameworks */,
 				D19CF1D73019489200B56A1F /* libglslang.16.dylib in Frameworks */,
 				D14BC6752FAD31990059E900 /* libharfbuzz.0.dylib in Frameworks */,
-				D14BC65B2FAD31990059E900 /* libhogweed.6.dylib in Frameworks */,
 				D14BC6982FAD31990059E900 /* libhwy.1.dylib in Frameworks */,
 				D14BC6522FAD31990059E900 /* libiconv.2.dylib in Frameworks */,
 				D14BC6892FAD31990059E900 /* libidn2.0.dylib in Frameworks */,
@@ -2465,10 +2452,8 @@
 				D1E2D4723071B365003CEDC2 /* libMoltenVK.dylib in Frameworks */,
 				D14BC6BD2FAD31990059E900 /* libmpv.2.dylib in Frameworks */,
 				D14BC6A02FAD31990059E900 /* libmujs.dylib in Frameworks */,
-				D14BC6B22FAD31990059E900 /* libnettle.8.dylib in Frameworks */,
 				D14BC69A2FAD31990059E900 /* libogg.0.dylib in Frameworks */,
 				D14BC6722FAD31990059E900 /* libopenjp2.7.dylib in Frameworks */,
-				D14BC6632FAD31990059E900 /* libp11-kit.0.dylib in Frameworks */,
 				D14BC68B2FAD31990059E900 /* libpcre2-8.0.dylib in Frameworks */,
 				D14BC6BF2FAD31990059E900 /* libplacebo.360.dylib in Frameworks */,
 				D14BC69E2FAD31990059E900 /* libpng16.16.dylib in Frameworks */,
@@ -2692,7 +2677,7 @@
 				D14BC5E72FAD31990059E900 /* libbrotlienc.1.dylib */,
 				D17653AB3078DD8100028889 /* libbs2b.0.dylib */,
 				D14BC5EE2FAD31990059E900 /* libcjson.1.dylib */,
-				D14BC5EF2FAD31990059E900 /* libcrypto.3.dylib */,
+				D14BC5EF2FAD31990059E900 /* libcrypto.4.dylib */,
 				D14BC5F02FAD31990059E900 /* libdav1d.7.dylib */,
 				D14BC5F12FAD31990059E900 /* libdovi.3.dylib */,
 				D14BC5F72FAD31990059E900 /* libfontconfig.1.dylib */,
@@ -2700,11 +2685,9 @@
 				D14BC5F92FAD31990059E900 /* libfribidi.0.dylib */,
 				D14BC5FA2FAD31990059E900 /* libglib-2.0.0.dylib */,
 				D14BC5FB2FAD31990059E900 /* libgmp.10.dylib */,
-				D14BC5FC2FAD31990059E900 /* libgnutls.30.dylib */,
 				D14BC5FD2FAD31990059E900 /* libgraphite2.3.dylib */,
 				D19CF1D63019489200B56A1F /* libglslang.16.dylib */,
 				D14BC5FE2FAD31990059E900 /* libharfbuzz.0.dylib */,
-				D14BC5FF2FAD31990059E900 /* libhogweed.6.dylib */,
 				D14BC6002FAD31990059E900 /* libhwy.1.dylib */,
 				D14BC6022FAD31990059E900 /* libiconv.2.dylib */,
 				D14BC6032FAD31990059E900 /* libidn2.0.dylib */,
@@ -2721,10 +2704,8 @@
 				D1E2D4713071B365003CEDC2 /* libMoltenVK.dylib */,
 				D14BC6102FAD31990059E900 /* libmpv.2.dylib */,
 				D14BC6112FAD31990059E900 /* libmujs.dylib */,
-				D14BC6132FAD31990059E900 /* libnettle.8.dylib */,
 				D14BC6152FAD31990059E900 /* libogg.0.dylib */,
 				D14BC6192FAD31990059E900 /* libopenjp2.7.dylib */,
-				D14BC61C2FAD31990059E900 /* libp11-kit.0.dylib */,
 				D14BC61D2FAD31990059E900 /* libpcre2-8.0.dylib */,
 				D14BC61E2FAD31990059E900 /* libplacebo.360.dylib */,
 				D14BC61F2FAD31990059E900 /* libpng16.16.dylib */,
@@ -2737,6 +2718,7 @@
 				D14BC6282FAD31990059E900 /* libsoxr.0.dylib */,
 				D14BC6292FAD31990059E900 /* libspeex.1.dylib */,
 				D19CF1D8301948AE00B56A1F /* libSPIRV.16.dylib */,
+				D14BC5FC2FAD31990059E900 /* libssl.4.dylib */,
 				D14BC62D2FAD31990059E900 /* libSvtAv1Enc.4.dylib */,
 				D14BC62E2FAD31990059E900 /* libswresample.7.dylib */,
 				D14BC62F2FAD31990059E900 /* libswscale.10.dylib */,

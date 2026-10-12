@@ -19,6 +19,7 @@
         let
           pkgs = import nixpkgs {
             system = systemName;
+            config.allowUnfree = true;
           };
 
           ### Tools / Commands ###
@@ -144,6 +145,22 @@
             }
           );
 
+          openssl = pkgs.openssl.overrideAttrs (
+            finalAttrs: previousAttrs: {
+              version = "4.0.3";
+              src = pkgs.fetchFromGitHub {
+                owner = "openssl";
+                repo = "openssl";
+                tag = "openssl-${finalAttrs.version}";
+                hash = "sha256-7h7s/mznobOfDHhZOlSg9A9Jvh70MhcSH6Ilb8Ytj/I=";
+              };
+              # TODO: find way to disable manpages to speed up build. This alone doesn't work
+              # outputs = builtins.filter (x: x != "man") previousAttrs.outputs;
+              doCheck = false;
+              withDocs = false;
+            }
+          ); # END openssl
+
           # Upgrade from 3.1.2 to 4.2.0.
           svt-av1 = pkgs.svt-av1.overrideAttrs (
             finalAttrs: previousAttrs: {
@@ -162,6 +179,10 @@
             (pkgs.ffmpeg-headless.override {
               version = "9.0.2";
               hash = "sha256-/c6cVfMSF6JJxCuJs58bxBlmBXDJ+jbnC4pELB97Qb0=";
+
+              withGPL = true; # Enable GPL-licensed codecs (e.g., x264, x265, libmp3lame)
+              withVersion3 = true; # Enable version 3-licensed codecs (e.g., libfdk-aac)
+              withUnfree = true; # Enable unfree codecs (e.g., AAC, MP3, H.264, H.265)
 
               withDebug = false; # Build using debug options
               withStripping = true; # Strip symbols from the resulting binaries to reduce size
@@ -183,8 +204,6 @@
 
               withFreetype = true;
 
-              withGnutls = true;
-
               withHarfbuzz = true;
 
               withJxl = true;
@@ -198,33 +217,35 @@
               withTheora = true; # Theora video codec
               withVorbis = true; # Vorbis audio codec
 
-              withX264 = false; # H.264 video encoder, not super useful for IINA (& adds >4 MB to app size)
-              withX265 = false; # H.265 video encoder, not super useful for IINA (& adds >31 MB to app size)
               withAom = false; # AV1 video encoder, IINA prefers SVT-AV1 (better performance)
               withCaca = false; # ASCII art video output, not useful for IINA
               withDvdnav = false;
               withDvdread = false;
+              withGnutls = false; # Use OpenSSL instead
               withMp3lame = false; # MP3 LAME audio codec encoder, not super useful for IINA
               withOpenapv = false; # APV video encoder, not very useful for IINA
+              withOpencl = false; # Vulkan predecessor, not supported on modern macOS
+              withOpenjpeg = false; # JPEG 2000 de/encoder
               withOpenmpt = false; # Tracker music files decoder (various formats), not included in IINA historically
               withOpus = false; # Opus audio codec, not included in IINA historically
               withRist = true; # RIST protocol support
+              withSdl2 = false; # SDL2 is disabled in our mpv build
               withSrt = false; # Secure Reliable Transport (SRT) protocol, not useful for IINA
               withSsh = false; # SFTP protocol support
+              withVdpau = false; # nVidia HW acceleration, not supported on modern macOS
               withVidStab = false; # Video stabilization filter, requires Linux
               withVmaf = false; # Video quality measurement tool, not useful for IINA
+              withX264 = false; # H.264 video encoder, not super useful for IINA (& adds >4 MB to app size)
+              withX265 = false; # H.265 video encoder, not super useful for IINA (& adds >31 MB to app size)
               withZmq = false; # ZeroMQ messaging library for FFmpeg streaming; not used by mpv or IINA
               withZvbi = false; # Teletext support, not useful for IINA
 
-              # Unlikely to ever enable these
-              withOpencl = false; # Vulkan predecessor, not supported on modern macOS
-              withOpenjpeg = false; # JPEG 2000 de/encoder
-              withVdpau = false; # nVidia HW acceleration, not supported on modern macOS
-              withXlib = false; # X11 support, no longer supported on modern OSes
-              withXcb = false; # X11
-              withXcbxfixes = false; # X11
-              withXcbShape = false; # X11
-              withXcbShm = false; # X11
+              # Disable X11 support: no longer supported on modern OSes
+              withXlib = false;
+              withXcb = false;
+              withXcbxfixes = false;
+              withXcbShape = false;
+              withXcbShm = false;
 
               # Don't build docs; we don't use them
               withHtmlDoc = false;
@@ -242,13 +263,25 @@
               (
                 finalAttrs: previousAttrs: {
                   # The postproc configure flag was removed in FFmpeg 8.
-                  configureFlags = builtins.filter (
-                    x:
-                    # The libcelt configure flag was removed in FFmpeg 9.
-                    x != "--disable-libcelt"
-                    # The libshaderc configure flag was removed in FFmpeg 9.
-                    && x != "--disable-libshaderc"
-                  ) previousAttrs.configureFlags;
+                  configureFlags =
+                    builtins.filter
+                      (
+                        x:
+                        # The libcelt configure flag was removed in FFmpeg 9.
+                        x != "--disable-libcelt"
+                        # The libshaderc configure flag was removed in FFmpeg 9.
+                        && x != "--disable-libshaderc"
+                      )
+                      (
+                        previousAttrs.configureFlags
+                        ++ [
+                          "--enable-openssl"
+                          "--extra-cflags=-I${pkgs.lib.getLib openssl}/include"
+                          "--extra-ldflags=-I${pkgs.lib.getLib openssl}/lib"
+                        ]
+                      );
+
+                  buildInputs = previousAttrs.buildInputs ++ [ openssl ];
                   # Skip tests to speed up build
                   doCheck = false;
                 }
@@ -302,6 +335,7 @@
                   mesonFlags = previousAttrs.mesonFlags ++ [
                     "-Dmanpage-build=disabled"
                   ];
+
                   # Disabling building of man pages requires the package outputs be adjusted accordingly.
                   outputs = builtins.filter (x: x != "man") previousAttrs.outputs;
                   patches =
@@ -380,27 +414,19 @@
                   dav1d # AV1 video decoder
                   ffmpeg
                   fontconfig # Font configuration library
-                  pkgs.freetype # FreeType font rendering engine
-                  pkgs.harfbuzz # Text shaping engine. Used by avdevice, avfilter, ass
                   libass # ASS subtitle renderer
                   libbluray # Blu-ray support
                   libhwy
                   libjxl # JPEG-XL support
                   mpv
                   pkgs.brotli # Brotli compression. Used for ass, fontconfig, bluray, & more
+                  pkgs.freetype # FreeType font rendering engine
                   pkgs.fribidi # Hebrew and Arabic support
                   pkgs.gettext # Internationalization library
                   pkgs.glib # GTK GLib utility library. Required by harfbuzz
                   pkgs.gmp # Provides arbitrary precision arithmetic. Required by several libs
-                  pkgs.gnutls # TLS support, needed for network streams
                   pkgs.graphite2 # Compiles Graphite-enabled fonts. Used by harfbuzz
-                  pkgs.haskellPackages.character-ps
-                  pkgs.haskellPackages.indexed-traversable
-                  pkgs.haskellPackages.integer-conversion
-                  pkgs.haskellPackages.network-uri
-                  pkgs.haskellPackages.semialign
-                  pkgs.haskellPackages.text-iso8601
-                  pkgs.haskellPackages.witherable
+                  pkgs.harfbuzz # Text shaping engine. Used by avdevice, avfilter, ass
                   pkgs.lcms2 # Little CMS color management lib. Required by placebo, jxl
                   pkgs.libarchive # Archive support
                   pkgs.libb2 # BLAKE2 hashing library
@@ -418,9 +444,9 @@
                   pkgs.lz4 # LZ4 compression. Used by libarchive
                   pkgs.moltenvk # Vulkan support for macOS. Required by libplacebo
                   pkgs.mujs # JavaScript engine. Needed for mpv's JS support
-                  pkgs.nettle # GnuTLS dependency (cryptographic algorithms)
                   pkgs.pcre2 # (Per-compatible) Regular expression pattern matching
                   pkgs.rubberband # Enables FFmpeg to perform audio tempo & pitch modifications
+                  openssl # TLS support, needed for network streams
                   pkgs.shaderc # Referenced by libplacebo, even though it requires Vulkan which IINA doesn't use
                   pkgs.snappy # Snappy compression
                   pkgs.soxr # SoX Resampler, needed for high-quality audio resampling
@@ -497,7 +523,7 @@
                 -disablePackageRepositoryCache \
                 -IDEPackageSupportDisableManifestSandbox=YES \
                 -IDEPackageSupportDisablePluginExecutionSandbox=YES \
-                ARCHS=$ARCH ONLY_ACTIVE_ARCH=YES
+                ARCHS=$ARCH ONLY_ACTIVE_ARCH=NO
             '';
 
           }; # END spmDeps

@@ -4,7 +4,7 @@ SKIP_LIBS=false
 SKIP_EXECUTABLES=false
 SKIP_PLUGINS=false
 
-DEPS_DOWNLOAD_PATH="https://github.com/svobs/iina-advance/releases/download/v1.6.2/iinaa-deps-1.6.2.zip"
+DEPS_DOWNLOAD_PATH="https://github.com/svobs/iina-advance/releases/download/v1.6.2/iinaa-deps-1.6.3.zip"
 DEPS_IS_APP=false
 
 # Colors for output
